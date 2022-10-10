@@ -8,7 +8,7 @@ lexer grammar AritmeticLexer;
  * Curs: 2022 - 2023
  */
 
-package compiladores.chadpp;
+package compiladores.chadpp.compiler_components;
 }
 
 /******************************************************************************
