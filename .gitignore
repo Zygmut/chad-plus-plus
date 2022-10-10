@@ -3,3 +3,13 @@
 /chadpp/nbproject/private/
 /nbproject/
 /target/
+src/main/java/compiladores/chadpp/compiler_components/AritmeticLexer.interp
+src/main/java/compiladores/chadpp/compiler_components/AritmeticLexer.java
+src/main/java/compiladores/chadpp/compiler_components/AritmeticLexer.tokens
+src/main/java/compiladores/chadpp/compiler_components/AritmeticParser.interp
+src/main/java/compiladores/chadpp/compiler_components/AritmeticParser.java
+src/main/java/compiladores/chadpp/compiler_components/AritmeticParser.tokens
+src/main/java/compiladores/chadpp/compiler_components/AritmeticParserBaseListener.java
+src/main/java/compiladores/chadpp/compiler_components/AritmeticParserBaseVisitor.java
+src/main/java/compiladores/chadpp/compiler_components/AritmeticParserListener.java
+src/main/java/compiladores/chadpp/compiler_components/AritmeticParserVisitor.java
