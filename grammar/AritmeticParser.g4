@@ -14,7 +14,7 @@ options {
  * OMEGA COMPILER
  */
 
-package compiladores.chadpp.lib;
+package antlr;
 }
 
 /******************************************************************************
