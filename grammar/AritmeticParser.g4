@@ -14,7 +14,7 @@ options {
  * OMEGA COMPILER
  */
 
-package compiladores.chadpp.compiler_components;
+package compiladores.chadpp.lib;
 }
 
 /******************************************************************************
