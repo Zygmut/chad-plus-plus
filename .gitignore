@@ -37,3 +37,4 @@ replay_pid*
 /lib/AritmeticParserBaseVisitor.java
 /lib/AritmeticParserListener.java
 /lib/AritmeticParserVisitor.java
+**/antlr/
