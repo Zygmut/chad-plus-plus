@@ -19,25 +19,24 @@ package antlr;
  * ****************************************************************************
  */
 
-TRUE: 'verdadero';
+TRUE: 'true';
 FALSE: 'false';
-OMEGA: 'omega';
+MAIN: 'main';
 ALPHA: 'alpha';
-OTUPUT: 'output';
+OUTPUT: 'output';
 INPUTINT: 'inputint';
 INPUTBOL: 'inputbol';
-INPUTSTR: 'inputstr';
 CONSTANT: 'const';
 RETURN: 'return';
 INT: 'int';
 BOOLEAN: 'bol';
-STRING: 'str';
-VOID: 'nil';
+TUPLE: 'tup';
+VOID: 'void';
 IF: 'if';
 ELSE: 'else';
 WHILE: 'while';
 BEGIN: 'begin';
-
+LOOP: 'loop';
 REQUAL: '==';
 RNOTEQUAL: '!=';
 LAND: '&&';
