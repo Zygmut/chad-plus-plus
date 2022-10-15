@@ -8,5 +8,8 @@
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[antlr]": {
+    "editor.defaultFormatter": "mike-lischke.vscode-antlr4"
   }
 }
