@@ -39,9 +39,11 @@ extrad: decl+ BEGIN;
 // Declaraciones de las variables y constantes
 decl: CONSTANT? type asignacion;
 
-asignacion: listaids '=' expresion SEMICOLON;
+//asignacion: listaids '=' expresion SEMICOLON;
+asignacion: listaids EQUAL expresion SEMICOLON;
 
-listaids: (ID ',')* ID;
+//listaids: (ID ',')* ID;
+listaids: (ID COMMA)* ID;
 
 // Tipos de variables o funciones
 typef: VOID | type;
@@ -49,22 +51,23 @@ typef: VOID | type;
 type: INT | BOOLEAN;
 
 // Parametros de una funcion
-params: (param ',')* param;
+params: (param COMMA)* param;
+//params: (param ',')* param;
 
 param: type ID;
 
 // Parametros de una funcion al llamarla en el programa
-
-args: (expresion ',')* expresion;
+args: (expresion COMMA)* expresion;
+//args: (expresion ',')* expresion;
 
 // Gestion de expresiones
 expresion: (cont_expresion op)* cont_expresion;
 
-tuple:; // TODO
+tuple: LSKEY expresion (COMMA expresion)* RSKEY;
 
 cont_expresion:
 	NUMBER
-	// | tuple
+	| tuple
 	| bool
 	| LPAREN expresion RPAREN
 	| LNOT expresion
@@ -93,13 +96,18 @@ bool: TRUE | FALSE;
 
 // Instrucciones 
 instr:
-	// TODO Add loop & MODIFICAR OUTPUT STRING
 	WHILE LPAREN expresion RPAREN LKEY instr* RKEY
+	| LOOP LPAREN expresion COMMA expresion RPAREN LKEY instr* RKEY
 	| IF LPAREN expresion RPAREN LKEY instr* RKEY (
 		ELSE LKEY instr* RKEY
 	)?
 	| callf SEMICOLON
-	| OUTPUT LPAREN expresion RPAREN SEMICOLON
+	| OUTPUT LPAREN (STRING_LIT | expresion) (
+		COMMA (
+			STRING_LIT
+			| expresion
+		) // Mirar si concatenar string con ',' o con '+'
+	)* RPAREN SEMICOLON
 	| asignacion
 	| ID post? SEMICOLON
 	| RETURN expresion SEMICOLON;
