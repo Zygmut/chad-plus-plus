@@ -19,8 +19,20 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 import antlr.ChadppLexer;
 import antlr.ChadppParser;
-import utils.*;
+import tests.FileDataTests;
+import utils.Env;
 
+/**
+ * Main - Clase principal del programa
+ *
+ * En esta clase se define el punto de entrada del programa.
+ * 
+ * Assignatura 21742 - Compiladors
+ * Estudis: Grau en Informàtica
+ * Itinerari: Computació
+ * Curs: 2022 - 2023
+ * 
+ */
 public class Main {
 
     public static void main(String[] args) {
@@ -30,14 +42,10 @@ public class Main {
         // chadpp t.chpp app
 
         // Check params
-        switch funcion(){
-            Env.Error: print rojo error
-            Env.Warning: print amarillo error 
-        }
+
         // Check filename ends with '.chpp'
 
         // Check out
-
 
         try {
             InputStream inputStream = new FileInputStream("./tests/example1.txt");
@@ -45,17 +53,19 @@ public class Main {
             TokenStream tokenStream = new CommonTokenStream(lexer);
             ChadppParser parser = new ChadppParser(tokenStream);
 
+            if (Env.TEST_MODE) {
+                FileDataTests.runFileDataTests();
+            }
+
             if (Env.VISUALIZATION) {
                 guiTreeVisualization(parser);
             } else {
                 ChadppParser.ChadppContext chadppContext = parser.chadpp();
                 ChadppVisitor visitor = new ChadppVisitor();
                 visitor.visit(chadppContext);
-
             }
 
         } catch (IOException e) {
-
             e.printStackTrace();
         }
 
