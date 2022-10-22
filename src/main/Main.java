@@ -19,20 +19,33 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 import antlr.ChadppLexer;
 import antlr.ChadppParser;
+import utils.*;
 
 public class Main {
 
-    private static final boolean VISUALIZATION = true;
-
     public static void main(String[] args) {
-        System.out.println("Chad++ Compiler");
+
+        // chadpp -> usage
+        // chadpp t.chpp -> compile /out
+        // chadpp t.chpp app
+
+        // Check params
+        switch funcion(){
+            Env.Error: print rojo error
+            Env.Warning: print amarillo error 
+        }
+        // Check filename ends with '.chpp'
+
+        // Check out
+
+
         try {
             InputStream inputStream = new FileInputStream("./tests/example1.txt");
             Lexer lexer = new ChadppLexer(CharStreams.fromStream(inputStream));
             TokenStream tokenStream = new CommonTokenStream(lexer);
             ChadppParser parser = new ChadppParser(tokenStream);
 
-            if (VISUALIZATION) {
+            if (Env.VISUALIZATION) {
                 guiTreeVisualization(parser);
             } else {
                 ChadppParser.ChadppContext chadppContext = parser.chadpp();
