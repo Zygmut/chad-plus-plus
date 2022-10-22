@@ -12,8 +12,8 @@ public class Test<T> {
         return ConsoleColor.printColored(ConsoleColor.RED, "\tERROR");
     }
 
-    public void customAssert(T object, T excpected) {
-        System.out.println((object.equals(excpected)) ? OK() : ERROR());
+    public void customAssert(T object, T expected) {
+        System.out.println((object.equals(expected)) ? OK() : ERROR());
     }
 
     /**
