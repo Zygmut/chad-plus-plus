@@ -1,7 +1,5 @@
 package main;
 
-import org.antlr.runtime.tree.ParseTree;
-
 import antlr.*;
 import antlr.ChadppParser.*; // imports all Rule-Contexts
 
