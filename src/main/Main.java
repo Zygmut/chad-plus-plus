@@ -20,7 +20,9 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import antlr.ChadppLexer;
 import antlr.ChadppParser;
 import tests.FileDataTests;
+import utils.ConsoleColor;
 import utils.Env;
+import utils.Sanity;
 
 /**
  * Main - Clase principal del programa
@@ -37,25 +39,23 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // chadpp -> usage
-        // chadpp t.chpp -> compile /out
-        // chadpp t.chpp app
+        if (Sanity.checkInput(args) == Env.Error) {
+            System.out.println(ConsoleColor.printColored(ConsoleColor.RED, "Error in arguments"));
+            System.exit(0);
+        }
 
-        // Check params
+        System.out.println(ConsoleColor.printColored(ConsoleColor.GREEN, "All Good!"));
 
-        // Check filename ends with '.chpp'
-
-        // Check out
+        // Unit Testing
+        if (Env.TEST_MODE) {
+            FileDataTests.runFileDataTests();
+        }
 
         try {
-            InputStream inputStream = new FileInputStream("./tests/example1.txt");
+            InputStream inputStream = new FileInputStream("./tests/example1.chpp");
             Lexer lexer = new ChadppLexer(CharStreams.fromStream(inputStream));
             TokenStream tokenStream = new CommonTokenStream(lexer);
             ChadppParser parser = new ChadppParser(tokenStream);
-
-            if (Env.TEST_MODE) {
-                FileDataTests.runFileDataTests();
-            }
 
             if (Env.VISUALIZATION) {
                 guiTreeVisualization(parser);
