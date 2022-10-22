@@ -28,27 +28,26 @@ import utils.Sanity;
  * Main - Clase principal del programa
  *
  * En esta clase se define el punto de entrada del programa.
- * 
+ *
  * Assignatura 21742 - Compiladors
  * Estudis: Grau en Informàtica
  * Itinerari: Computació
  * Curs: 2022 - 2023
- * 
+ *
  */
 public class Main {
 
+    // https://www.youtube.com/watch?v=c0-hvjV2A5Y&t=140s
+
     public static void main(String[] args) {
+        // Unit Testing
+        if (Env.TEST_MODE) {
+            new FileDataTests().runTests();
+        }
 
         if (Sanity.checkInput(args) == Env.Error) {
             System.out.println(ConsoleColor.printColored(ConsoleColor.RED, "Error in arguments"));
             System.exit(0);
-        }
-
-        System.out.println(ConsoleColor.printColored(ConsoleColor.GREEN, "All Good!"));
-
-        // Unit Testing
-        if (Env.TEST_MODE) {
-            FileDataTests.runFileDataTests();
         }
 
         try {
@@ -85,6 +84,6 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-    }
 
+    }
 }
