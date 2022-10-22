@@ -1,16 +1,16 @@
 #!/bin/bash
 
-mkdir -p ../src/antlr
-rm -r ../src/antlr/* 
+mkdir -p src/antlr
+rm -r src/antlr/*
 
-mkdir -p ../src/antlr/generated_files
+mkdir -p src/antlr/generated_files
 
-java -jar antlr-4.9.3-complete.jar ../grammar/ChadppLexer.g4
-java -jar antlr-4.9.3-complete.jar -visitor ../grammar/ChadppParser.g4
+java -jar lib/antlr-4.9.3-complete.jar grammar/ChadppLexer.g4
+java -jar lib/antlr-4.9.3-complete.jar -visitor grammar/ChadppParser.g4
 
-mv ../grammar/* ../src/antlr
-mv ../src/antlr/*.g4 ../grammar
+mv grammar/* src/antlr
+mv src/antlr/*.g4 grammar/
 
-mv ../src/antlr/*.tokens ../src/antlr/generated_files
-mv ../src/antlr/*.interp ../src/antlr/generated_files
+mv src/antlr/*.tokens src/antlr/generated_files
+mv src/antlr/*.interp src/antlr/generated_files
 
