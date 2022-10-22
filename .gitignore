@@ -39,5 +39,3 @@ replay_pid*
 /lib/AritmeticParserVisitor.java
 **/antlr/
 .antlr
-
-*.txt
