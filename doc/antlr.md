@@ -8,10 +8,10 @@
 
 ```bash
 # windows
-lib/windows_update_antlr.bat
+./lib/windows_update_antlr.bat
 
 # linux
-lib/linux_update_antlr.sh
+sh lib/linux_update_antlr.sh
 ```
 
 ## Info antlr
@@ -27,9 +27,9 @@ ANTLR Parser Generator  Version 4.9.3
  -message-format ___ specify output style for messages in antlr, gnu, vs2005
  -long-messages      show exception details when available for errors and warnings
  -listener           generate parse tree listener (default)
- -no-listener        don't generate parse tree listener
+ -no-listener        dont generate parse tree listener
  -visitor            generate parse tree visitor
- -no-visitor         don't generate parse tree visitor (default)
+ -no-visitor         dont generate parse tree visitor (default)
  -package ___        specify a package/namespace for the generated code
  -depend             generate file dependencies
  -D<option>=value    set/override a grammar-level option
