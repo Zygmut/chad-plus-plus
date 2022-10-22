@@ -23,7 +23,7 @@ public class Test<T> {
      * @param Name
      * @param functions
      */
-    public void runTests(String Name, Runnable[] functions) {
+    public void run(String Name, Runnable[] functions) {
         String header = "=== " + Name + " Unit Tests ===";
         String separator = "-".repeat(header.length());
         String footer = "=".repeat(header.length());
