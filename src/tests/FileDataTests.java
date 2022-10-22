@@ -1,15 +1,22 @@
 package tests;
 
-import utils.ConsoleColor;
 import utils.Env;
 import utils.FileData;
 
-public class FileDataTests {
+public class FileDataTests implements UnitTest {
 
     private static final Test<Object> unitTest = new Test<>();
 
-    public static void runFileDataTests() {
-        System.out.println(ConsoleColor.printColored(ConsoleColor.BLUE, "\n=== File Unit Tests ==="));
+    // Test. runtests(FileData, [test1, test2, test3])
+    @Override
+    public void runTests() {
+        unitTest.run("FileData", new Runnable[] {
+                FileDataTests::test1
+        });
+
+    }
+
+    private static void test1() {
 
         // Resultado esperado: "OK"
         unitTest.customAssert(new FileData(), Env.FILE_DATA);
@@ -30,6 +37,5 @@ public class FileDataTests {
         Env.FILE_DATA.setMultipleFileData("", "txt", "");
         unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
 
-        System.out.println(ConsoleColor.printColored(ConsoleColor.BLUE, "======================="));
     }
 }
