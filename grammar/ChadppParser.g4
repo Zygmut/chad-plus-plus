@@ -31,9 +31,9 @@ chadpp: function* main;
 //main '{' extrad? instr+ '}'
 main: MAIN LKEY extrad? instrucciones RKEY;
 
-// typef alpha id '(' params? ')' '{' extrad? instr+ '}'
+// typef alpha ID '(' params? ')' '{' extrad? instr+ '}'
 function:
-	typef ALPHA ID LPAREN params? RPAREN LKEY extrad? instrucciones RKEY;
+	typef ALPHA id LPAREN params? RPAREN LKEY extrad? instrucciones RKEY;
 
 //Lista de instrucciones en una función (o en el main)
 instrucciones: instr+;
@@ -48,7 +48,7 @@ decl: CONSTANT? type TUPLE? asignacion;
 asignacion: listaids EQUAL expresion SEMICOLON;
 
 //listaids: (ID ',')* ID;
-listaids: (ID COMMA)* ID;
+listaids: (id COMMA)* id;
 
 // Tipos de variables o funciones
 typef: VOID | type;
@@ -59,7 +59,7 @@ type: INT | BOOLEAN;
 params: (param COMMA)* param;
 //params: (param ',')* param;
 
-param: type ID;
+param: type id;
 
 // Parametros de una funcion al llamarla en el programa
 args: (expresion COMMA)* expresion;
@@ -70,38 +70,27 @@ expresion: (cont_expresion op)* cont_expresion;
 
 tuple_decl: LSKEY expresion (COMMA expresion)* RSKEY;
 
-tuple: ID LSKEY NUMBER RSKEY;
+tuple: id LSKEY number RSKEY;
 
 cont_expresion:
-	NUMBER
+	number
+	| id
 	| tuple
 	| bool
 	| LPAREN expresion RPAREN
 	| LNOT expresion
-	| ID post?
 	| callf;
 
 callf:
-	ID LPAREN args? RPAREN
+	id LPAREN args? RPAREN
 	| INPUTINT LPAREN RPAREN
 	| INPUTBOL LPAREN RPAREN;
 
-op:
-	PLUS
-	| MINUS
-	| MUL
-	| LAND
-	| LOR
-	| REQUAL
-	| RNOTEQUAL
-	| RLESS
-	| RGRE;
-
-post: PLUSPLUS | MINUSMINUS;
+op: PLUS | MINUS | MUL | LAND | LOR | REQUAL | RLESS | RGRE;
 
 bool: TRUE | FALSE;
 
-// Instrucciones 
+// Instrucciones
 instr:
 	WHILE LPAREN expresion RPAREN LKEY instr* RKEY
 	| LOOP LPAREN expresion COMMA expresion RPAREN LKEY instr* RKEY
@@ -116,5 +105,8 @@ instr:
 		) // Mirar si concatenar string con ',' o con '+'
 	)* RPAREN SEMICOLON
 	| asignacion
-	| ID post? SEMICOLON
 	| RETURN expresion SEMICOLON;
+
+id: ID;
+
+number: NUMBER;
