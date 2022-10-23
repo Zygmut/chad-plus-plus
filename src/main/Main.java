@@ -37,8 +37,6 @@ import utils.Sanity;
  */
 public class Main {
 
-    // https://www.youtube.com/watch?v=c0-hvjV2A5Y&t=140s
-
     public static void main(String[] args) {
         // Unit Testing
         if (Env.TEST_MODE) {
@@ -51,7 +49,7 @@ public class Main {
         }
 
         try {
-            InputStream inputStream = new FileInputStream("./tests/example1.chpp");
+            InputStream inputStream = new FileInputStream(Env.FILE_DATA.getFilePath());
             Lexer lexer = new ChadppLexer(CharStreams.fromStream(inputStream));
             TokenStream tokenStream = new CommonTokenStream(lexer);
             ChadppParser parser = new ChadppParser(tokenStream);
@@ -65,6 +63,9 @@ public class Main {
             }
 
         } catch (IOException e) {
+            System.out.println(ConsoleColor
+                    .printColored(ConsoleColor.RED,
+                            "Fichero no encontrado. Comprueba si la ruta asignada es la correcta."));
             e.printStackTrace();
         }
 
