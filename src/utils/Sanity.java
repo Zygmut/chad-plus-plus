@@ -21,7 +21,7 @@ public class Sanity {
      * (Opcional)
      *
      * @param args
-     * @return int
+     * @return int - Error o Ok
      */
     public static int checkInput(String[] args) {
 
