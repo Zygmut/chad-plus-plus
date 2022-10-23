@@ -1,7 +1,6 @@
 package tests;
 
 import utils.Env;
-import utils.FileData;
 
 public class FileDataTests implements UnitTest {
 
@@ -11,14 +10,13 @@ public class FileDataTests implements UnitTest {
     @Override
     public void runTests() {
         unitTest.run("FileData", new Runnable[] {
-                FileDataTests::test1
+                FileDataTests::testInput,
+                FileDataTests::testOutput,
+                FileDataTests::filePath
         });
     }
 
-    private static void test1() {
-
-        // Resultado esperado: "OK"
-        unitTest.customAssert(new FileData(), Env.FILE_DATA);
+    private static void testInput() {
 
         // Resultado esperado: "ERROR"
         Env.FILE_DATA.setMultipleFileData(".pp", "");
@@ -37,4 +35,13 @@ public class FileDataTests implements UnitTest {
         unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
 
     }
+
+    private static void testOutput() {
+        // TODO Testear que el outputpath va bien
+    }
+
+    private static void filePath() {
+        // TODO Testear que el filepath sea correcto
+    }
+
 }
