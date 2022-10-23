@@ -35,7 +35,7 @@ import utils.Sanity;
  * Curs: 2022 - 2023
  *
  */
-public class Main {
+public class MainChpp {
 
     public static void main(String[] args) {
         // Unit Testing
@@ -57,9 +57,13 @@ public class Main {
             if (Env.VISUALIZATION) {
                 guiTreeVisualization(parser);
             } else {
-                ChadppParser.ChadppContext chadppContext = parser.chadpp();
-                ChadppVisitor visitor = new ChadppVisitor();
-                visitor.visit(chadppContext);
+                /*
+                 * ChadppParser.ChadppContext chadppContext = parser.chadpp();
+                 * ChadppVisitor visitor = new ChadppVisitor();
+                 * visitor.visit(chadppContext);
+                 */
+                ChadppListener listener = new ChadppListener(parser);
+                listener.init();
             }
 
         } catch (IOException e) {
