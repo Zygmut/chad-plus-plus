@@ -49,4 +49,12 @@ public class Chadpp {
         return Objects.hash(listOfFunctions, main);
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                " listOfFunctions='" + getListOfFunctions() + "'" +
+                ", main='" + getMain() + "'" +
+                "}";
+    }
+
 }

@@ -52,4 +52,12 @@ public class Main {
         return Objects.hash(listOfDeclaraions, lisfOfInstructions);
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                " listOfDeclaraions='" + getListOfDeclaraions() + "'" +
+                ", lisfOfInstructions='" + getLisfOfInstructions() + "'" +
+                "}";
+    }
+
 }
