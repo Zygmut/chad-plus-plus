@@ -1,9 +1,5 @@
 package main;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import antlr.*;
 import antlr.ChadppParser.*; // imports all Rule-Contexts
 
@@ -41,7 +37,6 @@ public class ChadppListener extends ChadppParserBaseListener {
             this.exitFunction(function);
         });
 
-        // super.enterChadpp(ctx);
     }
 
     @Override
@@ -51,66 +46,87 @@ public class ChadppListener extends ChadppParserBaseListener {
         // comprobar si había llamada de variables globales no declaradas
 
         System.out.println("ADIOS");
-        super.exitChadpp(ctx);
+        // super.exitChadpp(ctx);
+    }
+
+    @Override
+    public void enterMain(MainContext ctx) {
+        System.out.println("Entramos al Main");
+
+        if (ctx.extrad() != null) {
+            // Tratamiento de declaraciones
+            this.enterExtrad(ctx.extrad());
+            this.exitExtrad(ctx.extrad());
+        }
+
+        System.out.println("\tInstrucciones:");
+        ctx.instrucciones().instr().forEach((instr) -> {
+            this.enterInstr(instr);
+            this.exitInstr(instr);
+        });
+
+        ctx.instrucciones();
+    }
+
+    @Override
+    public void exitMain(MainContext ctx) {
+        System.out.println("Salimos del Main");
     }
 
     @Override
     public void enterFunction(FunctionContext ctx) {
+        // String function_name = ctx.id().ID().getText();
+        String function_name = ctx.id().getText();
+        String function_type = ctx.typef().getText();
+        System.out.println(function_type + " " + function_name);
+        if (ctx.params() != null) {
+            System.out.println("\tParámetros:");
+            this.enterParams(ctx.params());
+            this.exitParams(ctx.params());
+        }
+
+        if (ctx.extrad() != null) {
+            // Tratamiento de declaraciones
+            // Nuevo ámbito en la tabla de símbolos
+            this.enterExtrad(ctx.extrad());
+            this.exitExtrad(ctx.extrad());
+        }
+
+        System.out.println("\tInstrucciones:");
+        ctx.instrucciones().instr().forEach((instr) -> {
+            this.enterInstr(instr);
+            this.exitInstr(instr);
+        });
+        System.out.println();
 
         super.enterFunction(ctx);
     }
 
     @Override
     public void exitFunction(FunctionContext ctx) {
-        String id = ctx.id().ID().getText();
-
-        System.out.println("Función: " + id);
-        System.out.println("\tsus hijos:\n" + ctx.children.toString() + "\n");
-        super.exitFunction(ctx);
+        // super.exitFunction(ctx);
     }
 
     @Override
-    public void enterArgs(ArgsContext ctx) {
-        super.enterArgs(ctx);
+    public void enterParams(ParamsContext ctx) {
+        // FunctionContext funct = (FunctionContext) ctx.parent;
+        // contexto del padre (Función)
+
+        ctx.param().forEach((param) -> {
+            System.out.println("\t\t" + param.type().getText() + " " + param.id().getText());
+            // añadir el parámetro a su función padre
+            // funcion "funct".add(param)
+        });
     }
 
     @Override
-    public void enterAsignacion(AsignacionContext ctx) {
-        super.enterAsignacion(ctx);
-    }
-
-    @Override
-    public void enterBool(BoolContext ctx) {
-        super.enterBool(ctx);
-    }
-
-    @Override
-    public void enterCallf(CallfContext ctx) {
-        super.enterCallf(ctx);
-    }
-
-    @Override
-    public void enterCont_expresion(Cont_expresionContext ctx) {
-        super.enterCont_expresion(ctx);
-    }
-
-    @Override
-    public void enterDecl(DeclContext ctx) {
-        super.enterDecl(ctx);
-    }
-
-    @Override
-    public void enterEveryRule(ParserRuleContext ctx) {
-        super.enterEveryRule(ctx);
-    }
-
-    @Override
-    public void enterExpresion(ExpresionContext ctx) {
-        super.enterExpresion(ctx);
+    public void exitParams(ParamsContext ctx) {
+        System.out.println();
     }
 
     @Override
     public void enterExtrad(ExtradContext ctx) {
+        System.out.println("\tDeclaraciones:");
         ctx.decl().forEach(decl -> {
             this.enterDecl(decl);
             this.exitDecl(decl);
@@ -119,197 +135,70 @@ public class ChadppListener extends ChadppParserBaseListener {
     }
 
     @Override
-    public void enterInstr(InstrContext ctx) {
-        super.enterInstr(ctx);
+    public void exitExtrad(ExtradContext ctx) {
+        System.out.println();
     }
 
     @Override
-    public void enterInstrucciones(InstruccionesContext ctx) {
-        super.enterInstrucciones(ctx);
-    }
-
-    @Override
-    public void enterListaids(ListaidsContext ctx) {
-        super.enterListaids(ctx);
-    }
-
-    @Override
-    public void enterMain(MainContext ctx) {
-        System.out.println("Entramos al Main");
-
-        if (ctx.extrad().decl().size() != 0) {
-            // Tratamiento de declaraciones
-            this.enterExtrad(ctx.extrad());
-            this.exitExtrad(ctx.extrad());
+    public void enterDecl(DeclContext ctx) {
+        String type = ctx.type().getText();
+        boolean constant;
+        if (ctx.CONSTANT() != null) {
+            constant = true;
+        } else {
+            constant = false;
         }
 
-        ctx.instrucciones();
-    }
+        if (ctx.TUPLE() == null) {
+            // System.out.println("\t\tNo es tupla");
+        } else {
+            // System.out.println("si es tupla");
+        }
 
-    @Override
-    public void enterOp(OpContext ctx) {
-        super.enterOp(ctx);
-    }
-
-    @Override
-    public void enterParam(ParamContext ctx) {
-        super.enterParam(ctx);
-    }
-
-    @Override
-    public void enterParams(ParamsContext ctx) {
-        super.enterParams(ctx);
-    }
-
-    @Override
-    public void enterTuple(TupleContext ctx) {
-        super.enterTuple(ctx);
-    }
-
-    @Override
-    public void enterTuple_decl(Tuple_declContext ctx) {
-        super.enterTuple_decl(ctx);
-    }
-
-    @Override
-    public void enterType(TypeContext ctx) {
-        super.enterType(ctx);
-    }
-
-    @Override
-    public void enterTypef(TypefContext ctx) {
-        super.enterTypef(ctx);
-    }
-
-    @Override
-    public void exitArgs(ArgsContext ctx) {
-        super.exitArgs(ctx);
-    }
-
-    @Override
-    public void exitAsignacion(AsignacionContext ctx) {
-        super.exitAsignacion(ctx);
-    }
-
-    @Override
-    public void exitBool(BoolContext ctx) {
-        super.exitBool(ctx);
-    }
-
-    @Override
-    public void exitCallf(CallfContext ctx) {
-        super.exitCallf(ctx);
-    }
-
-    @Override
-    public void exitCont_expresion(Cont_expresionContext ctx) {
-        super.exitCont_expresion(ctx);
+        ctx.asignacion().listaids().id().forEach((id) -> {
+            System.out.println("\t\ttype: " + type);
+            System.out.println("\t\tconstant: " + constant);
+            System.out.println("\t\tid: " + id.getText());
+            System.out.println("\t\tvalue: " + ctx.asignacion().expresion().getText() + "\n");
+        });
     }
 
     @Override
     public void exitDecl(DeclContext ctx) {
-        super.exitDecl(ctx);
+        // super.exitDecl(ctx);
     }
 
     @Override
-    public void exitEveryRule(ParserRuleContext ctx) {
-        super.exitEveryRule(ctx);
-    }
+    public void enterInstr(InstrContext ctx) {
+        /*
+         * Opciones:
+         * - While
+         * - Loop
+         * - If /else
+         * - Callf
+         * - Output
+         * - Asignacion
+         * - Return
+         * 
+         * esta parte va a ser muy mala de hacer si se deja así
+         * 
+         * posible idea:
+         * - Modificar la gramática añadiendo marcadores (contra, ni puta idea de como
+         * hacerlo)
+         * EJ:
+         * .M1 WHILE ... RKEY
+         * | .M2 LOOP ... RKEY
+         * | ...
+         * 
+         * - Modificar la gramática añadiendo producciones intermedias (como id -> ID)
+         */
 
-    @Override
-    public void exitExpresion(ExpresionContext ctx) {
-        super.exitExpresion(ctx);
-    }
-
-    @Override
-    public void exitExtrad(ExtradContext ctx) {
-        super.exitExtrad(ctx);
+        System.out.println("\t\t" + ctx.getText());
     }
 
     @Override
     public void exitInstr(InstrContext ctx) {
-        super.exitInstr(ctx);
-    }
-
-    @Override
-    public void exitInstrucciones(InstruccionesContext ctx) {
-        super.exitInstrucciones(ctx);
-    }
-
-    @Override
-    public void exitListaids(ListaidsContext ctx) {
-        super.exitListaids(ctx);
-    }
-
-    @Override
-    public void exitMain(MainContext ctx) {
-        System.out.println("Salimos del Main");
-        super.exitMain(ctx);
-    }
-
-    @Override
-    public void exitOp(OpContext ctx) {
-        super.exitOp(ctx);
-    }
-
-    @Override
-    public void exitParam(ParamContext ctx) {
-        super.exitParam(ctx);
-    }
-
-    @Override
-    public void exitParams(ParamsContext ctx) {
-        super.exitParams(ctx);
-    }
-
-    @Override
-    public void exitTuple(TupleContext ctx) {
-        super.exitTuple(ctx);
-    }
-
-    @Override
-    public void exitTuple_decl(Tuple_declContext ctx) {
-        super.exitTuple_decl(ctx);
-    }
-
-    @Override
-    public void exitType(TypeContext ctx) {
-        super.exitType(ctx);
-    }
-
-    @Override
-    public void exitTypef(TypefContext ctx) {
-        super.exitTypef(ctx);
-    }
-
-    @Override
-    public void visitErrorNode(ErrorNode node) {
-        super.visitErrorNode(node);
-    }
-
-    @Override
-    public void visitTerminal(TerminalNode node) {
-        super.visitTerminal(node);
-    }
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
+        // super.exitInstr(ctx);
     }
 
 }
