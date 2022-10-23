@@ -18,7 +18,7 @@ bol alpha mayor5_v3 (int n){
 }
 
 void alpha test_global (){
-    // Creará un reminder para el metodo main //
+    // Creara un reminder para el metodo main
     return a;
 }
 
@@ -28,6 +28,7 @@ main {
     hola(a, c);
     a = 1;
     test_global();
-    output("Valor de a: " , a , "\n Adiós!");
+    output("Valor de a: " , a , "\n Adios!");
 }
-// al salir, main checkeará los reminders de todas las funciones y si tienen comprobará que esta declarada esa variable, sino revienta//
+/* al salir, main checkeara los reminders de todas las funciones y
+ si tienen comprobara que esta declarada esa variable, sino revienta */
