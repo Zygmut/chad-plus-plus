@@ -13,7 +13,6 @@ public class FileDataTests implements UnitTest {
         unitTest.run("FileData", new Runnable[] {
                 FileDataTests::test1
         });
-
     }
 
     private static void test1() {
@@ -22,19 +21,19 @@ public class FileDataTests implements UnitTest {
         unitTest.customAssert(new FileData(), Env.FILE_DATA);
 
         // Resultado esperado: "ERROR"
-        Env.FILE_DATA.setMultipleFileData("", "pp", "");
+        Env.FILE_DATA.setMultipleFileData(".pp", "");
         unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
 
         // Resultado esperado: "OK"
-        Env.FILE_DATA.setMultipleFileData("test", "txt", "");
+        Env.FILE_DATA.setMultipleFileData("test.txt", "");
         unitTest.customAssert(Env.FILE_DATA.checkFileData(), true);
 
         // Resultado esperado: "OK"
-        Env.FILE_DATA.setMultipleFileData("example1", "chpp", "");
+        Env.FILE_DATA.setMultipleFileData("example1.chpp", "");
         unitTest.customAssert(Env.FILE_DATA.checkFileData(), true);
 
         // Resultado esperado: "ERROR"
-        Env.FILE_DATA.setMultipleFileData("", "txt", "");
+        Env.FILE_DATA.setMultipleFileData(".txt", "");
         unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
 
     }
