@@ -2,6 +2,7 @@ package utils;
 
 public class FileData {
 
+    private String filePath;
     private String fileName;
     private String fileExtension;
     private String outputPath;
@@ -9,8 +10,17 @@ public class FileData {
     private String currentPath = System.getProperty("user.dir");
 
     public FileData(String fileName, String fileExtension, String outputPath) {
+        this.filePath = currentPath + "\\" + fileName + "." + fileExtension;
         this.fileName = fileName;
         this.fileExtension = fileExtension;
+        this.outputPath = outputPath;
+    }
+
+    public FileData(String filePath, String outputPath) {
+        this.filePath = currentPath + "\\" + fileName + "." + fileExtension;
+        String substring = filePath.substring(filePath.lastIndexOf("\\", filePath.length() - 1), filePath.length() - 1);
+        this.fileName = substring.split("[.]")[0];
+        this.fileExtension = substring.split("[.]")[1];
         this.outputPath = outputPath;
     }
 
@@ -32,11 +42,30 @@ public class FileData {
                         || fileExtension.equals("chpp")));
     }
 
+    @Deprecated
     public void setMultipleFileData(String fileName, String fileExtension,
             String outputPath) {
         this.fileName = fileName;
         this.fileExtension = fileExtension;
-        if (!(outputPath == null) || !(outputPath == "")) {
+        this.filePath = ".\\" + fileName + "." + fileExtension;
+        if (!((outputPath == null) || (outputPath == ""))) {
+            this.outputPath = outputPath;
+        }
+    }
+
+    public void setMultipleFileData(String filePath,
+            String outputPath) {
+        if (filePath.contains("/") || filePath.contains("\\")) {
+            this.filePath = currentPath + filePath;
+        } else {
+            this.filePath = currentPath + "\\" + filePath;
+        }
+        String substring = filePath.substring(filePath.lastIndexOf("\\", filePath.length()) + 1, filePath.length());
+
+        this.fileName = substring.split("[.]")[0];
+        this.fileExtension = substring.split("[.]")[1];
+
+        if (!((outputPath == null) || (outputPath == ""))) {
             this.outputPath = outputPath;
         }
     }
@@ -68,24 +97,20 @@ public class FileData {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
     public String getFileExtension() {
         return fileExtension;
-    }
-
-    public void setFileExtension(String fileExtension) {
-        this.fileExtension = fileExtension;
     }
 
     public String getOutputPath() {
         return outputPath;
     }
 
-    public void setOutputPath(String outputPath) {
-        this.outputPath = outputPath;
+    public String getFilePath() {
+        return this.filePath;
+    }
+
+    public String getCurrentPath() {
+        return this.currentPath;
     }
 
     @Override
@@ -97,6 +122,9 @@ public class FileData {
         sb.append("\n");
         sb.append("\tcurrentPath: ");
         sb.append(currentPath);
+        sb.append("\n");
+        sb.append("\tfilePath: ");
+        sb.append(filePath);
         sb.append("\n");
         sb.append("\tfileName: ");
         sb.append(fileName);

@@ -37,10 +37,10 @@ public class Sanity {
 
         switch (args.length) {
             case 1:
-                Env.FILE_DATA.setMultipleFileData(args[0].split("[.]")[0], args[0].split("[.]")[1], null);
+                Env.FILE_DATA.setMultipleFileData(args[0], null);
                 break;
             case 2:
-                Env.FILE_DATA.setMultipleFileData(args[0].split("[.]")[0], args[0].split("[.]")[1], args[1]);
+                Env.FILE_DATA.setMultipleFileData(args[0], args[1]);
                 break;
         }
 
