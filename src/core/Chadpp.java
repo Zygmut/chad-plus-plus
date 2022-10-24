@@ -33,6 +33,10 @@ public class Chadpp {
         this.main = main;
     }
 
+    public void addFunction(Function function) {
+        this.listOfFunctions.add(function);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)

@@ -35,6 +35,14 @@ public class Main {
         this.lisfOfInstructions = lisfOfInstructions;
     }
 
+    public void addDeclaration(Declaration declaration) {
+        this.listOfDeclaraions.add(declaration);
+    }
+
+    public void addInstruction(Instruction instruction) {
+        this.lisfOfInstructions.add(instruction);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
