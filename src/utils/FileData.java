@@ -28,7 +28,7 @@ public class FileData {
     public FileData() {
         this.fileName = "";
         this.fileExtension = "chpp";
-        this.outputPath = currentPath + Env.SLASH + "target" + Env.SLASH;
+        this.outputPath = "." + Env.SLASH + "target" + Env.SLASH;
     }
 
     /**
