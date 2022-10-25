@@ -10,15 +10,16 @@ public class FileData {
     private String currentPath = System.getProperty("user.dir");
 
     public FileData(String fileName, String fileExtension, String outputPath) {
-        this.filePath = currentPath + "\\" + fileName + "." + fileExtension;
+        this.filePath = currentPath + Env.SLASH + fileName + "." + fileExtension;
         this.fileName = fileName;
         this.fileExtension = fileExtension;
         this.outputPath = outputPath;
     }
 
     public FileData(String filePath, String outputPath) {
-        this.filePath = currentPath + "\\" + fileName + "." + fileExtension;
-        String substring = filePath.substring(filePath.lastIndexOf("\\", filePath.length() - 1), filePath.length() - 1);
+        this.filePath = currentPath + Env.SLASH + fileName + "." + fileExtension;
+        String substring = filePath.substring(filePath.lastIndexOf(Env.SLASH, filePath.length() - 1),
+                filePath.length() - 1);
         this.fileName = substring.split("[.]")[0];
         this.fileExtension = substring.split("[.]")[1];
         this.outputPath = outputPath;
@@ -27,7 +28,7 @@ public class FileData {
     public FileData() {
         this.fileName = "";
         this.fileExtension = "chpp";
-        this.outputPath = currentPath + "\\target\\";
+        this.outputPath = currentPath + Env.SLASH + "target" + Env.SLASH;
     }
 
     /**
@@ -38,8 +39,8 @@ public class FileData {
      */
     public boolean checkFileData() {
         return !fileName.isEmpty() && !fileExtension.isEmpty()
-                && ((fileExtension.equals("txt")
-                        || fileExtension.equals("chpp")));
+                && ((fileExtension.equals("txt") || fileExtension.equals("chpp")))
+                && (!filePath.endsWith(Env.SLASH));
     }
 
     @Deprecated
@@ -47,23 +48,35 @@ public class FileData {
             String outputPath) {
         this.fileName = fileName;
         this.fileExtension = fileExtension;
-        this.filePath = ".\\" + fileName + "." + fileExtension;
+        this.filePath = "." + Env.SLASH + fileName + "." + fileExtension;
         if (!((outputPath == null) || (outputPath == ""))) {
             this.outputPath = outputPath;
         }
     }
 
-    public void setMultipleFileData(String filePath,
-            String outputPath) {
-        if (filePath.contains("/") || filePath.contains("\\")) {
+    public void setMultipleFileData(String filePath, String outputPath) {
+        if (filePath.startsWith("." + Env.SLASH)) {
+            filePath = filePath.substring(1);
+        }
+
+        if (filePath.contains(Env.SLASH)) {
             this.filePath = currentPath + filePath;
         } else {
-            this.filePath = currentPath + "\\" + filePath;
+            this.filePath = currentPath + Env.SLASH + filePath;
         }
-        String substring = filePath.substring(filePath.lastIndexOf("\\", filePath.length()) + 1, filePath.length());
+        String substring = filePath.substring(filePath.lastIndexOf(Env.SLASH, filePath.length()) + 1,
+                filePath.length());
 
-        this.fileName = substring.split("[.]")[0];
-        this.fileExtension = substring.split("[.]")[1];
+        try {
+            this.fileName = substring.split("[.]")[0];
+        } catch (Exception e) {
+            this.fileName = "";
+        }
+        try {
+            this.fileExtension = substring.split("[.]")[1];
+        } catch (Exception e) {
+            this.fileExtension = "";
+        }
 
         if (!((outputPath == null) || (outputPath == ""))) {
             this.outputPath = outputPath;
@@ -87,6 +100,9 @@ public class FileData {
             return false;
         }
         if ((this.outputPath == null) ? (other.outputPath != null) : !this.outputPath.equals(other.outputPath)) {
+            return false;
+        }
+        if ((this.filePath == null) ? (other.filePath != null) : !this.filePath.equals(other.filePath)) {
             return false;
         }
 

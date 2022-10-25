@@ -51,4 +51,8 @@ public class Sanity {
         return Env.FILE_DATA.checkFileData() ? Env.Ok : Env.Error;
     }
 
+    public static String sanitizePath(String s) {
+        return s.replace("\\", Env.SLASH).replace("/", Env.SLASH);
+    }
+
 }

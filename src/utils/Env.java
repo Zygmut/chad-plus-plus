@@ -13,6 +13,11 @@ package utils;
  *
  */
 public class Env {
+
+    // Operating system
+    public static final String OS = System.getProperty("os.name");
+    public static final String SLASH = OS.contains("Windows") ? "\\" : "/";
+
     // Test mode (Unit tests)
     public static final boolean TEST_MODE = true;
 
