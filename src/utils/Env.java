@@ -19,7 +19,7 @@ public class Env {
     public static final String SLASH = OS.contains("Windows") ? "\\" : "/";
 
     // Test mode (Unit tests)
-    public static final boolean TEST_MODE = true;
+    public static final boolean TEST_MODE = false;
 
     // Debug mode
     public static final boolean DEBUG_MODE = false;
@@ -31,7 +31,9 @@ public class Env {
     // sobreescribe
     public static final FileData FILE_DATA = new FileData();
 
-    public static final String welcomeString = "This is the Chad++ compiler!";
+    public static final String welcomeString = "This is the Chad++ compiler!\n"
+            + "\tUsage:\t  chadpp <inputFile> \n\t       or chadpp <inputFile> <outputFile>\n\n"
+            + "\tNote: <outputFile> defaults to ./target/";
 
     // Constantes para el manejo de errores y excepciones en el input del programa
     public static final int Ok = 0;
