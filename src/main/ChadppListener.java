@@ -1,5 +1,7 @@
 package main;
 
+import java.util.List;
+
 import antlr.*;
 import antlr.ChadppParser.*; // imports all Rule-Contexts
 
@@ -54,28 +56,26 @@ public class ChadppListener extends ChadppParserBaseListener {
         System.out.println("Entramos al Main");
 
         if (ctx.extrad() != null) {
-            // Tratamiento de declaraciones
             this.enterExtrad(ctx.extrad());
             this.exitExtrad(ctx.extrad());
         }
 
         System.out.println("\tInstrucciones:");
-        ctx.instrucciones().instr().forEach((instr) -> {
-            this.enterInstr(instr);
-            this.exitInstr(instr);
-        });
 
-        ctx.instrucciones();
+        ctx.instr().forEach((instr) -> {
+            String contx = getProdInstr(instr);
+            System.out.println(contx);
+            enterInstr(instr, contx);
+        });
     }
 
     @Override
     public void exitMain(MainContext ctx) {
-        System.out.println("Salimos del Main");
+        System.out.println("Salimos del Main\n");
     }
 
     @Override
     public void enterFunction(FunctionContext ctx) {
-        // String function_name = ctx.id().ID().getText();
         String function_name = ctx.id().getText();
         String function_type = ctx.typef().getText();
         System.out.println(function_type + " " + function_name);
@@ -86,16 +86,15 @@ public class ChadppListener extends ChadppParserBaseListener {
         }
 
         if (ctx.extrad() != null) {
-            // Tratamiento de declaraciones
-            // Nuevo ámbito en la tabla de símbolos
             this.enterExtrad(ctx.extrad());
             this.exitExtrad(ctx.extrad());
         }
 
         System.out.println("\tInstrucciones:");
-        ctx.instrucciones().instr().forEach((instr) -> {
-            this.enterInstr(instr);
-            this.exitInstr(instr);
+        ctx.instr().forEach((instr) -> {
+            String contx = getProdInstr(instr);
+            System.out.println(contx);
+            enterInstr(instr, contx);
         });
         System.out.println();
 
@@ -168,37 +167,94 @@ public class ChadppListener extends ChadppParserBaseListener {
         // super.exitDecl(ctx);
     }
 
-    @Override
-    public void enterInstr(InstrContext ctx) {
-        /*
-         * Opciones:
-         * - While
-         * - Loop
-         * - If /else
-         * - Callf
-         * - Output
-         * - Asignacion
-         * - Return
-         * 
-         * esta parte va a ser muy mala de hacer si se deja así
-         * 
-         * posible idea:
-         * - Modificar la gramática añadiendo marcadores (contra, ni puta idea de como
-         * hacerlo)
-         * EJ:
-         * .M1 WHILE ... RKEY
-         * | .M2 LOOP ... RKEY
-         * | ...
-         * 
-         * - Modificar la gramática añadiendo producciones intermedias (como id -> ID)
-         */
+    // **********************| GESTIÓN DE INSTRUCCIONES|***************************
 
-        System.out.println("\t\t" + ctx.getText());
+    @Override
+    public void enterIF(IFContext ctx) {
+
+        List<OpContext> listOp = ctx.expresion().op();
+        List<Cont_expresionContext> listcontExpr = ctx.expresion().cont_expresion();
+
+        System.out.println("IF ANALISY");
+        System.out.print("Condición:\n\t");
+        int indx = 0;
+        while (indx < listOp.size()) {
+            System.out.print(" " + listcontExpr.get(indx).getText() + " " + listOp.get(indx).getText());
+            indx++;
+        }
+        System.out.println(" " + listcontExpr.get(indx).getText());
+
+        // TO DO: DIFERENCIAR LAS INSTRUCCIONES QUE SON DEL 'THEN' Y DEL 'ELSE'
+        System.out.println("Instrucciones THEN");
+        ctx.instr().forEach((instr) -> {
+            String instrClass = getProdInstr(instr);
+            System.out.println("\t" + instrClass);
+        });
     }
 
     @Override
-    public void exitInstr(InstrContext ctx) {
-        // super.exitInstr(ctx);
+    public void enterLOOP(LOOPContext ctx) {
+    }
+
+    @Override
+    public void enterOUTPUT(OUTPUTContext ctx) {
+    }
+
+    @Override
+    public void enterRETURN(RETURNContext ctx) {
+    }
+
+    @Override
+    public void enterWHILE(WHILEContext ctx) {
+    }
+
+    @Override
+    public void enterASIGNACION(ASIGNACIONContext ctx) {
+    }
+
+    @Override
+    public void enterCALLF(CALLFContext ctx) {
+    }
+
+    // *************************| Funciones Auxiliares |***************************
+    private String getProdInstr(InstrContext instr) {
+        String tmp = instr.getClass().getName().toString();
+        return tmp.substring(tmp.indexOf("$") + 1);
+    }
+
+    private void enterInstr(InstrContext instr, String contx) {
+        switch (contx) {
+            case "CALLFContext":
+                enterCALLF((ChadppParser.CALLFContext) instr);
+                break;
+
+            case "LOOPContext":
+                enterLOOP((ChadppParser.LOOPContext) instr);
+                break;
+
+            case "IFContext":
+                enterIF((ChadppParser.IFContext) instr);
+                break;
+
+            case "RETURNContext":
+                enterRETURN((ChadppParser.RETURNContext) instr);
+                break;
+            case "OUTPUTContext":
+                enterOUTPUT((ChadppParser.OUTPUTContext) instr);
+                break;
+
+            case "ASIGNACIONContext":
+                enterASIGNACION((ChadppParser.ASIGNACIONContext) instr);
+                break;
+
+            case "WHILEContext":
+                enterWHILE((ChadppParser.WHILEContext) instr);
+                break;
+
+            default:
+                System.out.println("F: Erorr en el Listener");
+                break;
+        }
     }
 
 }
