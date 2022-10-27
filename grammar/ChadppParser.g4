@@ -29,14 +29,11 @@ package antlr;
 chadpp: function* main;
 
 //main '{' extrad? instr+ '}'
-main: MAIN LKEY extrad? instrucciones RKEY;
+main: MAIN LKEY extrad? instr+ RKEY;
 
 // typef alpha ID '(' params? ')' '{' extrad? instr+ '}'
 function:
-	typef ALPHA id LPAREN params? RPAREN LKEY extrad? instrucciones RKEY;
-
-//Lista de instrucciones en una función (o en el main)
-instrucciones: instr+;
+	typef ALPHA id LPAREN params? RPAREN LKEY extrad? instr+ RKEY;
 
 //Lista de declaraciones
 extrad: decl+ BEGIN;
@@ -90,23 +87,18 @@ op: PLUS | MINUS | MUL | LAND | LOR | REQUAL | RLESS | RGRE;
 
 bool: TRUE | FALSE;
 
-// Instrucciones
 instr:
-	WHILE LPAREN expresion RPAREN LKEY instr* RKEY
-	| LOOP LPAREN expresion COMMA expresion RPAREN LKEY instr* RKEY
+	WHILE LPAREN expresion RPAREN LKEY instr* RKEY					# WHILE
+	| LOOP LPAREN expresion COMMA expresion RPAREN LKEY instr* RKEY	# LOOP
 	| IF LPAREN expresion RPAREN LKEY instr* RKEY (
 		ELSE LKEY instr* RKEY
-	)?
-	| callf SEMICOLON
+	)?								# IF
+	| RETURN expresion SEMICOLON	# RETURN
+	| callf SEMICOLON				# CALLF
 	| OUTPUT LPAREN (STRING_LIT | expresion) (
-		COMMA (
-			STRING_LIT
-			| expresion
-		) // Mirar si concatenar string con ',' o con '+'
-	)* RPAREN SEMICOLON
-	| asignacion
-	| RETURN expresion SEMICOLON;
+		COMMA ( STRING_LIT | expresion)
+	)* RPAREN SEMICOLON	# OUTPUT
+	| asignacion		# ASIGNACION;
 
 id: ID;
-
 number: NUMBER;
