@@ -170,7 +170,7 @@ public class ChadppListener extends ChadppParserBaseListener {
     // **********************| GESTIÓN DE INSTRUCCIONES|***************************
 
     @Override
-    public void enterIF(IFContext ctx) {
+    public void enterII(IIContext ctx) {
 
         List<OpContext> listOp = ctx.expresion().op();
         List<Cont_expresionContext> listcontExpr = ctx.expresion().cont_expresion();
@@ -193,27 +193,27 @@ public class ChadppListener extends ChadppParserBaseListener {
     }
 
     @Override
-    public void enterLOOP(LOOPContext ctx) {
+    public void enterIL(ILContext ctx) {
     }
 
     @Override
-    public void enterOUTPUT(OUTPUTContext ctx) {
+    public void enterIO(IOContext ctx) {
     }
 
     @Override
-    public void enterRETURN(RETURNContext ctx) {
+    public void enterIR(IRContext ctx) {
     }
 
     @Override
-    public void enterWHILE(WHILEContext ctx) {
+    public void enterIW(IWContext ctx) {
     }
 
     @Override
-    public void enterASIGNACION(ASIGNACIONContext ctx) {
+    public void enterIA(IAContext ctx) {
     }
 
     @Override
-    public void enterCALLF(CALLFContext ctx) {
+    public void enterIC(ICContext ctx) {
     }
 
     // *************************| Funciones Auxiliares |***************************
@@ -224,31 +224,31 @@ public class ChadppListener extends ChadppParserBaseListener {
 
     private void enterInstr(InstrContext instr, String contx) {
         switch (contx) {
-            case "CALLFContext":
-                enterCALLF((ChadppParser.CALLFContext) instr);
+            case "ICContext":
+                enterIC((ChadppParser.ICContext) instr);
                 break;
 
-            case "LOOPContext":
-                enterLOOP((ChadppParser.LOOPContext) instr);
+            case "ILContext":
+                enterIL((ChadppParser.ILContext) instr);
                 break;
 
-            case "IFContext":
-                enterIF((ChadppParser.IFContext) instr);
+            case "IIContext":
+                enterII((ChadppParser.IIContext) instr);
                 break;
 
-            case "RETURNContext":
-                enterRETURN((ChadppParser.RETURNContext) instr);
+            case "IRContext":
+                enterIR((ChadppParser.IRContext) instr);
                 break;
-            case "OUTPUTContext":
-                enterOUTPUT((ChadppParser.OUTPUTContext) instr);
-                break;
-
-            case "ASIGNACIONContext":
-                enterASIGNACION((ChadppParser.ASIGNACIONContext) instr);
+            case "IOContext":
+                enterIO((ChadppParser.IOContext) instr);
                 break;
 
-            case "WHILEContext":
-                enterWHILE((ChadppParser.WHILEContext) instr);
+            case "IAContext":
+                enterIA((ChadppParser.IAContext) instr);
+                break;
+
+            case "IWContext":
+                enterIW((ChadppParser.IWContext) instr);
                 break;
 
             default:
