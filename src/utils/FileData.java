@@ -60,7 +60,11 @@ public class FileData {
         }
 
         if (filePath.contains(Env.SLASH)) {
-            this.filePath = currentPath + filePath;
+            if (filePath.startsWith(Env.SLASH)) {
+                this.filePath = currentPath + filePath;
+            } else {
+                this.filePath = currentPath + Env.SLASH + filePath;
+            }
         } else {
             this.filePath = currentPath + Env.SLASH + filePath;
         }
