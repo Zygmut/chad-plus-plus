@@ -88,17 +88,17 @@ op: PLUS | MINUS | MUL | LAND | LOR | REQUAL | RLESS | RGRE;
 bool: TRUE | FALSE;
 
 instr:
-	WHILE LPAREN expresion RPAREN LKEY instr* RKEY					# WHILE
-	| LOOP LPAREN expresion COMMA expresion RPAREN LKEY instr* RKEY	# LOOP
+	WHILE LPAREN expresion RPAREN LKEY instr* RKEY					# IW
+	| LOOP LPAREN expresion COMMA expresion RPAREN LKEY instr* RKEY	# IL
 	| IF LPAREN expresion RPAREN LKEY instr* RKEY (
 		ELSE LKEY instr* RKEY
-	)?								# IF
-	| RETURN expresion SEMICOLON	# RETURN
-	| callf SEMICOLON				# CALLF
+	)?								# II
+	| RETURN expresion SEMICOLON	# IR
+	| callf SEMICOLON				# IC
 	| OUTPUT LPAREN (STRING_LIT | expresion) (
 		COMMA ( STRING_LIT | expresion)
-	)* RPAREN SEMICOLON	# OUTPUT
-	| asignacion		# ASIGNACION;
+	)* RPAREN SEMICOLON	# IO
+	| asignacion		# IA;
 
 id: ID;
 number: NUMBER;
