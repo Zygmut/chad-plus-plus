@@ -7,6 +7,7 @@ public class Id {
     private String value;
 
     public Id() {
+        this.value = "chad";
     }
 
     public Id(String value) {
