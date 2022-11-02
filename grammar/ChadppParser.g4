@@ -73,7 +73,7 @@ cont_expresion:
 	number
 	| id
 	| tuple
-	| bool
+	| bol
 	| LPAREN expresion RPAREN
 	| LNOT expresion
 	| callf;
@@ -85,7 +85,7 @@ callf:
 
 op: PLUS | MINUS | MUL | LAND | LOR | REQUAL | RLESS | RGRE;
 
-bool: TRUE | FALSE;
+bol: TRUE | FALSE;
 
 instr:
 	WHILE LPAREN expresion RPAREN LKEY instr* RKEY					# IW
