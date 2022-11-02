@@ -11,27 +11,27 @@ public class DeclarationType {
      * Posiblemente se deba comprobar que el tipo de dato solo sea uno de los dos
      * anteriores.
      */
-    private Type type;
+    private TypeVar type;
 
     public DeclarationType() {
-        this.type = new Type();
+        this.type = new TypeVar();
     }
 
-    public DeclarationType(Type type) {
+    public DeclarationType(TypeVar type) {
         if (type == null) {
             throw new IllegalArgumentException("Type cannot be null");
         }
         // if (type != Type.INT && type != Type.BOOL) {
         // throw new IllegalArgumentException("Type must be INT or BOOL");
         // }
-        this.type = new Type();
+        this.type = new TypeVar();
     }
 
-    public Type getType() {
+    public TypeVar getType() {
         return this.type;
     }
 
-    public void setType(Type type) {
+    public void setType(TypeVar type) {
         this.type = type;
     }
 
