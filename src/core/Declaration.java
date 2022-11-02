@@ -4,25 +4,47 @@ import java.util.Objects;
 
 public class Declaration {
 
-    private DeclarationType declarationType;
+    private String constant; // Check if needs to be a String or a class
+    private Type type;
+    private String tuple; // Check if needs to be a String or a class
     private Asignation asignation;
 
-    public Declaration() {
-        this.declarationType = new DeclarationType();
-        this.asignation = new Asignation();
-    }
-
-    public Declaration(DeclarationType declarationType, Asignation asignation) {
-        this.declarationType = declarationType;
+    public Declaration(String constant, Type type, String tuple, Asignation asignation) {
+        this.constant = constant;
+        this.type = type;
+        this.tuple = tuple;
         this.asignation = asignation;
     }
 
-    public DeclarationType getDeclarationType() {
-        return this.declarationType;
+    public Declaration() {
+        this.constant = "";
+        this.type = new Type();
+        this.tuple = "";
+        this.asignation = new Asignation();
     }
 
-    public void setDeclarationType(DeclarationType declarationType) {
-        this.declarationType = declarationType;
+    public String getConstant() {
+        return this.constant;
+    }
+
+    public void setConstant(String constant) {
+        this.constant = constant;
+    }
+
+    public Type getType() {
+        return this.type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public String getTuple() {
+        return this.tuple;
+    }
+
+    public void setTuple(String tuple) {
+        this.tuple = tuple;
     }
 
     public Asignation getAsignation() {
@@ -41,13 +63,13 @@ public class Declaration {
             return false;
         }
         Declaration declaration = (Declaration) o;
-        return Objects.equals(declarationType, declaration.declarationType)
-                && Objects.equals(asignation, declaration.asignation);
+        return Objects.equals(constant, declaration.constant) && Objects.equals(type, declaration.type)
+                && Objects.equals(tuple, declaration.tuple) && Objects.equals(asignation, declaration.asignation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(declarationType, asignation);
+        return Objects.hash(constant, type, tuple, asignation);
     }
 
 }
