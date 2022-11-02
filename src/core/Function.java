@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class Function {
+
     private Typef typef;
     private Id id;
-    // Parametros de la funcion
     private List<Param> params;
     private List<Declaration> listOfDeclaraions;
     private List<Instruction> lisfOfInstructions;
@@ -30,10 +30,9 @@ public class Function {
         this.listOfDeclaraions.add(declaration);
     }
 
-    /*
-     * Comprobar si es una lista o no
-     * public void addParam(Param param) { this.params.add(param); }
-     */
+    public void addParam(Param param) {
+        this.params.add(param);
+    }
 
     public void addInstruction(Instruction instruction) {
         this.lisfOfInstructions.add(instruction);
@@ -53,6 +52,14 @@ public class Function {
 
     public void setId(Id id) {
         this.id = id;
+    }
+
+    public List<Param> getParams() {
+        return this.params;
+    }
+
+    public void setParams(List<Param> params) {
+        this.params = params;
     }
 
     public List<Declaration> getListOfDeclaraions() {
