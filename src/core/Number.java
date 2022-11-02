@@ -7,6 +7,7 @@ public class Number {
     private Integer value;
 
     public Number() {
+        this.value = 0;
     }
 
     public Number(Integer value) {
