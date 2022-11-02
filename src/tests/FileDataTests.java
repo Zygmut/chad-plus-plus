@@ -23,19 +23,19 @@ public class FileDataTests implements UnitTest {
 
         // Resultado esperado: "OK"
         Env.FILE_DATA.setMultipleFileData("test.txt", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), true);
+        unitTest.assertT(Env.FILE_DATA.checkFileData());
 
         // Resultado esperado: "OK"
         Env.FILE_DATA.setMultipleFileData("test.chpp", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), true);
+        unitTest.assertT(Env.FILE_DATA.checkFileData());
 
         // Resultado esperado: "ERROR"
         Env.FILE_DATA.setMultipleFileData("test.exe", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
+        unitTest.assertF(Env.FILE_DATA.checkFileData());
 
         // Resultado esperado: "ERROR"
         Env.FILE_DATA.setMultipleFileData("test.deb", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
+        unitTest.assertF(Env.FILE_DATA.checkFileData());
 
     }
 
@@ -43,19 +43,19 @@ public class FileDataTests implements UnitTest {
 
         // Resultado esperado: "OK"
         Env.FILE_DATA.setMultipleFileData("test.txt", "");
-        unitTest.customAssert(Env.FILE_DATA.getFileName(), "test");
+        unitTest.assertEq(Env.FILE_DATA.getFileName(), "test");
 
         // Resultado esperado: "OK"
         Env.FILE_DATA.setMultipleFileData(Env.SLASH + "test.chpp", "");
-        unitTest.customAssert(Env.FILE_DATA.getFileName(), "test");
+        unitTest.assertEq(Env.FILE_DATA.getFileName(), "test");
 
         // Resultado esperado: "OK"
         Env.FILE_DATA.setMultipleFileData(Sanity.sanitizePath(System.getProperty("user.dir") + "\\test.chpp"), "");
-        unitTest.customAssert(Env.FILE_DATA.getFileName(), "test");
+        unitTest.assertEq(Env.FILE_DATA.getFileName(), "test");
 
         // Resultado esperado: "ERROR"
         Env.FILE_DATA.setMultipleFileData(".test.exe", "");
-        unitTest.customAssert(Env.FILE_DATA.getFileName(), "");
+        unitTest.assertEq(Env.FILE_DATA.getFileName(), "");
 
     }
 
@@ -63,43 +63,43 @@ public class FileDataTests implements UnitTest {
 
         // Resultado esperado: "OK"
         Env.FILE_DATA.setMultipleFileData("." + Env.SLASH + "a.chpp", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), true);
+        unitTest.assertT(Env.FILE_DATA.checkFileData());
 
         // Resultado esperado: "OK"
         Env.FILE_DATA.setMultipleFileData(Env.SLASH + "a.chpp", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), true);
+        unitTest.assertT(Env.FILE_DATA.checkFileData());
 
         // Resultado esperado: "OK"
         Env.FILE_DATA.setMultipleFileData("src" + Env.SLASH + "a.chpp", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), true);
+        unitTest.assertT(Env.FILE_DATA.checkFileData());
 
         // Resultado esperado: "ERROR" -> No ha reconocido la absencia argumentos
         Env.FILE_DATA.setMultipleFileData("", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
+        unitTest.assertF(Env.FILE_DATA.checkFileData());
 
         // Resultado esperado: "ERROR"
         Env.FILE_DATA.setMultipleFileData(Env.SLASH, "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
+        unitTest.assertF(Env.FILE_DATA.checkFileData());
 
         // Resultado esperado: "ERROR"
         Env.FILE_DATA.setMultipleFileData(".", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
+        unitTest.assertF(Env.FILE_DATA.checkFileData());
 
         // Resultado esperado: "ERROR"
         Env.FILE_DATA.setMultipleFileData("a", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
+        unitTest.assertF(Env.FILE_DATA.checkFileData());
 
         // Resultado esperado: "ERROR"
         Env.FILE_DATA.setMultipleFileData(".txt", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
+        unitTest.assertF(Env.FILE_DATA.checkFileData());
 
         // Resultado esperado: "ERROR"
         Env.FILE_DATA.setMultipleFileData(".chpp", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
+        unitTest.assertF(Env.FILE_DATA.checkFileData());
 
         // Resultado esperado: "ERROR"
         Env.FILE_DATA.setMultipleFileData("a.", "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
+        unitTest.assertF(Env.FILE_DATA.checkFileData());
 
     }
 
@@ -107,11 +107,11 @@ public class FileDataTests implements UnitTest {
 
         // Resultado esperado: "OK"
         Env.FILE_DATA.setMultipleFileData("test.chpp", "");
-        unitTest.customAssert(Env.FILE_DATA.getOutputPath(), "." + Env.SLASH + "target" + Env.SLASH);
+        unitTest.assertEq(Env.FILE_DATA.getOutputPath(), "." + Env.SLASH + "target" + Env.SLASH);
 
         // Resultado esperado: "OK"
         Env.FILE_DATA.setMultipleFileData("test.chpp", "out");
-        unitTest.customAssert(Env.FILE_DATA.getOutputPath(), "out");
+        unitTest.assertEq(Env.FILE_DATA.getOutputPath(), "out");
 
         // Resultado esperado: "OK"
         // TODO Decide on what to do in this occasion
@@ -124,17 +124,17 @@ public class FileDataTests implements UnitTest {
 
         // Resultado esperado: "OK"
         Env.FILE_DATA.setMultipleFileData(Sanity.sanitizePath("\\tests\\test.chpp"), "");
-        unitTest.customAssert(Env.FILE_DATA.getFilePath(),
+        unitTest.assertEq(Env.FILE_DATA.getFilePath(),
                 Sanity.sanitizePath(System.getProperty("user.dir") + "\\tests\\test.chpp"));
 
         // Resultado esperado: "OK"
         Env.FILE_DATA.setMultipleFileData(Sanity.sanitizePath(".\\tests\\test.chpp"), "");
-        unitTest.customAssert(Env.FILE_DATA.getFilePath(),
+        unitTest.assertEq(Env.FILE_DATA.getFilePath(),
                 Sanity.sanitizePath(Sanity.sanitizePath(System.getProperty("user.dir") + "\\tests\\test.chpp")));
 
         // Resultado esperado: "ERROR"
         Env.FILE_DATA.setMultipleFileData(Sanity.sanitizePath(".\\tests\\"), "");
-        unitTest.customAssert(Env.FILE_DATA.checkFileData(), false);
+        unitTest.assertF(Env.FILE_DATA.checkFileData());
     }
 
 }
