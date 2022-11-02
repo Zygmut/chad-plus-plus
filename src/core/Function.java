@@ -6,20 +6,20 @@ import java.util.Objects;
 
 public class Function {
 
-    private Typef typef;
+    private TypeFn typef;
     private Id id;
     private List<Param> params;
     private List<Declaration> listOfDeclaraions;
     private List<Instruction> lisfOfInstructions;
 
     public Function() {
-        this.typef = new Typef();
+        this.typef = new TypeFn();
         this.id = new Id();
         this.listOfDeclaraions = new ArrayList<Declaration>();
         this.lisfOfInstructions = new ArrayList<Instruction>();
     }
 
-    public Function(Typef typef, Id id, List<Declaration> listOfDeclaraions, List<Instruction> lisfOfInstructions) {
+    public Function(TypeFn typef, Id id, List<Declaration> listOfDeclaraions, List<Instruction> lisfOfInstructions) {
         this.typef = typef;
         this.id = id;
         this.listOfDeclaraions = listOfDeclaraions;
@@ -38,11 +38,11 @@ public class Function {
         this.lisfOfInstructions.add(instruction);
     }
 
-    public Typef getTypef() {
+    public TypeFn getTypef() {
         return this.typef;
     }
 
-    public void setTypef(Typef typef) {
+    public void setTypef(TypeFn typef) {
         this.typef = typef;
     }
 

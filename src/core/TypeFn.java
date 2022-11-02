@@ -1,6 +1,7 @@
 package core;
 
-public class Type {
+public class TypeFn {
+
     /*
      * Tipos posibles
      * 1. int

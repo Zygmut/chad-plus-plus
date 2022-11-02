@@ -5,11 +5,11 @@ import java.util.Objects;
 public class Declaration {
 
     private String constant; // Check if needs to be a String or a class
-    private Type type;
+    private TypeVar type;
     private String tuple; // Check if needs to be a String or a class
     private Asignation asignation;
 
-    public Declaration(String constant, Type type, String tuple, Asignation asignation) {
+    public Declaration(String constant, TypeVar type, String tuple, Asignation asignation) {
         this.constant = constant;
         this.type = type;
         this.tuple = tuple;
@@ -18,7 +18,7 @@ public class Declaration {
 
     public Declaration() {
         this.constant = "";
-        this.type = new Type();
+        this.type = new TypeVar();
         this.tuple = "";
         this.asignation = new Asignation();
     }
@@ -31,11 +31,11 @@ public class Declaration {
         this.constant = constant;
     }
 
-    public Type getType() {
+    public TypeVar getType() {
         return this.type;
     }
 
-    public void setType(Type type) {
+    public void setType(TypeVar type) {
         this.type = type;
     }
 
