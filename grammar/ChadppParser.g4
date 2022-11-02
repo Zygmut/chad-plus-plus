@@ -33,13 +33,13 @@ main: MAIN LKEY extrad? instr+ RKEY;
 
 // typef alpha ID '(' params? ')' '{' extrad? instr+ '}'
 function:
-	typef ALPHA id LPAREN params? RPAREN LKEY extrad? instr+ RKEY;
+	typefn ALPHA id LPAREN params? RPAREN LKEY extrad? instr+ RKEY;
 
 //Lista de declaraciones
 extrad: decl+ BEGIN;
 
 // Declaraciones de las variables y constantes
-decl: CONSTANT? type TUPLE? asignacion;
+decl: CONSTANT? typevar TUPLE? asignacion;
 
 //asignacion: listaids '=' expresion ';' ;
 asignacion: listaids EQUAL expresion SEMICOLON;
@@ -48,15 +48,15 @@ asignacion: listaids EQUAL expresion SEMICOLON;
 listaids: (id COMMA)* id;
 
 // Tipos de variables o funciones
-typef: VOID | type;
+typefn: VOID | typevar;
 
-type: INT | BOOLEAN;
+typevar: INT | BOOLEAN;
 
 // Parametros de una funcion
 params: (param COMMA)* param;
 //params: (param ',')* param;
 
-param: type id;
+param: typevar id;
 
 // Parametros de una funcion al llamarla en el programa
 args: (expresion COMMA)* expresion;
