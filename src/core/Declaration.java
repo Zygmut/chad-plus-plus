@@ -18,7 +18,7 @@ public class Declaration {
 
     public Declaration() {
         this.constant = "";
-        this.type = new TypeVar();
+        this.type = TypeVar.BOOL;
         this.tuple = "";
         this.asignation = new Asignation();
     }

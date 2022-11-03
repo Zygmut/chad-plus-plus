@@ -13,7 +13,7 @@ public class Function {
     private List<Instruction> lisfOfInstructions;
 
     public Function() {
-        this.typef = new TypeFn();
+        this.typef = TypeFn.VOID;
         this.id = new Id();
         this.listOfDeclaraions = new ArrayList<Declaration>();
         this.lisfOfInstructions = new ArrayList<Instruction>();

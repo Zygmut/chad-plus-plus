@@ -7,7 +7,7 @@ public class Param {
     private Id id;
 
     public Param() {
-        this.type = new TypeVar();
+        this.type = TypeVar.BOOL;
         this.id = new Id();
     }
 

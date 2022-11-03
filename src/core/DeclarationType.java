@@ -7,14 +7,14 @@ public class DeclarationType {
      * Tipos de declaraciones posibles
      * 1. int
      * 2. bool
-     * 
+     *
      * Posiblemente se deba comprobar que el tipo de dato solo sea uno de los dos
      * anteriores.
      */
     private TypeVar type;
 
     public DeclarationType() {
-        this.type = new TypeVar();
+        this.type = TypeVar.BOOL;
     }
 
     public DeclarationType(TypeVar type) {
@@ -24,7 +24,7 @@ public class DeclarationType {
         // if (type != Type.INT && type != Type.BOOL) {
         // throw new IllegalArgumentException("Type must be INT or BOOL");
         // }
-        this.type = new TypeVar();
+        this.type = type;
     }
 
     public TypeVar getType() {
