@@ -7,7 +7,7 @@ public class LoopInstruction extends Instruction {
 
     private Expresion start;
     private Expresion finish;
-    private List<Instruction> instructions;
+    private List<Instruction> lisfOfInstructions;
 
     public LoopInstruction() {
         this.instructionType = TypeInstr.IL;
@@ -16,7 +16,7 @@ public class LoopInstruction extends Instruction {
     public LoopInstruction(Expresion start, Expresion finish, List<Instruction> instructions) {
         this.start = start;
         this.finish = finish;
-        this.instructions = instructions;
+        this.lisfOfInstructions = instructions;
     }
 
     public Expresion getStart() {
@@ -36,11 +36,11 @@ public class LoopInstruction extends Instruction {
     }
 
     public List<Instruction> getInstructions() {
-        return this.instructions;
+        return this.lisfOfInstructions;
     }
 
     public void setInstructions(List<Instruction> instructions) {
-        this.instructions = instructions;
+        this.lisfOfInstructions = instructions;
     }
 
     @Override
@@ -52,12 +52,12 @@ public class LoopInstruction extends Instruction {
         }
         LoopInstruction loopInstruction = (LoopInstruction) o;
         return Objects.equals(start, loopInstruction.start) && Objects.equals(finish, loopInstruction.finish)
-                && Objects.equals(instructions, loopInstruction.instructions);
+                && Objects.equals(lisfOfInstructions, loopInstruction.lisfOfInstructions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(start, finish, instructions);
+        return Objects.hash(start, finish, lisfOfInstructions);
     }
 
     @Override
