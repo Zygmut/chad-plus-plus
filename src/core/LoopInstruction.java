@@ -62,7 +62,7 @@ public class LoopInstruction extends Instruction {
 
     @Override
     public String toString() {
-        return "{" +
+        return "{ Loop: " +
                 " start='" + getStart() + "'" +
                 ", finish='" + getFinish() + "'" +
                 ", instructions='" + getInstructions() + "'" +
