@@ -2,23 +2,22 @@ package core;
 
 import java.util.Objects;
 
-public class Instruction {
+public abstract class Instruction {
 
-    private InstructionType instructionType;
+    protected TypeInstr instructionType;
 
     public Instruction() {
-        this.instructionType = new InstructionType();
     }
 
-    public Instruction(InstructionType instructionType) {
+    public Instruction(TypeInstr instructionType) {
         this.instructionType = instructionType;
     }
 
-    public InstructionType getInstructionType() {
+    public TypeInstr getInstructionType() {
         return this.instructionType;
     }
 
-    public void setInstructionType(InstructionType instructionType) {
+    public void setInstructionType(TypeInstr instructionType) {
         this.instructionType = instructionType;
     }
 
