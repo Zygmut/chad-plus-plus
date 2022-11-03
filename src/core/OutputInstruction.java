@@ -1,6 +1,6 @@
 package core;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,7 +9,7 @@ public class OutputInstruction extends Instruction {
 
     public OutputInstruction() {
         this.instructionType = TypeInstr.IO;
-        this.contents = new ArrayList<>();
+        this.contents = new LinkedList<>();
     }
 
     public OutputInstruction(List<Object> contents) {
