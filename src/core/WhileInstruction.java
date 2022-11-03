@@ -2,15 +2,15 @@ package core;
 
 import java.util.List;
 
-public class InstructionWhile extends Instruction {
+public class WhileInstruction extends Instruction {
     private Expresion expresion;
     private List<Instruction> lisfOfInstructions;
 
-    public InstructionWhile() {
+    public WhileInstruction() {
         this.instructionType = TypeInstr.IW;
     }
 
-    public InstructionWhile(Expresion expresion, List<Instruction> lisfOfInstructions) {
+    public WhileInstruction(Expresion expresion, List<Instruction> lisfOfInstructions) {
         this.expresion = expresion;
         this.lisfOfInstructions = lisfOfInstructions;
     }
