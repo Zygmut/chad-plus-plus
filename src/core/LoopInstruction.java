@@ -1,5 +1,6 @@
 package core;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,9 +12,13 @@ public class LoopInstruction extends Instruction {
 
     public LoopInstruction() {
         this.instructionType = TypeInstr.IL;
+        this.start = new Expresion();
+        this.finish = new Expresion();
+        this.lisfOfInstructions = new ArrayList<>();
     }
 
     public LoopInstruction(Expresion start, Expresion finish, List<Instruction> instructions) {
+        this.instructionType = TypeInstr.IL;
         this.start = start;
         this.finish = finish;
         this.lisfOfInstructions = instructions;

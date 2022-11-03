@@ -2,19 +2,21 @@ package core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class WhileInstruction extends Instruction {
+public class IfInstruction extends Instruction {
+
     private Expresion expresion;
     private List<Instruction> lisfOfInstructions;
 
-    public WhileInstruction() {
-        this.instructionType = TypeInstr.IW;
+    public IfInstruction() {
+        this.instructionType = TypeInstr.II;
         this.expresion = new Expresion();
         this.lisfOfInstructions = new ArrayList<>();
     }
 
-    public WhileInstruction(Expresion expresion, List<Instruction> lisfOfInstructions) {
-        this.instructionType = TypeInstr.IW;
+    public IfInstruction(Expresion expresion, List<Instruction> lisfOfInstructions) {
+        this.instructionType = TypeInstr.II;
         this.expresion = expresion;
         this.lisfOfInstructions = lisfOfInstructions;
     }
@@ -36,8 +38,25 @@ public class WhileInstruction extends Instruction {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof IfInstruction)) {
+            return false;
+        }
+        IfInstruction ifInstruction = (IfInstruction) o;
+        return Objects.equals(expresion, ifInstruction.expresion)
+                && Objects.equals(lisfOfInstructions, ifInstruction.lisfOfInstructions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(expresion, lisfOfInstructions);
+    }
+
+    @Override
     public String toString() {
-        return "{ While: " +
+        return "{ If: " +
                 " expresion='" + getExpresion() + "'" +
                 ", lisfOfInstructions='" + getLisfOfInstructions() + "'" +
                 "}";
