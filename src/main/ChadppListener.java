@@ -77,7 +77,7 @@ public class ChadppListener extends ChadppParserBaseListener {
     @Override
     public void enterFunction(FunctionContext ctx) {
         String function_name = ctx.id().getText();
-        String function_type = ctx.typef().getText();
+        String function_type = ctx.typefn().getText();
         System.out.println(function_type + " " + function_name);
         if (ctx.params() != null) {
             System.out.println("\tParámetros:");
@@ -112,7 +112,7 @@ public class ChadppListener extends ChadppParserBaseListener {
         // contexto del padre (Función)
 
         ctx.param().forEach((param) -> {
-            System.out.println("\t\t" + param.type().getText() + " " + param.id().getText());
+            System.out.println("\t\t" + param.typevar().getText() + " " + param.id().getText());
             // añadir el parámetro a su función padre
             // funcion "funct".add(param)
         });
@@ -140,7 +140,7 @@ public class ChadppListener extends ChadppParserBaseListener {
 
     @Override
     public void enterDecl(DeclContext ctx) {
-        String type = ctx.type().getText();
+        String type = ctx.typevar().getText();
         boolean constant;
         if (ctx.CONSTANT() != null) {
             constant = true;
