@@ -38,9 +38,16 @@ public class FileData {
      * @return boolean - true si el fichero es valido, false si no lo es
      */
     public boolean checkFileData() {
-        return !fileName.isEmpty() && !fileExtension.isEmpty()
-                && ((fileExtension.equals("txt") || fileExtension.equals("chpp")))
-                && (!filePath.endsWith(Env.SLASH));
+
+        if (!fileName.isEmpty() && !fileExtension.isEmpty() && (!filePath.endsWith(Env.SLASH))) {
+            for (String extension : Env.VALID_EXT) {
+                if (extension.equals(fileExtension)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
     }
 
     @Deprecated
