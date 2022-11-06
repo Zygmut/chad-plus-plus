@@ -6,5 +6,5 @@ package core;
  * 2. bool
  */
 public enum TypeVar {
-    INT, BOOL
+    INT, BOOL, TUP
 }

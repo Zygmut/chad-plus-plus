@@ -8,5 +8,5 @@ package core;
  */
 public enum TypeFn {
 
-    INT, BOOL, VOID
+    INT, BOOL, TUP, VOID
 }

@@ -39,7 +39,7 @@ function:
 extrad: decl+ BEGIN;
 
 // Declaraciones de las variables y constantes
-decl: CONSTANT? typevar TUPLE? asignacion;
+decl: CONSTANT? typevar asignacion;
 
 //asignacion: listaids '=' expresion ';' ;
 asignacion: listaids EQUAL expresion SEMICOLON;
@@ -50,7 +50,7 @@ listaids: (id COMMA)* id;
 // Tipos de variables o funciones
 typefn: VOID | typevar;
 
-typevar: INT | BOOLEAN;
+typevar: INT | BOOLEAN | TUPLE;
 
 // Parametros de una funcion
 params: (param COMMA)* param;
@@ -65,9 +65,7 @@ args: (expresion COMMA)* expresion;
 // Gestion de expresiones
 expresion: (cont_expresion op)* cont_expresion;
 
-tuple_decl: LSKEY expresion (COMMA expresion)* RSKEY;
-
-tuple: id LSKEY number RSKEY;
+tuple: LSKEY expresion (COMMA expresion)* RSKEY;
 
 cont_expresion:
 	number

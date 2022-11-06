@@ -142,17 +142,14 @@ public class ChadppListener extends ChadppParserBaseListener {
     public void enterDecl(DeclContext ctx) {
         String type = ctx.typevar().getText();
         boolean constant;
-        if (ctx.CONSTANT() != null) {
-            constant = true;
-        } else {
-            constant = false;
-        }
 
-        if (ctx.TUPLE() == null) {
-            // System.out.println("\t\tNo es tupla");
-        } else {
-            // System.out.println("si es tupla");
-        }
+        // if (ctx.CONSTANT() != null) {
+        // constant = true;
+        // } else {
+        // constant = false;
+        // }
+
+        constant = ctx.CONSTANT() != null;
 
         ctx.asignacion().listaids().id().forEach((id) -> {
             System.out.println("\t\ttype: " + type);
