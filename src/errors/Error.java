@@ -48,14 +48,14 @@ public class Error {
      * the ErrorCodes class.
      */
     private void setMessage() {
-        switch (code) {
-            case 0:
+        switch (this.code) {
+            case ErrorCodes.ARGUMENT_FILE_NOT_FOUND:
                 message = "Invalid argument, couldn't find file.";
                 break;
-            case 1:
+            case ErrorCodes.ARGUMENT_INVALID_FILE_EXTENSION:
                 message = "Invalid argument, invalid file extension.";
                 break;
-            case 2:
+            case ErrorCodes.ARGUMENT_INVALID_FILE:
                 message = "Invalid argument, invalid file.";
                 break;
             default:

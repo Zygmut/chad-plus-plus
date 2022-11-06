@@ -1,5 +1,7 @@
 package utils;
 
+import errors.ErrorHandler;
+
 /**
  * Clase encargada de checkear que un elemento cumpla con las restricciones
  * impuestas
@@ -41,6 +43,10 @@ public class Sanity {
 
         if (Env.DEBUG_MODE) {
             System.out.println(Env.FILE_DATA);
+        }
+
+        if (ErrorHandler.hasErrors()) {
+            return Env.Error;
         }
 
         return Env.FILE_DATA.checkFileData() ? Env.Ok : Env.Error;

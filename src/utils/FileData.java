@@ -50,9 +50,8 @@ public class FileData {
             }
         }
 
-        if (!ErrorHandler.hasErrors()) {
-            ErrorHandler.addError(ErrorCodes.ARGUMENT_INVALID_FILE_EXTENSION, -1);
-        }
+        ErrorHandler.addError(ErrorCodes.ARGUMENT_INVALID_FILE_EXTENSION, -1);
+
         return false;
     }
 
