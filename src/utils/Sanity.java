@@ -30,11 +30,6 @@ public class Sanity {
             System.exit(0);
         }
 
-        // Comprobar que es un fichero con extension .chpp o .txt
-        if (!(args[0].contains(".") && !(args[0].endsWith(".")))) {
-            return Env.Error;
-        }
-
         switch (args.length) {
             case 1:
                 Env.FILE_DATA.setMultipleFileData(args[0], null);
