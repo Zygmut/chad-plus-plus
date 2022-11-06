@@ -2,8 +2,15 @@ package errors;
 
 import java.util.ArrayList;
 
+import utils.Env;
+
 /**
- * ErrorHandler
+ * ErrorHandler - Clase para manejar los errores de compilacion
+ *
+ * Assignatura 21742 - Compiladors
+ * Estudis: Grau en Informàtica
+ * Itinerari: Computació
+ * Curs: 2022 - 2023
  */
 public class ErrorHandler {
 
@@ -15,7 +22,9 @@ public class ErrorHandler {
      * @param error
      */
     public static void addError(Error error) {
-        errors.add(error);
+        if (!Env.TEST_MODE) {
+            errors.add(error);
+        }
     }
 
     /*
@@ -27,7 +36,9 @@ public class ErrorHandler {
      *
      */
     public static void addError(int code, int line) {
-        errors.add(new Error(code, line));
+        if (!Env.TEST_MODE) {
+            errors.add(new Error(code, line));
+        }
     }
 
     /*
