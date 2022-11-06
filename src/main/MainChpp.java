@@ -19,8 +19,9 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 import antlr.ChadppLexer;
 import antlr.ChadppParser;
+import errors.ErrorHandler;
+import errors.ErrorCodes;
 import tests.FileDataTests;
-import utils.ConsoleColor;
 import utils.Env;
 import utils.Sanity;
 
@@ -44,7 +45,7 @@ public class MainChpp {
         }
 
         if (Sanity.checkInput(args) == Env.Error) {
-            System.out.println(ConsoleColor.printColored(ConsoleColor.RED, "Error in arguments"));
+            ErrorHandler.printErrors();
             System.exit(0);
         }
 
@@ -67,10 +68,8 @@ public class MainChpp {
             }
 
         } catch (IOException e) {
-            System.out.println(ConsoleColor
-                    .printColored(ConsoleColor.RED,
-                            "Fichero no encontrado. Comprueba si la ruta asignada es la correcta."));
-            e.printStackTrace();
+            ErrorHandler.addError(ErrorCodes.ARGUMENT_FILE_NOT_FOUND, -1);
+            ErrorHandler.printErrors();
         }
 
     }
