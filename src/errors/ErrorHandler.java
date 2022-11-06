@@ -7,19 +7,15 @@ import java.util.ArrayList;
  */
 public class ErrorHandler {
 
-    private ArrayList<Error> errors;
-
-    public ErrorHandler() {
-        this.errors = new ArrayList<Error>();
-    }
+    private static ArrayList<Error> errors = new ArrayList<>();
 
     /*
      * Add an error to the list of errors
      *
      * @param error
      */
-    public void addError(Error error) {
-        this.errors.add(error);
+    public static void addError(Error error) {
+        errors.add(error);
     }
 
     /*
@@ -30,15 +26,15 @@ public class ErrorHandler {
      * @param int line
      *
      */
-    public void addError(int code, int line) {
-        this.errors.add(new Error(code, line));
+    public static void addError(int code, int line) {
+        errors.add(new Error(code, line));
     }
 
     /*
      * Print all errors
      */
-    public void printErrors() {
-        for (Error error : this.errors) {
+    public static void printErrors() {
+        for (Error error : errors) {
             System.out.println(error);
         }
     }
@@ -48,8 +44,8 @@ public class ErrorHandler {
      *
      * @return boolean
      */
-    public boolean hasErrors() {
-        return this.errors.size() > 0;
+    public static boolean hasErrors() {
+        return errors.size() > 0;
     }
 
     /*
@@ -57,8 +53,8 @@ public class ErrorHandler {
      *
      * @return ArrayList<Error>
      */
-    public ArrayList<Error> getErrors() {
-        return this.errors;
+    public static ArrayList<Error> getErrors() {
+        return errors;
     }
 
 }
