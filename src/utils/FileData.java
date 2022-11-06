@@ -1,5 +1,8 @@
 package utils;
 
+import errors.ErrorCodes;
+import errors.ErrorHandler;
+
 public class FileData {
 
     private String filePath;
@@ -46,8 +49,11 @@ public class FileData {
                 }
             }
         }
-        return false;
 
+        if (!ErrorHandler.hasErrors()) {
+            ErrorHandler.addError(ErrorCodes.ARGUMENT_INVALID_FILE_EXTENSION, -1);
+        }
+        return false;
     }
 
     @Deprecated
@@ -81,17 +87,20 @@ public class FileData {
         try {
             this.fileName = substring.split("[.]")[0];
         } catch (Exception e) {
+            ErrorHandler.addError(ErrorCodes.ARGUMENT_INVALID_FILE, -1);
             this.fileName = "";
         }
         try {
             this.fileExtension = substring.split("[.]")[1];
         } catch (Exception e) {
+            ErrorHandler.addError(ErrorCodes.ARGUMENT_INVALID_FILE, -1);
             this.fileExtension = "";
         }
 
         if (!((outputPath == null) || (outputPath == ""))) {
             this.outputPath = outputPath;
         }
+
     }
 
     @Override
