@@ -24,6 +24,8 @@ import errors.ErrorCodes;
 import tests.FileDataTests;
 import utils.Env;
 import utils.Sanity;
+import warnings.WarningCodes;
+import warnings.WarningHandler;
 
 /**
  * Main - Clase principal del programa
@@ -72,6 +74,7 @@ public class MainChpp {
             ErrorHandler.printErrors();
         }
 
+        WarningHandler.printWarnings();
     }
 
     private static void guiTreeVisualization(ChadppParser parser) {
