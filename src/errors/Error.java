@@ -31,10 +31,9 @@ public class Error {
 
         sb.append(ConsoleColor.printColored(ConsoleColor.RED, "ERROR"));
         // CLI argument error
-        if (line != -1) {
-            sb.append(ConsoleColor.printColored(ConsoleColor.RED, "at line "));
+        if (this.line != -1) {
+            sb.append(ConsoleColor.printColored(ConsoleColor.RED, " at line "));
             sb.append(ConsoleColor.printColored(ConsoleColor.RED, Integer.toString(line)));
-            sb.append(ConsoleColor.printColored(ConsoleColor.RED, " "));
         }
 
         sb.append(ConsoleColor.printColored(ConsoleColor.RED, ": "));
@@ -50,16 +49,16 @@ public class Error {
     private void setMessage() {
         switch (this.code) {
             case ErrorCodes.ARGUMENT_FILE_NOT_FOUND:
-                message = "Invalid argument, couldn't find file.";
+                this.message = "Invalid argument, couldn't find file.";
                 break;
             case ErrorCodes.ARGUMENT_INVALID_FILE_EXTENSION:
-                message = "Invalid argument, invalid file extension.";
+                this.message = "Invalid argument, invalid file extension.";
                 break;
             case ErrorCodes.ARGUMENT_INVALID_FILE:
-                message = "Invalid argument, invalid file.";
+                this.message = "Invalid argument, invalid file.";
                 break;
             default:
-                message = "Error code not found, invalid error code.";
+                this.message = "Error code not found, invalid error code.";
                 break;
         }
     }
