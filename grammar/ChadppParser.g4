@@ -66,11 +66,13 @@ args: (expresion COMMA)* expresion;
 expresion: (cont_expresion op)* cont_expresion;
 
 tuple: LSKEY expresion (COMMA expresion)* RSKEY;
+tuple_access: ID LSKEY NUMBER RSKEY;
 
 cont_expresion:
 	number
 	| id
 	| tuple
+	| tuple_access
 	| bol
 	| LPAREN expresion RPAREN
 	| LNOT expresion
