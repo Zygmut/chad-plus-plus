@@ -27,11 +27,7 @@ replay_pid*
 /chadpp/nbproject/private/
 /nbproject/
 /target/
-/grammar/Parser.java
-/grammar/ParserSym.java
-/grammar/Scanner.java
-/grammar/Scanner.java~
-grammar/Parser.java
+grammar/ParserSym.java
 grammar/Scanner.java
 grammar/Scanner.java~
-grammar/Scanner.java~
+grammar/Parser.java
