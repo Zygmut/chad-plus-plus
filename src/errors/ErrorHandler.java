@@ -42,6 +42,22 @@ public class ErrorHandler {
     }
 
     /*
+     * Add an error to the list of errors
+     *
+     * @param int code
+     *
+     * @param int line
+     *
+     * @param int charloc
+     *
+     */
+    public static void addError(int code, int line, int charloc) {
+        if (!Env.TEST_MODE) {
+            errors.add(new Error(code, line, charloc));
+        }
+    }
+
+    /*
      * Print all errors
      */
     public static void printErrors() {

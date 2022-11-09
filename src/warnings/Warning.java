@@ -4,13 +4,22 @@ import utils.ConsoleColor;
 
 public class Warning {
 
+    private final String color = ConsoleColor.YELLOW;
     private String message;
     private int code;
     private int line;
+    private int charloc;
 
     public Warning(int code, int line) {
         this.code = code;
         this.line = line;
+        this.charloc = -1;
+    }
+
+    public Warning(int code, int line, int charloc) {
+        this.code = code;
+        this.line = line;
+        this.charloc = charloc;
     }
 
     @Override
@@ -18,11 +27,16 @@ public class Warning {
         setMessage();
 
         StringBuilder sb = new StringBuilder();
-        sb.append(ConsoleColor.printColored(ConsoleColor.YELLOW, "WARNING"));
-        sb.append(ConsoleColor.printColored(ConsoleColor.YELLOW, " at line "));
-        sb.append(ConsoleColor.printColored(ConsoleColor.YELLOW, Integer.toString(line)));
-        sb.append(ConsoleColor.printColored(ConsoleColor.YELLOW, ": "));
-        sb.append(ConsoleColor.printColored(ConsoleColor.YELLOW, message));
+        sb.append(ConsoleColor.printColored(color, "WARNING"));
+        sb.append(ConsoleColor.printColored(color, " at line "));
+        sb.append(ConsoleColor.printColored(color, Integer.toString(line)));
+        if (this.charloc != -1) {
+            sb.append(ConsoleColor.printColored(color, ":"));
+            sb.append(ConsoleColor.printColored(color, Integer.toString(line)));
+
+        }
+        sb.append(ConsoleColor.printColored(color, " - "));
+        sb.append(ConsoleColor.printColored(color, message));
 
         return sb.toString();
     }

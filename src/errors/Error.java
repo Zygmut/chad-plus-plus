@@ -12,16 +12,26 @@ import utils.ConsoleColor;
  */
 public class Error {
 
+    private final String color = ConsoleColor.RED;
     // Error message
     private String message;
     // Error code
     private int code;
     // Error line
     private int line;
+    // Character
+    private int charloc;
 
     public Error(int code, int line) {
         this.code = code;
         this.line = line;
+        this.charloc = -1;
+    }
+
+    public Error(int code, int line, int charloc) {
+        this.code = code;
+        this.line = line;
+        this.charloc = charloc;
     }
 
     @Override
@@ -29,15 +39,21 @@ public class Error {
         setMessage(); // Set the message based on the code
         StringBuilder sb = new StringBuilder();
 
-        sb.append(ConsoleColor.printColored(ConsoleColor.RED, "ERROR"));
+        sb.append(ConsoleColor.printColored(color, "ERROR"));
         // CLI argument error
         if (this.line != -1) {
-            sb.append(ConsoleColor.printColored(ConsoleColor.RED, " at line "));
-            sb.append(ConsoleColor.printColored(ConsoleColor.RED, Integer.toString(line)));
+            sb.append(ConsoleColor.printColored(color, " at line "));
+            sb.append(ConsoleColor.printColored(color, Integer.toString(line)));
+
+            if (this.charloc != -1) {
+                sb.append(ConsoleColor.printColored(color, ":"));
+                sb.append(ConsoleColor.printColored(color, Integer.toString(line)));
+
+            }
         }
 
-        sb.append(ConsoleColor.printColored(ConsoleColor.RED, ": "));
-        sb.append(ConsoleColor.printColored(ConsoleColor.RED, message));
+        sb.append(ConsoleColor.printColored(color, " - "));
+        sb.append(ConsoleColor.printColored(color, message));
 
         return sb.toString();
     }

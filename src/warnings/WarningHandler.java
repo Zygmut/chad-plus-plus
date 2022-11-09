@@ -40,6 +40,19 @@ public class WarningHandler {
     }
 
     /**
+     * Add a warning to the list of warnings
+     *
+     * @param code
+     * @param line
+     * @param charloc
+     */
+    public static void addWarning(int code, int line, int charloc) {
+        if (!Env.TEST_MODE) {
+            warnings.add(new Warning(code, line, charloc));
+        }
+    }
+
+    /**
      * Print all warnings
      *
      */
