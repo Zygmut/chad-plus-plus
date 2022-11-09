@@ -67,7 +67,7 @@ STRING_LIT: '"' .*? '"';
 ID: [a-zA-Z][a-zA-Z_0-9]*;
 NUMBER:
 	'0'
-	| [1-9][0-9]*; // Number literal signs must be handled in parser
+	| [+|-]? [1-9][0-9]*; // Number literal signs must be handled in parser
 
 COMMENT: '/*' .*? '*/' -> skip;
 LINE_COMMENT: '//' ~[\r\n]* -> skip;
