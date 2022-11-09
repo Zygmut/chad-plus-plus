@@ -1,6 +1,7 @@
 package errors;
 
 import utils.ConsoleColor;
+import utils.Env;
 
 /**
  * Error - Clase con los metadatos de un error
@@ -21,17 +22,21 @@ public class Error {
     private int line;
     // Character
     private int charloc;
+    // Phase of the compiler
+    private int phase;
 
-    public Error(int code, int line) {
+    public Error(int code, int line, int phase) {
         this.code = code;
         this.line = line;
         this.charloc = -1;
+        this.phase = phase;
     }
 
-    public Error(int code, int line, int charloc) {
+    public Error(int code, int line, int charloc, int phase) {
         this.code = code;
         this.line = line;
         this.charloc = charloc;
+        this.phase = phase;
     }
 
     @Override
@@ -42,6 +47,7 @@ public class Error {
         sb.append(ConsoleColor.printColored(color, "ERROR"));
         // CLI argument error
         if (this.line != -1) {
+            sb.append(ConsoleColor.printColored(color, "during the " + this.getPhase() + " phase of the compilation"));
             sb.append(ConsoleColor.printColored(color, " at line "));
             sb.append(ConsoleColor.printColored(color, Integer.toString(line)));
 
@@ -56,6 +62,27 @@ public class Error {
         sb.append(ConsoleColor.printColored(color, message));
 
         return sb.toString();
+    }
+
+    /**
+     * 
+     * @return the phase of the error
+     */
+    private String getPhase() {
+        switch (this.phase) {
+            case Env.PRE_COMPILER_PHASE:
+                return "sanity check";
+            case Env.LEXICAL_PHASE:
+                return "lexical";
+            case Env.SYNTACTIC_PHASE:
+                return "syntactic";
+            case Env.SEMANTIC_PHASE:
+                return "semantic";
+            case Env.CODE_GENERATION_PHASE:
+                return "code generation";
+            default:
+                return "the phase set is not valid";
+        }
     }
 
     /**

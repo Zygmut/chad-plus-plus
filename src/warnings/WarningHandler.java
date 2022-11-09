@@ -32,10 +32,11 @@ public class WarningHandler {
      *
      * @param code
      * @param line
+     * @param phase
      */
-    public static void addWarning(int code, int line) {
+    public static void addWarning(int code, int line, int phase) {
         if (!Env.TEST_MODE) {
-            warnings.add(new Warning(code, line));
+            warnings.add(new Warning(code, line, phase));
         }
     }
 
@@ -45,10 +46,11 @@ public class WarningHandler {
      * @param code
      * @param line
      * @param charloc
+     * @param phase
      */
-    public static void addWarning(int code, int line, int charloc) {
+    public static void addWarning(int code, int line, int charloc, int phase) {
         if (!Env.TEST_MODE) {
-            warnings.add(new Warning(code, line, charloc));
+            warnings.add(new Warning(code, line, charloc, phase));
         }
     }
 

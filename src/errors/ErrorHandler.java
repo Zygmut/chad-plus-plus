@@ -33,11 +33,13 @@ public class ErrorHandler {
      * @param int code
      *
      * @param int line
+     * 
+     * @param int phase
      *
      */
-    public static void addError(int code, int line) {
+    public static void addError(int code, int line, int phase) {
         if (!Env.TEST_MODE) {
-            errors.add(new Error(code, line));
+            errors.add(new Error(code, line, phase));
         }
     }
 
@@ -49,11 +51,13 @@ public class ErrorHandler {
      * @param int line
      *
      * @param int charloc
+     * 
+     * @param int phase
      *
      */
-    public static void addError(int code, int line, int charloc) {
+    public static void addError(int code, int line, int charloc, int phase) {
         if (!Env.TEST_MODE) {
-            errors.add(new Error(code, line, charloc));
+            errors.add(new Error(code, line, charloc, phase));
         }
     }
 

@@ -41,4 +41,13 @@ public class Env {
     public static final int Ok = 0;
     public static final int Error = -2;
     public static final int Warning = -1;
+
+    // Constantes para deteminar el que fase del programa se ha producido el error o
+    // la advertencia
+    public static final int PRE_COMPILER_PHASE = -1;
+    public static final int LEXICAL_PHASE = 0;
+    public static final int SYNTACTIC_PHASE = 1;
+    public static final int SEMANTIC_PHASE = 2;
+    public static final int CODE_GENERATION_PHASE = 3;
+
 }
