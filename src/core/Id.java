@@ -40,9 +40,7 @@ public class Id {
 
     @Override
     public String toString() {
-        return "{" +
-                " value='" + getValue() + "'" +
-                "}";
+        return "Id [value=" + value + "]";
     }
 
 }

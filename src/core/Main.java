@@ -62,10 +62,7 @@ public class Main {
 
     @Override
     public String toString() {
-        return "{" +
-                " listOfDeclaraions='" + getListOfDeclaraions() + "'" +
-                ", lisfOfInstructions='" + getLisfOfInstructions() + "'" +
-                "}";
+        return "Main [listOfDeclaraions=" + listOfDeclaraions + ", lisfOfInstructions=" + lisfOfInstructions + "]";
     }
 
 }

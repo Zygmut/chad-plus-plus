@@ -37,10 +37,7 @@ public class WhileInstruction extends Instruction {
 
     @Override
     public String toString() {
-        return "{ While: " +
-                " expresion='" + getExpresion() + "'" +
-                ", lisfOfInstructions='" + getLisfOfInstructions() + "'" +
-                "}";
+        return "WhileInstruction [expresion=" + expresion + ", lisfOfInstructions=" + lisfOfInstructions + "]";
     }
 
 }

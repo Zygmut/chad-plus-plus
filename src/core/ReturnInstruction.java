@@ -41,9 +41,7 @@ public class ReturnInstruction extends Instruction {
 
     @Override
     public String toString() {
-        return "{ Return: " +
-                " expresion='" + getExpresion() + "'" +
-                "}";
+        return "ReturnInstruction [expresion=" + expresion + "]";
     }
 
 }

@@ -37,4 +37,9 @@ public abstract class Instruction {
         return Objects.hashCode(instructionType);
     }
 
+    @Override
+    public String toString() {
+        return "Instruction [instructionType=" + instructionType + "]";
+    }
+
 }

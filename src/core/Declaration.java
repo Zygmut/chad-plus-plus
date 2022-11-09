@@ -72,4 +72,10 @@ public class Declaration {
         return Objects.hash(constant, type, tuple, asignation);
     }
 
+    @Override
+    public String toString() {
+        return "Declaration [constant=" + constant + ", type=" + type + ", tuple=" + tuple + ", asignation="
+                + asignation + "]";
+    }
+
 }

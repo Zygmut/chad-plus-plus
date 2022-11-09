@@ -51,4 +51,9 @@ public class DeclarationType {
         return Objects.hashCode(type);
     }
 
+    @Override
+    public String toString() {
+        return "DeclarationType [type=" + type + "]";
+    }
+
 }

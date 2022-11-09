@@ -55,4 +55,9 @@ public class Asignation {
         return Objects.hash(listOfIds, expresion);
     }
 
+    @Override
+    public String toString() {
+        return "Asignation [listOfIds=" + listOfIds + ", expresion=" + expresion + "]";
+    }
+
 }

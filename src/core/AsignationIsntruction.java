@@ -55,10 +55,7 @@ public class AsignationIsntruction extends Instruction {
 
     @Override
     public String toString() {
-        return "{ Asignation: " +
-                " listaids='" + getListaids() + "'" +
-                ", expresion='" + getExpresion() + "'" +
-                "}";
+        return "AsignationIsntruction [listaids=" + listaids + ", expresion=" + expresion + "]";
     }
 
 }

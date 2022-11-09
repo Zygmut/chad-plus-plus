@@ -56,10 +56,7 @@ public class IfInstruction extends Instruction {
 
     @Override
     public String toString() {
-        return "{ If: " +
-                " expresion='" + getExpresion() + "'" +
-                ", lisfOfInstructions='" + getLisfOfInstructions() + "'" +
-                "}";
+        return "IfInstruction [expresion=" + expresion + ", lisfOfInstructions=" + lisfOfInstructions + "]";
     }
 
 }

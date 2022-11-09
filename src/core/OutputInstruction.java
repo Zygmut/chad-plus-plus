@@ -43,9 +43,7 @@ public class OutputInstruction extends Instruction {
 
     @Override
     public String toString() {
-        return "{ Output: " +
-                " contents='" + getContents() + "'" +
-                "}";
+        return "OutputInstruction [contents=" + contents + "]";
     }
 
 }

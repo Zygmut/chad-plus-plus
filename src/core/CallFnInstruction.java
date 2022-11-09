@@ -41,9 +41,7 @@ public class CallFnInstruction extends Instruction {
 
     @Override
     public String toString() {
-        return "{ Function call: " +
-                " function='" + getFunction() + "'" +
-                "}";
+        return "CallFnInstruction [function=" + function + "]";
     }
 
 }

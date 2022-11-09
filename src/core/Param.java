@@ -50,10 +50,7 @@ public class Param {
 
     @Override
     public String toString() {
-        return "{" +
-                " type='" + getType() + "'" +
-                ", id='" + getId() + "'" +
-                "}";
+        return "Param [type=" + type + ", id=" + id + "]";
     }
 
 }

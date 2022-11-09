@@ -55,10 +55,7 @@ public class Chadpp {
 
     @Override
     public String toString() {
-        return "{" +
-                " listOfFunctions='" + getListOfFunctions() + "'" +
-                ", main='" + getMain() + "'" +
-                "}";
+        return "Chadpp [listOfFunctions=" + listOfFunctions + ", main=" + main + "]";
     }
 
 }

@@ -96,4 +96,10 @@ public class Function {
         return Objects.hash(typef, id, listOfDeclaraions, lisfOfInstructions);
     }
 
+    @Override
+    public String toString() {
+        return "Function [typef=" + typef + ", id=" + id + ", params=" + params + ", listOfDeclaraions="
+                + listOfDeclaraions + ", lisfOfInstructions=" + lisfOfInstructions + "]";
+    }
+
 }

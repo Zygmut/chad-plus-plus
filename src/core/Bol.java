@@ -44,8 +44,7 @@ public class Bol {
 
     @Override
     public String toString() {
-        return "{" +
-                " value='" + getValue() + "'" +
-                "}";
+        return "Bol [value=" + value + "]";
     }
+
 }

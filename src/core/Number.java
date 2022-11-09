@@ -44,9 +44,7 @@ public class Number {
 
     @Override
     public String toString() {
-        return "{" +
-                " value='" + getValue() + "'" +
-                "}";
+        return "Number [value=" + value + "]";
     }
 
 }
