@@ -1,61 +1,64 @@
-/**
- Per compilar aquest fitxer s'ha d'haver instal·lat JavaCup
-
-  java -jar java-cup-11b.jar Parser.cup
- **/
-
-/**
- * Assignatura 21742 - Compiladors I 
- * Estudis: Grau en Informàtica 
- * Itinerari: Computació 
- * Curs: 2017-2018
- *
- * Professor: Pere Palmer
+/*
+ * Assignatura 21742 - Compiladors
+ * Estudis: Grau en Informàtica
+ * Itinerari: Computació
+ * Curs: 2022 - 2023
  */
+
 package grammar;
 
-
-
 import java_cup.runtime.*;
+import core.*;
 
 class Parser;
+// parser code {:
+//     private Scanner scanner;
+//     public Parser(Scanner scanner) { 
+//         this.scanner = scanner;
+//     }
+// :}
 
-/**
- ** Aquí es podria posar un codi 'ad hoc' però en aquest cas no és necessari.
-parser code {:
-    private Scanner scanner;
-    public Parser(Scanner scanner) { 
-        this.scanner = scanner;
-    }
-:}
-**/
 
 /**
  ** També aquí es poden afegir accions a realitzar quan es requereix un token.
 scan with {:     next_token(); :}
 **/
 
-terminal                ADD, SUB, MUL, DIV, MOD, LPAREN, RPAREN;
-terminal      String    valor;
-non terminal  Integer   E, T, F;
+terminal       BEGIN, MAIN, ALPHA, CONST, RETURN, INT, VBOL, TUP, VOID,
+               IF, WHILE, LOOP, AND, OR, NOT, PLUS, MINUS, MULT,
+               DIV, OUT, ININT, INBOL, EQUAL, SEMICOLON, COMMA,LPAREN,
+               RPAREN, LKEY, RKEY, LSKEY, LRKEY ;
+
+terminal       String    NUMBER;
+terminal       String    ID;
+terminal       String    BOL;
+
+non terminal   Chadpp    CHADPP;
+non terminal   Main      MAINFN;
+
+start with CHADPP;
+
+CHADPP ::= MAINFN FUNTIONS;
+
+MAINFN ::= MAIN LKEY EXTRAD INSTRUCTIONS RKEY;
+
+EXTRAD ::= DECLS BEGIN;
+
+DECLS  ::= DECL DECLS
+INSTRUCTIONS ::= ;
 
 
-precedence left  ADD, SUB;
-precedence left  MUL, DIV, MOD;
-
-start with E;
-
-E ::=  E:v1 ADD T:v2  {: RESULT = v1 + v2; :}
-     | E:v1 SUB T:v2  {: RESULT = v1 - v2; :}
-     | T:v            {: RESULT = v; :}
-     ;
-
-T ::=  T:v1 MUL F:v2    {: RESULT = v1 * v2; :}
-     | T:v1 DIV F:v2    {: RESULT = v1 / v2; :}
-     | T:v1 MOD F:v2    {: RESULT = v1 % v2; :}
-     | F:v              {: RESULT = v; :}
-     ;
-
-F ::= LPAREN E:v RPAREN {: RESULT = v; :}
-     | valor:v          {: RESULT = Integer.parseInt(v); :}
-     ;
+//E ::=  E:v1 ADD T:v2  {: RESULT = v1 + v2; :}
+     //| E:v1 SUB T:v2  {: RESULT = v1 - v2; :}
+     //| T:v            {: RESULT = v; :}
+     //;
+//
+//T ::=  T:v1 MUL F:v2    {: RESULT = v1 * v2; :}
+     //| T:v1 DIV F:v2    {: RESULT = v1 / v2; :}
+     //| T:v1 MOD F:v2    {: RESULT = v1 % v2; :}
+     //| F:v              {: RESULT = v; :}
+     //;
+//
+//F ::= LPAREN E:v RPAREN  {: RESULT = v; :}
+     //| NUMBER:v          {: RESULT = Integer.parseInt(v); :}
+     //;
