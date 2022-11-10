@@ -58,8 +58,6 @@ ENDLINE       = [\r\n]+
 %%
 
 // Rules & actions
-
-
 // terminals
 
 // reserved key words
@@ -79,7 +77,7 @@ ENDLINE       = [\r\n]+
 
 // code branching
 "if"            { return symbol(ParserSym.IF);                    }
-"else"          { return symbol(ParserSym.ELSE);                  }
+// optional "else"          { return symbol(ParserSym.ELSE);                  }
 "while"         { return symbol(ParserSym.WHILE);                 }
 "loop"          { return symbol(ParserSym.LOOP);                  }
 
