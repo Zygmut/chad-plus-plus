@@ -1,59 +1,43 @@
-/**
-  Per poder compilar aquest fitxer s'ha d'haver instal·lat JFlex
- **/ 
-
-/**
- * Assignatura 21742 - Compiladors I 
- * Estudis: Grau en Informàtica 
- * Itinerari: Computació 
- * Curs: 2017-2018
- *
- * Professor: Pere Palmer
+/*
+ * Assignatura 21742 - Compiladors
+ * Estudis: Grau en Informàtica
+ * Itinerari: Computació
+ * Curs: 2022 - 2023
  */
-// El codi que es copiarà tal qual al document. A l'inici
+
 package grammar;
 
 import java.io.*;
 
 import java_cup.runtime.*;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+import errors.ErrorHandler;
+import errors.ErrorCodes;
+import utils.Env;
 
 import grammar.ParserSym;
 
 %%
 
-/****
- Indicació de quin tipus d'analitzador sintàctic s'utilitzarà. En aquest cas 
- es fa ús de Java CUP.
- ****/
 %cup
-/****
-La línia anterior és una alternativa a la indicació element a element:
 
-%implements java_cup.runtime.Scanner
-%function next_token
-%type java_cup.runtime.Symbol
-
-****/
-
-%public              // Per indicar que la classe és pública
-%class Scanner       // El nom de la classe
+%public
+%class Scanner
 
 %eofval{
   return symbol(ParserSym.EOF);
 %eofval}
 
-// Declaracions
 
-digit     = [0-9]
-digits    = {digit}+
+ID            = [a-zA-Z][a-zA-Z_0-9]* 
+NUMBER        = 0 | [\+\-]?[1-9][0-9]*
+STRING_LIT    = \" .*? \"
+COMMENT       = "/*" .*? "*/"
+LINE_COMMENT  = "//" ~[\r\n]*
+WS            = [ \t]+
+ENDLINE       = [\r\n]+
 
-WS        = [ \t]+
-ENDLINE   = [\r\n]+
 
-
-// El següent codi es copiarà també, dins de la classe. És a dir, si es posa res
-// ha de ser en el format adient: mètodes, atributs, etc. 
 %{
     /***
        Mecanismes de gestió de símbols basat en ComplexSymbol. Tot i que en
@@ -62,14 +46,14 @@ ENDLINE   = [\r\n]+
     /**
      Construcció d'un symbol sense atribut associat.
      **/
-    private Complex symbol(int type) {
+    private ComplexSymbol symbol(int type) {
         return new ComplexSymbol(ParserSym.terminalNames[type], type);
     }
-    
+
     /**
      Construcció d'un symbol amb un atribut associat.
      **/
-    private Symbol symbol(int type, Object value) {
+    private ComplexSymbol symbol(int type, Object value) {
         return new ComplexSymbol(ParserSym.terminalNames[type], type, value);
     }
 %}
@@ -77,18 +61,65 @@ ENDLINE   = [\r\n]+
 
 %%
 
-// Regles/accions
+// Rules & actions
 
-{digits} { return symbol(ParserSym.valor, this.yytext()); }
-"+"      { return symbol(ParserSym.ADD);                  }
-"-"      { return symbol(ParserSym.SUB);                  }
-"*"      { return symbol(ParserSym.MUL);                  }
-"/"      { return symbol(ParserSym.DIV);                  }
-"%"      { return symbol(ParserSym.MOD);                  }
-"("      { return symbol(ParserSym.LPAREN);               }
-")"      { return symbol(ParserSym.RPAREN);               }
+// non-terminals
+{NUMBER}        { return symbol(ParserSym.NUMBER, this.yytext()); }
+{ID}            { return symbol(ParserSym.ID, this.yytext()); }
 
-{WS}     { /* no fer tres */ }
-{ENDLINE} { return symbol(ParserSym.EOF);                 }
+// terminals
 
-[^]      { return symbol(ParserSym.error);                }
+// reserved key words
+"BEGIN"         { return symbol(ParserSym.ADD);                  }
+"true"          { return symbol(ParserSym.ADD);                  }
+"false"         { return symbol(ParserSym.ADD);                  }
+"main"          { return symbol(ParserSym.ADD);                  }
+"alpha"         { return symbol(ParserSym.ADD);                  }
+"const"         { return symbol(ParserSym.ADD);                  }
+"return"        { return symbol(ParserSym.ADD);                  }
+
+// types
+"int"           { return symbol(ParserSym.ADD);                  }
+"bol"           { return symbol(ParserSym.ADD);                  }
+"tup"           { return symbol(ParserSym.ADD);                  }
+"void"          { return symbol(ParserSym.ADD);                  }
+
+// code branching
+"if"            { return symbol(ParserSym.ADD);                  }
+"else"          { return symbol(ParserSym.ADD);                  }
+"while"         { return symbol(ParserSym.ADD);                  }
+"loop"          { return symbol(ParserSym.ADD);                  }
+
+// logic
+"&&"            { return symbol(ParserSym.ADD);                  }
+"||"            { return symbol(ParserSym.ADD);                  }
+"!"             { return symbol(ParserSym.ADD);                  }
+
+// arithmetic
+"+"             { return symbol(ParserSym.ADD);                  }
+"-"             { return symbol(ParserSym.ADD);                  }
+"*"             { return symbol(ParserSym.ADD);                  }
+"/"             { return symbol(ParserSym.ADD);                  }
+
+// I/O
+"output"        { return symbol(ParserSym.ADD);                  }
+"inputint"      { return symbol(ParserSym.ADD);                  }
+"inputbol"      { return symbol(ParserSym.ADD);                  }
+
+//Extras
+"="             { return symbol(ParserSym.ADD);                  }
+";"             { return symbol(ParserSym.ADD);                  }
+","             { return symbol(ParserSym.ADD);                  }
+"("             { return symbol(ParserSym.ADD);                  }
+")"             { return symbol(ParserSym.ADD);                  }
+"{"             { return symbol(ParserSym.ADD);                  }
+"}"             { return symbol(ParserSym.ADD);                  }
+"["             { return symbol(ParserSym.ADD);                  }
+"]"             { return symbol(ParserSym.ADD);                  }
+
+{WS}            {                                               }
+{COMMENT}       {                                               }
+{LINE_COMMENT}  {                                               }
+{ENDLINE}       { return symbol(ParserSym.EOF);                 }
+
+[^]             { ErrorHandler.addError(ErrorCodes.INVALID_TOKEN, yyline, yycolumn, Env.LEXICAL_PHASE);                }
