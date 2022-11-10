@@ -13,9 +13,9 @@ package errors;
  */
 public class ErrorCodes {
 
-    public static final int ARGUMENT_FILE_NOT_FOUND = 0;
-    public static final int ARGUMENT_INVALID_FILE_EXTENSION = 1;
-    public static final int ARGUMENT_INVALID_FILE = 2;
+    public static final int FILE_NOT_FOUND = 0;
+    public static final int INVALID_FILE_EXTENSION = 1;
+    public static final int INVALID_FILE = 2;
     public static final int INVALID_TOKEN = 3;
 
 }

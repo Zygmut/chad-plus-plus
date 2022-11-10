@@ -91,13 +91,13 @@ public class Error {
      */
     private void setMessage() {
         switch (this.code) {
-            case ErrorCodes.ARGUMENT_FILE_NOT_FOUND:
+            case ErrorCodes.FILE_NOT_FOUND:
                 this.message = "Invalid argument, couldn't find file.";
                 break;
-            case ErrorCodes.ARGUMENT_INVALID_FILE_EXTENSION:
+            case ErrorCodes.INVALID_FILE_EXTENSION:
                 this.message = "Invalid argument, invalid file extension.";
                 break;
-            case ErrorCodes.ARGUMENT_INVALID_FILE:
+            case ErrorCodes.INVALID_FILE:
                 this.message = "Invalid argument, invalid file.";
                 break;
             case ErrorCodes.INVALID_TOKEN:
