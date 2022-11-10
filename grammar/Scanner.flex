@@ -29,9 +29,9 @@ import grammar.ParserSym;
 %eofval}
 
 
-ID            = [a-zA-Z][a-zA-Z_0-9]* 
+ID            = [a-zA-Z][a-zA-Z_0-9]*
 NUMBER        = 0 | [\+\-]?[1-9][0-9]*
-STRING_LIT    = \" .*? \"
+STRING_LIT    = \" .*? \"               // Optional
 COMMENT       = "/*" .*? "*/"
 LINE_COMMENT  = "//" ~[\r\n]*
 WS            = [ \t]+
@@ -65,61 +65,66 @@ ENDLINE       = [\r\n]+
 
 // non-terminals
 {NUMBER}        { return symbol(ParserSym.NUMBER, this.yytext()); }
-{ID}            { return symbol(ParserSym.ID, this.yytext()); }
+{ID}            { return symbol(ParserSym.ID, this.yytext());     }
 
 // terminals
 
 // reserved key words
-"BEGIN"         { return symbol(ParserSym.ADD);                  }
-"true"          { return symbol(ParserSym.ADD);                  }
-"false"         { return symbol(ParserSym.ADD);                  }
-"main"          { return symbol(ParserSym.ADD);                  }
-"alpha"         { return symbol(ParserSym.ADD);                  }
-"const"         { return symbol(ParserSym.ADD);                  }
-"return"        { return symbol(ParserSym.ADD);                  }
+"BEGIN"         { return symbol(ParserSym.BEGIN);                 }
+"true"          { return symbol(ParserSym.BOL, "true");           }
+"false"         { return symbol(ParserSym.BOL, "false");          }
+"main"          { return symbol(ParserSym.MAIN);                  }
+"alpha"         { return symbol(ParserSym.ALPHA);                 }
+"const"         { return symbol(ParserSym.CONST);                 }
+"return"        { return symbol(ParserSym.RETURN);                }
 
 // types
-"int"           { return symbol(ParserSym.ADD);                  }
-"bol"           { return symbol(ParserSym.ADD);                  }
-"tup"           { return symbol(ParserSym.ADD);                  }
-"void"          { return symbol(ParserSym.ADD);                  }
+"int"           { return symbol(ParserSym.INT);                   }
+"bol"           { return symbol(ParserSym.BOL);                   }
+"tup"           { return symbol(ParserSym.TUP);                   }
+"void"          { return symbol(ParserSym.VOID);                  }
 
 // code branching
-"if"            { return symbol(ParserSym.ADD);                  }
-"else"          { return symbol(ParserSym.ADD);                  }
-"while"         { return symbol(ParserSym.ADD);                  }
-"loop"          { return symbol(ParserSym.ADD);                  }
+"if"            { return symbol(ParserSym.IF);                    }
+"else"          { return symbol(ParserSym.ELSE);                  }
+"while"         { return symbol(ParserSym.WHILE);                 }
+"loop"          { return symbol(ParserSym.LOOP);                  }
 
-// logic
-"&&"            { return symbol(ParserSym.ADD);                  }
-"||"            { return symbol(ParserSym.ADD);                  }
-"!"             { return symbol(ParserSym.ADD);                  }
+// logic 2
+"&&"            { return symbol(ParserSym.AND);                   }
+"||"            { return symbol(ParserSym.OR);                    }
+"!"             { return symbol(ParserSym.NOT);                   }
 
-// arithmetic
-"+"             { return symbol(ParserSym.ADD);                  }
-"-"             { return symbol(ParserSym.ADD);                  }
-"*"             { return symbol(ParserSym.ADD);                  }
-"/"             { return symbol(ParserSym.ADD);                  }
+// relational 2
+"=="             { return symbol(ParserSym.PLUS);                  }
+"<"             { return symbol(ParserSym.MINUS);                 }
+">"             { return symbol(ParserSym.MULT);                  }
+
+// arithmetic 2
+"+"             { return symbol(ParserSym.PLUS);                  }
+"-"             { return symbol(ParserSym.MINUS);                 }
+"*"             { return symbol(ParserSym.MULT);                  }
+"/"             { return symbol(ParserSym.DIV);                   }
 
 // I/O
-"output"        { return symbol(ParserSym.ADD);                  }
-"inputint"      { return symbol(ParserSym.ADD);                  }
-"inputbol"      { return symbol(ParserSym.ADD);                  }
+"output"        { return symbol(ParserSym.OUT);                   }
+"inputint"      { return symbol(ParserSym.ININT);                 }
+"inputbol"      { return symbol(ParserSym.INBOL);                 }
 
 //Extras
-"="             { return symbol(ParserSym.ADD);                  }
-";"             { return symbol(ParserSym.ADD);                  }
-","             { return symbol(ParserSym.ADD);                  }
-"("             { return symbol(ParserSym.ADD);                  }
-")"             { return symbol(ParserSym.ADD);                  }
-"{"             { return symbol(ParserSym.ADD);                  }
-"}"             { return symbol(ParserSym.ADD);                  }
-"["             { return symbol(ParserSym.ADD);                  }
-"]"             { return symbol(ParserSym.ADD);                  }
+"="             { return symbol(ParserSym.EQUAL);                 }
+";"             { return symbol(ParserSym.SEMICOLON);             }
+","             { return symbol(ParserSym.COMMA);                 }
+"("             { return symbol(ParserSym.LPAREN);                }
+")"             { return symbol(ParserSym.RPAREN);                }
+"{"             { return symbol(ParserSym.LKEY);                  }
+"}"             { return symbol(ParserSym.RKEY);                  }
+"["             { return symbol(ParserSym.LSKEY);                 }
+"]"             { return symbol(ParserSym.RSKEY);                 }
 
-{WS}            {                                               }
-{COMMENT}       {                                               }
-{LINE_COMMENT}  {                                               }
-{ENDLINE}       { return symbol(ParserSym.EOF);                 }
+{WS}            {                                                 }
+{COMMENT}       {                                                 }
+{LINE_COMMENT}  {                                                 }
+{ENDLINE}       { return symbol(ParserSym.EOF);                   }
 
 [^]             { ErrorHandler.addError(ErrorCodes.INVALID_TOKEN, yyline, yycolumn, Env.LEXICAL_PHASE);                }
