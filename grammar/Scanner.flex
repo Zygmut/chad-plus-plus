@@ -31,7 +31,7 @@ import grammar.ParserSym;
 
 ID            = [a-zA-Z][a-zA-Z_0-9]*
 NUMBER        = 0 | [\+\-]?[1-9][0-9]*
-STRING_LIT    = \" .*? \"               // Optional
+// STRING_LIT    = \" .*? \"               // Optional
 COMMENT       = "/*" .*? "*/"
 LINE_COMMENT  = "//" ~[\r\n]*
 WS            = [ \t]+
@@ -39,20 +39,16 @@ ENDLINE       = [\r\n]+
 
 
 %{
-    /***
-       Mecanismes de gestió de símbols basat en ComplexSymbol. Tot i que en
-       aquest cas potser no és del tot necessari.
-     ***/
-    /**
-     Construcció d'un symbol sense atribut associat.
-     **/
+    /*
+     * Create ComplexSymbol without attribute
+     */
     private ComplexSymbol symbol(int type) {
         return new ComplexSymbol(ParserSym.terminalNames[type], type);
     }
 
-    /**
-     Construcció d'un symbol amb un atribut associat.
-     **/
+    /*
+     * Create ComplexSymbol with attribute
+     */
     private ComplexSymbol symbol(int type, Object value) {
         return new ComplexSymbol(ParserSym.terminalNames[type], type, value);
     }
@@ -63,20 +59,17 @@ ENDLINE       = [\r\n]+
 
 // Rules & actions
 
-// non-terminals
-{NUMBER}        { return symbol(ParserSym.NUMBER, this.yytext()); }
-{ID}            { return symbol(ParserSym.ID, this.yytext());     }
 
 // terminals
 
 // reserved key words
 "BEGIN"         { return symbol(ParserSym.BEGIN);                 }
-"true"          { return symbol(ParserSym.BOL, "true");           }
-"false"         { return symbol(ParserSym.BOL, "false");          }
 "main"          { return symbol(ParserSym.MAIN);                  }
 "alpha"         { return symbol(ParserSym.ALPHA);                 }
 "const"         { return symbol(ParserSym.CONST);                 }
 "return"        { return symbol(ParserSym.RETURN);                }
+"true"          { return symbol(ParserSym.VBOL, "true");          }
+"false"         { return symbol(ParserSym.VBOL, "false");         }
 
 // types
 "int"           { return symbol(ParserSym.INT);                   }
@@ -96,7 +89,7 @@ ENDLINE       = [\r\n]+
 "!"             { return symbol(ParserSym.NOT);                   }
 
 // relational 2
-"=="             { return symbol(ParserSym.PLUS);                  }
+"=="            { return symbol(ParserSym.PLUS);                  }
 "<"             { return symbol(ParserSym.MINUS);                 }
 ">"             { return symbol(ParserSym.MULT);                  }
 
@@ -111,7 +104,7 @@ ENDLINE       = [\r\n]+
 "inputint"      { return symbol(ParserSym.ININT);                 }
 "inputbol"      { return symbol(ParserSym.INBOL);                 }
 
-//Extras
+// extras
 "="             { return symbol(ParserSym.EQUAL);                 }
 ";"             { return symbol(ParserSym.SEMICOLON);             }
 ","             { return symbol(ParserSym.COMMA);                 }
@@ -121,6 +114,10 @@ ENDLINE       = [\r\n]+
 "}"             { return symbol(ParserSym.RKEY);                  }
 "["             { return symbol(ParserSym.LSKEY);                 }
 "]"             { return symbol(ParserSym.RSKEY);                 }
+
+// non-terminals
+{NUMBER}        { return symbol(ParserSym.NUMBER, this.yytext()); }
+{ID}            { return symbol(ParserSym.ID, this.yytext());     }
 
 {WS}            {                                                 }
 {COMMENT}       {                                                 }
