@@ -47,7 +47,7 @@ public class Error {
         sb.append(ConsoleColor.printColored(color, "ERROR"));
         // CLI argument error
         if (this.line != -1) {
-            sb.append(ConsoleColor.printColored(color, "during the " + this.getPhase() + " phase of the compilation"));
+            sb.append(ConsoleColor.printColored(color, " during the " + this.getPhase() + " phase of the compilation"));
             sb.append(ConsoleColor.printColored(color, " at line "));
             sb.append(ConsoleColor.printColored(color, Integer.toString(line)));
 
@@ -99,6 +99,9 @@ public class Error {
                 break;
             case ErrorCodes.ARGUMENT_INVALID_FILE:
                 this.message = "Invalid argument, invalid file.";
+                break;
+            case ErrorCodes.INVALID_TOKEN:
+                this.message = "Invalid Token.";
                 break;
             default:
                 this.message = "Error code not found, invalid error code.";
