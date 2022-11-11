@@ -84,12 +84,12 @@ ENDLINE       = [\r\n]+
 // logic 2
 "&&"            { return symbol(ParserSym.AND);                   }
 "||"            { return symbol(ParserSym.OR);                    }
-"!"             { return symbol(ParserSym.NOT);                   }
+// "!"             { return symbol(ParserSym.NOT);                   }
 
 // relational 2
-"=="            { return symbol(ParserSym.PLUS);                  }
-"<"             { return symbol(ParserSym.MINUS);                 }
-">"             { return symbol(ParserSym.MULT);                  }
+"=="            { return symbol(ParserSym.REQUAL);                }
+"<"             { return symbol(ParserSym.LT);                    }
+">"             { return symbol(ParserSym.GT);                    }
 
 // arithmetic 2
 "+"             { return symbol(ParserSym.PLUS);                  }

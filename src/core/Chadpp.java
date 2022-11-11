@@ -1,61 +1,39 @@
 package core;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-/**
- * Chadpp
- */
 public class Chadpp {
 
-    private List<Function> listOfFunctions;
+    private L_Fn nextFn;
     private Main main;
 
     public Chadpp() {
-        this.listOfFunctions = new ArrayList<>();
         this.main = new Main();
+        this.nextFn = new L_Fn();
     }
 
-    public List<Function> getListOfFunctions() {
-        return this.listOfFunctions;
+    public Chadpp(Main main, L_Fn functions) {
+        this.main = main;
+        this.nextFn = functions;
     }
 
-    public void setListOfFunctions(List<Function> listOfFunctions) {
-        this.listOfFunctions = listOfFunctions;
+    public L_Fn getNextFn() {
+        return nextFn;
+    }
+
+    public void setNextFn(L_Fn nextFn) {
+        this.nextFn = nextFn;
     }
 
     public Main getMain() {
-        return this.main;
+        return main;
     }
 
     public void setMain(Main main) {
         this.main = main;
     }
 
-    public void addFunction(Function function) {
-        this.listOfFunctions.add(function);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof Chadpp)) {
-            return false;
-        }
-        Chadpp chadpp = (Chadpp) o;
-        return Objects.equals(listOfFunctions, chadpp.listOfFunctions) && Objects.equals(main, chadpp.main);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(listOfFunctions, main);
-    }
-
     @Override
     public String toString() {
-        return "Chadpp [listOfFunctions=" + listOfFunctions + ", main=" + main + "]";
+        return "Chadpp [listOfFunctions=" + nextFn + ", main=" + main + "]";
     }
 
 }

@@ -11,12 +11,11 @@ import java_cup.runtime.*;
 import core.*;
 
 class Parser;
-// parser code {:
-//     private Scanner scanner;
-//     public Parser(Scanner scanner) { 
-//         this.scanner = scanner;
-//     }
-// :}
+parser code {:
+    Chadpp tree;
+
+    public Chadpp getTree(){ return tree; }
+:}
 
 
 /**
@@ -24,41 +23,121 @@ class Parser;
 scan with {:     next_token(); :}
 **/
 
-terminal       BEGIN, MAIN, ALPHA, CONST, RETURN, INT, VBOL, TUP, VOID,
-               IF, WHILE, LOOP, AND, OR, NOT, PLUS, MINUS, MULT,
-               DIV, OUT, ININT, INBOL, EQUAL, SEMICOLON, COMMA,LPAREN,
-               RPAREN, LKEY, RKEY, LSKEY, LRKEY ;
+terminal        BEGIN, MAIN, ALPHA, CONST, RETURN, INT, BOL, TUP, VOID,
+                IF, WHILE, LOOP, AND, OR, PLUS, MINUS, MULT,
+                DIV, OUT, ININT, INBOL, EQUAL, REQUAL, LT, GT,
+                SEMICOLON, COMMA, LPAREN, RPAREN, LKEY, RKEY, LSKEY,
+                RSKEY ;
 
-terminal       String    NUMBER;
-terminal       String    ID;
-terminal       String    BOL;
+terminal        String      NUMBER;
+terminal        String      ID;
+terminal        String      VBOL;
 
-non terminal   Chadpp    CHADPP;
-non terminal   Main      MAINFN;
+non terminal    Chadpp      CHADPP;
+non terminal    Main        MAINFN;
+non terminal    L_Decls     DECLS;
+non terminal    Decl        DECL;
+non terminal    TypeVar     TYPEVAR;
+non terminal    Asignation  ASIGNATION;
+non terminal    Expresion   EXPRESION;
+non terminal    Op          OP;
+non terminal    Value       VALUE;
+non terminal    Tuple       V_TUP;
+non terminal    A_Tuple     A_TUP;
+non terminal    CallFn      CALLF;
+non terminal    L_Args      ARGS;
+non terminal    L_Instrs    INSTRS;
+non terminal    Instr       INSTR;
+non terminal    L_FArgs     F_ARGS;
+non terminal    L_FArgs     F_ARGS2;
+non terminal    Functions   FUNCTIONS;
+non terminal    Function    FUNCTION;
 
 start with CHADPP;
 
-CHADPP ::= MAINFN FUNTIONS;
+CHADPP          ::= MAINFN FUNCTIONS;
 
-MAINFN ::= MAIN LKEY EXTRAD INSTRUCTIONS RKEY;
+MAINFN          ::= MAIN LKEY DECLS INSTRS RKEY ;
 
-EXTRAD ::= DECLS BEGIN;
+DECLS           ::= DECL DECLS BEGIN
+                |
+                ;
 
-DECLS  ::= DECL DECLS
-INSTRUCTIONS ::= ;
+DECL            ::= CONST TYPEVAR ASIGNATION
+                |   TYPEVAR ASIGNATION
+                ;
 
+TYPEVAR         ::= INT
+                |   BOL
+                |   TUP
+                ;
 
-//E ::=  E:v1 ADD T:v2  {: RESULT = v1 + v2; :}
-     //| E:v1 SUB T:v2  {: RESULT = v1 - v2; :}
-     //| T:v            {: RESULT = v; :}
-     //;
-//
-//T ::=  T:v1 MUL F:v2    {: RESULT = v1 * v2; :}
-     //| T:v1 DIV F:v2    {: RESULT = v1 / v2; :}
-     //| T:v1 MOD F:v2    {: RESULT = v1 % v2; :}
-     //| F:v              {: RESULT = v; :}
-     //;
-//
-//F ::= LPAREN E:v RPAREN  {: RESULT = v; :}
-     //| NUMBER:v          {: RESULT = Integer.parseInt(v); :}
-     //;
+ASIGNATION      ::= ID EQUAL EXPRESION SEMICOLON;
+
+EXPRESION       ::= VALUE OP EXPRESION
+                |   VALUE
+                ;
+
+OP              ::= PLUS
+                |   MINUS
+                |   MULT
+                |   DIV
+                |   REQUAL
+                |   LT
+                |   GT
+                |   AND
+                |   OR
+//                |   NOT
+                ;
+
+VALUE           ::= LPAREN EXPRESION RPAREN // (E)
+                |   V_TUP                   // [a,b,c]
+                |   A_TUP                   // v[5]
+                |   NUMBER                  // 1
+                |   VBOL                    // true
+                |   CALLF                   // fn()
+                |   ID                      // a
+                ;
+
+V_TUP           ::= LSKEY ARGS RSKEY; // No se permite []. Al menos debe tener un elemento i.e [A]
+
+A_TUP           ::= ID LSKEY NUMBER RSKEY;
+
+CALLF           ::= ID LPAREN ARGS RPAREN
+                |   ID LPAREN RPAREN
+                |   ININT LPAREN RPAREN
+                |   INBOL LPAREN RPAREN
+                ;
+
+ARGS            ::= EXPRESION COMMA ARGS
+                |   EXPRESION
+                ;
+
+INSTRS          ::= INSTR INSTRS
+                |
+                ;
+
+INSTR           ::= IF LPAREN EXPRESION RPAREN LKEY INSTRS RKEY
+                |   WHILE LPAREN EXPRESION RPAREN LKEY INSTRS RKEY
+                |   LOOP LPAREN EXPRESION COMMA EXPRESION RPAREN LKEY INSTRS RKEY
+                |   RETURN EXPRESION SEMICOLON
+                |   OUT LPAREN EXPRESION RPAREN SEMICOLON
+                |   ASIGNATION
+                |   CALLF SEMICOLON
+                ;
+
+FUNCTIONS        ::= FUNCTION FUNCTIONS
+                |
+                ;
+
+FUNCTION         ::= TYPEVAR ALPHA ID LPAREN F_ARGS RPAREN LKEY DECLS INSTRS RKEY
+                |   VOID ALPHA ID LPAREN F_ARGS RPAREN LKEY DECLS INSTRS RKEY
+                ;
+
+F_ARGS          ::= F_ARGS2
+                |
+                ;
+
+F_ARGS2        ::= TYPEVAR ID COMMA F_ARGS
+                |   TYPEVAR ID
+                ;

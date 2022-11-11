@@ -1,68 +1,38 @@
 package core;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 public class Main {
-
-    private List<Declaration> listOfDeclaraions;
-    private List<Instruction> lisfOfInstructions;
+    private L_Decls nextDecl;
+    private L_Instrs nextInstr;
 
     public Main() {
-        this.listOfDeclaraions = new ArrayList<Declaration>();
-        this.lisfOfInstructions = new ArrayList<Instruction>();
+        this.nextDecl = null;
+        this.nextInstr = null;
     }
 
-    public Main(List<Declaration> listOfDeclaraions, List<Instruction> lisfOfInstructions) {
-        this.listOfDeclaraions = listOfDeclaraions;
-        this.lisfOfInstructions = lisfOfInstructions;
+    public Main(L_Decls nextDecl, L_Instrs nextInstr) {
+        this.nextDecl = nextDecl;
+        this.nextInstr = nextInstr;
     }
 
-    public List<Declaration> getListOfDeclaraions() {
-        return this.listOfDeclaraions;
+    public L_Decls getNextDecl() {
+        return nextDecl;
     }
 
-    public void setListOfDeclaraions(List<Declaration> listOfDeclaraions) {
-        this.listOfDeclaraions = listOfDeclaraions;
+    public void setNextDecl(L_Decls nextDecl) {
+        this.nextDecl = nextDecl;
     }
 
-    public List<Instruction> getLisfOfInstructions() {
-        return this.lisfOfInstructions;
+    public L_Instrs getNextInstr() {
+        return nextInstr;
     }
 
-    public void setLisfOfInstructions(List<Instruction> lisfOfInstructions) {
-        this.lisfOfInstructions = lisfOfInstructions;
-    }
-
-    public void addDeclaration(Declaration declaration) {
-        this.listOfDeclaraions.add(declaration);
-    }
-
-    public void addInstruction(Instruction instruction) {
-        this.lisfOfInstructions.add(instruction);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof Main)) {
-            return false;
-        }
-        Main main = (Main) o;
-        return Objects.equals(listOfDeclaraions, main.listOfDeclaraions)
-                && Objects.equals(lisfOfInstructions, main.lisfOfInstructions);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(listOfDeclaraions, lisfOfInstructions);
+    public void setNextInstr(L_Instrs nextInstr) {
+        this.nextInstr = nextInstr;
     }
 
     @Override
     public String toString() {
-        return "Main [listOfDeclaraions=" + listOfDeclaraions + ", lisfOfInstructions=" + lisfOfInstructions + "]";
+        return "Main [nextDecl=" + nextDecl + ", nextInstr=" + nextInstr + "]";
     }
 
 }
