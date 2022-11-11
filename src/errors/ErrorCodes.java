@@ -17,5 +17,6 @@ public class ErrorCodes {
     public static final int INVALID_FILE_EXTENSION = 1;
     public static final int INVALID_FILE = 2;
     public static final int INVALID_TOKEN = 3;
+    public static final int PARSER_ERROR = 4;
 
 }

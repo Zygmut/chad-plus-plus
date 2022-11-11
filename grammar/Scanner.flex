@@ -13,16 +13,19 @@ import java_cup.runtime.*;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import errors.ErrorHandler;
 import errors.ErrorCodes;
-import utils.Env;
+import utils.Phase;
 
 import grammar.ParserSym;
 
 %%
 
 %cup
-
 %public
 %class Scanner
+
+%integer
+%line
+%column
 
 %eofval{
   return symbol(ParserSym.EOF);
@@ -32,8 +35,7 @@ import grammar.ParserSym;
 ID            = [a-zA-Z][a-zA-Z_0-9]*
 NUMBER        = 0 | [\+\-]?[1-9][0-9]*
 // STRING_LIT    = \" .*? \"               // Optional
-COMMENT       = "/*" .*? "*/"
-LINE_COMMENT  = "//" ~[\r\n]*
+COMMENT       = "$" .*? "$"
 WS            = [ \t]+
 ENDLINE       = [\r\n]+
 
@@ -51,6 +53,14 @@ ENDLINE       = [\r\n]+
      */
     private ComplexSymbol symbol(int type, Object value) {
         return new ComplexSymbol(ParserSym.terminalNames[type], type, value);
+    }
+
+    private void error(int line){
+        System.out.println("token " + yytext());
+        System.out.println("line number " + line);
+        System.out.println("column number " + yycolumn);
+        ErrorHandler.addError(ErrorCodes.INVALID_TOKEN, yyline, yycolumn, Phase.LEXICAL_PHASE);
+
     }
 %}
 
@@ -119,7 +129,6 @@ ENDLINE       = [\r\n]+
 
 {WS}            {                                                 }
 {COMMENT}       {                                                 }
-{LINE_COMMENT}  {                                                 }
-{ENDLINE}       { return symbol(ParserSym.EOF);                   }
+{ENDLINE}       {                                                 }
 
-[^]             { ErrorHandler.addError(ErrorCodes.INVALID_TOKEN, yyline, yycolumn, Env.LEXICAL_PHASE);                }
+[^]             { error(yyline);                }

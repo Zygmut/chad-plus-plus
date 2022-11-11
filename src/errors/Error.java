@@ -1,7 +1,6 @@
 package errors;
 
 import utils.ConsoleColor;
-import utils.Env;
 import utils.Phase;
 
 /**
@@ -103,6 +102,9 @@ public class Error {
                 break;
             case ErrorCodes.INVALID_TOKEN:
                 this.message = "Invalid Token.";
+                break;
+            case ErrorCodes.PARSER_ERROR:
+                this.message = "Parser error.";
                 break;
             default:
                 this.message = "Error code not found, invalid error code.";

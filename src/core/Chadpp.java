@@ -15,6 +15,11 @@ public class Chadpp {
         this.nextFn = functions;
     }
 
+    public void setRoot(Main main, L_Fn functions) {
+        this.main = main;
+        this.nextFn = functions;
+    }
+
     public L_Fn getNextFn() {
         return nextFn;
     }
