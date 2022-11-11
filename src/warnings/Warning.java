@@ -2,6 +2,7 @@ package warnings;
 
 import utils.ConsoleColor;
 import utils.Env;
+import utils.Phase;
 
 public class Warning {
 
@@ -10,16 +11,16 @@ public class Warning {
     private int code;
     private int line;
     private int charloc;
-    private int phase;
+    private Phase phase;
 
-    public Warning(int code, int line, int phase) {
+    public Warning(int code, int line, Phase phase) {
         this.code = code;
         this.line = line;
         this.charloc = -1;
         this.phase = phase;
     }
 
-    public Warning(int code, int line, int charloc, int phase) {
+    public Warning(int code, int line, int charloc, Phase phase) {
         this.code = code;
         this.line = line;
         this.charloc = charloc;
@@ -52,15 +53,15 @@ public class Warning {
      */
     private String getPhase() {
         switch (this.phase) {
-            case Env.PRE_COMPILER_PHASE:
+            case PRE_COMPILER_PHASE:
                 return "sanity check";
-            case Env.LEXICAL_PHASE:
+            case LEXICAL_PHASE:
                 return "lexical";
-            case Env.SYNTACTIC_PHASE:
+            case SYNTACTIC_PHASE:
                 return "syntactic";
-            case Env.SEMANTIC_PHASE:
+            case SEMANTIC_PHASE:
                 return "semantic";
-            case Env.CODE_GENERATION_PHASE:
+            case CODE_GENERATION_PHASE:
                 return "code generation";
             default:
                 return "the phase set is not valid";

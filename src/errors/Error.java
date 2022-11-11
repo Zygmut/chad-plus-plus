@@ -2,6 +2,7 @@ package errors;
 
 import utils.ConsoleColor;
 import utils.Env;
+import utils.Phase;
 
 /**
  * Error - Clase con los metadatos de un error
@@ -23,16 +24,16 @@ public class Error {
     // Character
     private int charloc;
     // Phase of the compiler
-    private int phase;
+    private Phase phase;
 
-    public Error(int code, int line, int phase) {
+    public Error(int code, int line, Phase phase) {
         this.code = code;
         this.line = line;
         this.charloc = -1;
         this.phase = phase;
     }
 
-    public Error(int code, int line, int charloc, int phase) {
+    public Error(int code, int line, int charloc, Phase phase) {
         this.code = code;
         this.line = line;
         this.charloc = charloc;
@@ -65,20 +66,20 @@ public class Error {
     }
 
     /**
-     * 
+     *
      * @return the phase of the error
      */
     private String getPhase() {
         switch (this.phase) {
-            case Env.PRE_COMPILER_PHASE:
+            case PRE_COMPILER_PHASE:
                 return "sanity check";
-            case Env.LEXICAL_PHASE:
+            case LEXICAL_PHASE:
                 return "lexical";
-            case Env.SYNTACTIC_PHASE:
+            case SYNTACTIC_PHASE:
                 return "syntactic";
-            case Env.SEMANTIC_PHASE:
+            case SEMANTIC_PHASE:
                 return "semantic";
-            case Env.CODE_GENERATION_PHASE:
+            case CODE_GENERATION_PHASE:
                 return "code generation";
             default:
                 return "the phase set is not valid";
