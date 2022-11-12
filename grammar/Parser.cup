@@ -55,7 +55,7 @@ non terminal    Function    FUNCTION;
 
 start with CHADPP;
 
-CHADPP          ::= MAINFN FUNCTIONS {: tree = new Chadpp(); :};
+CHADPP          ::= MAINFN:main FUNCTIONS:l_i {: Chadpp progam = new Chadpp(main, l_i); :};
 
 MAINFN          ::= MAIN LKEY DECLS BEGIN INSTRS RKEY
                 |   MAIN LKEY INSTRS RKEY
