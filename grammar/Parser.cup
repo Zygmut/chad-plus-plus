@@ -50,56 +50,62 @@ non terminal    L_Instrs    INSTRS;
 non terminal    Instr       INSTR;
 non terminal    L_FArgs     F_ARGS;
 non terminal    L_FArgs     F_ARGS2;
-non terminal    Functions   FUNCTIONS;
+non terminal    L_Function  FUNCTIONS;
 non terminal    Function    FUNCTION;
+non terminal    L_Ids       LID;
 
 start with CHADPP;
 
-CHADPP          ::= MAINFN:main FUNCTIONS:l_i {: Chadpp progam = new Chadpp(main, l_i); :};
+CHADPP          ::= MAINFN:main FUNCTIONS:fun                   {: tree = new Chadpp(main, fun); :}
+                ;
 
-MAINFN          ::= MAIN LKEY DECLS BEGIN INSTRS RKEY
-                |   MAIN LKEY INSTRS RKEY
+MAINFN          ::= MAIN LKEY DECLS:decls BEGIN INSTRS:i RKEY   {: RESULT = new Main(decls, i); :}
+                |   MAIN LKEY INSTRS:i RKEY                     {: RESULT = new Main(null, i); :}
                 ;
 
 
-DECLS           ::= DECL DECLS
-                |
+DECLS           ::= DECL:d DECLS:ld                             {: RESULT = new L_Decls(d, ld); :}
+                | DECL:d                                        {: RESULT = new L_Decls(d); :}
                 ;
 
-DECL            ::= CONST TYPEVAR ASIGNATION
-                |   TYPEVAR ASIGNATION
+DECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {: RESULT = new Decl(true, type, assig); :}
+                |   TYPEVAR:type ASIGNATION:assig               {: RESULT = new Decl(false, type, assig); :}
                 ;
 
-TYPEVAR         ::= INT
-                |   BOL
-                |   TUP
+TYPEVAR         ::= INT                                         {: RESULT = TypeVar.INT; :}
+                |   BOL                                         {: RESULT = TypeVar.BOOL; :}
+                |   TUP                                         {: RESULT = TypeVar.TUP; :}
                 ;
 
-ASIGNATION      ::= ID EQUAL EXPRESION SEMICOLON;
+ASIGNATION      ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e); :};
 
-EXPRESION       ::= VALUE OP EXPRESION
-                |   VALUE
+LID             ::= ID:id COMMA LID:lid                         {: RESULT = new L_Ids(id, lid); :}
+                | ID:id                                         {: RESULT = new L_Ids(id); :}
                 ;
 
-OP              ::= PLUS
-                |   MINUS
-                |   MULT
-                |   DIV
-                |   REQUAL
-                |   LT
-                |   GT
-                |   AND
-                |   OR
+EXPRESION       ::= VALUE:v OP:op EXPRESION:e                   {: RESULT = new Expresion(v, e, op); :}
+                |   VALUE:v                                     {: RESULT = new Expresion(v); :}
+                ;
+
+OP              ::= PLUS                                        {: RESULT = Op.PLUS; :}
+                |   MINUS                                       {: RESULT = Op.MINUS; :}
+                |   MULT                                        {: RESULT = Op.MULT; :}
+                |   DIV                                         {: RESULT = Op.DIV; :}
+                |   REQUAL                                      {: RESULT = Op.REQUAL; :}
+                |   LT                                          {: RESULT = Op.LT; :}
+                |   GT                                          {: RESULT = Op.GT; :}
+                |   AND                                         {: RESULT = Op.AND; :}
+                |   OR                                          {: RESULT = Op.OR; :}
 //                |   NOT
                 ;
 
-VALUE           ::= LPAREN EXPRESION RPAREN // (E)
-                |   V_TUP                   // [a,b,c]
-                |   A_TUP                   // v[5]
-                |   NUMBER                  // 1
-                |   VBOL                    // true
-                |   CALLF                   // fn()
-                |   ID                      // a
+VALUE           ::= LPAREN EXPRESION:e RPAREN                   //{: RESULT = new Value(e); :}                // (E)
+                |   V_TUP                                                                                   // [a,b,c]
+                |   A_TUP                                                                                   // v[5]
+                |   NUMBER:n                                    {: RESULT = new Value("Number", n); :}      // 1
+                |   VBOL:b                                      {: RESULT = new Value("Bol", b); :}        // true
+                |   CALLF:call                                  //{: RESULT = new Value(call); :}             // fn()
+                |   ID:id                                       //{: RESULT = new Value("Id", id); :}         // a
                 ;
 
 V_TUP           ::= LSKEY ARGS RSKEY; // No se permite []. Al menos debe tener un elemento i.e [A]
