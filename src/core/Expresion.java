@@ -11,6 +11,12 @@ public class Expresion {
         this.op = op;
     }
 
+    public Expresion(Value value) {
+        this.value = value;
+        this.nextExpresion = null;
+        this.op = null;
+    }
+
     public Value getValue() {
         return value;
     }

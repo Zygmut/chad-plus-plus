@@ -37,7 +37,7 @@ public class L_Decls {
 
     @Override
     public String toString() {
-        return "L_Decls [nextDecl=" + nextDecl + ", decl=" + decl + "]";
+        return "L_Decls [decl=" + decl + ", nextDecl=" + nextDecl + "]";
     }
 
 }

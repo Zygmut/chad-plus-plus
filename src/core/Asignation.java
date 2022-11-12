@@ -2,20 +2,20 @@ package core;
 
 public class Asignation {
 
-    private String id;
+    private L_Ids lid;
     private Expresion expresion;
 
-    public Asignation(String id, Expresion expresion) {
-        this.id = id;
+    public Asignation(L_Ids id, Expresion expresion) {
+        this.lid = id;
         this.expresion = expresion;
     }
 
-    public String getId() {
-        return id;
+    public L_Ids getL_Ids() {
+        return lid;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setL_Ids(L_Ids lid) {
+        this.lid = lid;
     }
 
     public Expresion getExpresion() {
@@ -28,7 +28,7 @@ public class Asignation {
 
     @Override
     public String toString() {
-        return "Asignation [id=" + id + ", expresion=" + expresion + "]";
+        return "Asignation [L_Ids=" + lid + ", expresion=" + expresion + "]";
     }
 
 }

@@ -1,44 +1,36 @@
 package core;
 
+import java.util.HashMap;
+
 public class Chadpp {
 
-    private L_Fn nextFn;
+    HashMap<String, Object> hm = new HashMap<>();
+
+    private L_Function functions;
     private Main main;
 
     public Chadpp() {
         this.main = new Main();
-        this.nextFn = new L_Fn();
+        this.functions = new L_Function();
     }
 
-    public Chadpp(Main main, L_Fn functions) {
+    public Chadpp(Main main) {
         this.main = main;
-        this.nextFn = functions;
+        this.functions = null;
     }
 
-    public void setRoot(Main main, L_Fn functions) {
+    public Chadpp(Main main, L_Function functions) {
         this.main = main;
-        this.nextFn = functions;
+        this.functions = functions;
     }
 
-    public L_Fn getNextFn() {
-        return nextFn;
-    }
-
-    public void setNextFn(L_Fn nextFn) {
-        this.nextFn = nextFn;
-    }
-
-    public Main getMain() {
-        return main;
-    }
-
-    public void setMain(Main main) {
-        this.main = main;
+    public void exec() {
+        this.main.run(hm);
     }
 
     @Override
     public String toString() {
-        return "Chadpp [listOfFunctions=" + nextFn + ", main=" + main + "]";
+        return "Chadpp [listOfFunctions=" + functions + ", main=" + main + "]";
     }
 
 }

@@ -1,38 +1,29 @@
 package core;
 
+import java.util.HashMap;
+
 public class Main {
-    private L_Decls nextDecl;
-    private L_Instrs nextInstr;
+    private L_Decls listaDecl;
+    private L_Instrs listaInstr;
 
     public Main() {
-        this.nextDecl = null;
-        this.nextInstr = null;
+        this.listaDecl = null;
+        this.listaInstr = null;
     }
 
-    public Main(L_Decls nextDecl, L_Instrs nextInstr) {
-        this.nextDecl = nextDecl;
-        this.nextInstr = nextInstr;
+    public Main(L_Decls listaDecl, L_Instrs listaInstr) {
+        this.listaDecl = listaDecl;
+        this.listaInstr = listaInstr;
     }
 
-    public L_Decls getNextDecl() {
-        return nextDecl;
-    }
-
-    public void setNextDecl(L_Decls nextDecl) {
-        this.nextDecl = nextDecl;
-    }
-
-    public L_Instrs getNextInstr() {
-        return nextInstr;
-    }
-
-    public void setNextInstr(L_Instrs nextInstr) {
-        this.nextInstr = nextInstr;
+    public void run(HashMap<String, Object> hm) {
+        // listaDecl.run(hm);
+        listaInstr.run(hm);
     }
 
     @Override
     public String toString() {
-        return "Main [nextDecl=" + nextDecl + ", nextInstr=" + nextInstr + "]";
+        return "Main [nextDecl=" + listaDecl + ", nextInstr=" + listaInstr + "]";
     }
 
 }
