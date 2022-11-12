@@ -77,7 +77,10 @@ public class MainChpp {
         try {
             SymbolFactory sf = new ComplexSymbolFactory();
             Parser parser = new Parser(scanner, sf);
-            parser.parse();
+            Symbol s = parser.parse();
+            System.out.println(s.toString());
+            System.out.println(s.value.toString());
+
         } catch (Exception e) {
             ErrorHandler.printErrors();
             System.exit(0);
