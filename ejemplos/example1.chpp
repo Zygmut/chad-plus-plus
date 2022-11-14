@@ -8,8 +8,9 @@ main {
     
 }
 
+# Hola que tal
 $
-Este comentario no deberia salir
+ hola
 $
 
 bol alpha mayor5 (int n){
