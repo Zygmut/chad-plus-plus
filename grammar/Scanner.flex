@@ -35,7 +35,8 @@ import grammar.ParserSym;
 ID            = [a-zA-Z][a-zA-Z_0-9]*
 NUMBER        = 0 | [\+\-]?[1-9][0-9]*
 // STRING_LIT    = \" .*? \"               // Optional
-COMMENT       = "$" .*? "$"
+COMMENT       = "$" [^*] ~"$" | "$" "$"
+LINE_COMMENT  = "#" [^\r\n]* [\r|\n|\r\n]?
 WS            = [ \t]+
 ENDLINE       = [\r\n]+
 
@@ -127,6 +128,7 @@ ENDLINE       = [\r\n]+
 
 {WS}            {                                                }
 {COMMENT}       {                                                 }
+{LINE_COMMENT}  {                                                 }
 {ENDLINE}       {                                      }
 
 [^]             { error();                                        }
