@@ -53,7 +53,7 @@ public class Error {
 
             if (this.charloc != -1) {
                 sb.append(ConsoleColor.printColored(color, ":"));
-                sb.append(ConsoleColor.printColored(color, Integer.toString(line)));
+                sb.append(ConsoleColor.printColored(color, Integer.toString(charloc)));
 
             }
         }
