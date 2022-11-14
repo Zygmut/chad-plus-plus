@@ -18,7 +18,7 @@ public class Main {
 
     public void run(HashMap<String, Object> hm) {
         // listaDecl.run(hm);
-        listaInstr.run(hm);
+        // listaInstr.run(hm);
     }
 
     @Override

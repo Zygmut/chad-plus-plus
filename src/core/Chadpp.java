@@ -6,12 +6,12 @@ public class Chadpp {
 
     HashMap<String, Object> hm = new HashMap<>();
 
-    private L_Function functions;
+    private L_Fn functions;
     private Main main;
 
     public Chadpp() {
         this.main = new Main();
-        this.functions = new L_Function();
+        this.functions = null;
     }
 
     public Chadpp(Main main) {
@@ -19,7 +19,7 @@ public class Chadpp {
         this.functions = null;
     }
 
-    public Chadpp(Main main, L_Function functions) {
+    public Chadpp(Main main, L_Fn functions) {
         this.main = main;
         this.functions = functions;
     }

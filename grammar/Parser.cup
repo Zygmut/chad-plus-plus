@@ -50,7 +50,7 @@ non terminal    L_Instrs    INSTRS;
 non terminal    Instr       INSTR;
 non terminal    L_FArgs     F_ARGS;
 non terminal    L_FArgs     F_ARGS2;
-non terminal    L_Function  FUNCTIONS;
+non terminal    L_Fn        FUNCTIONS;
 non terminal    Function    FUNCTION;
 non terminal    L_Ids       LID;
 
@@ -99,31 +99,31 @@ OP              ::= PLUS                                        {: RESULT = Op.P
 //                |   NOT
                 ;
 
-VALUE           ::= LPAREN EXPRESION:e RPAREN                   //{: RESULT = new Value(e); :}                // (E)
+VALUE           ::= LPAREN EXPRESION:e RPAREN                   {: RESULT = new Value(e); :}                // (E)
                 |   V_TUP                                                                                   // [a,b,c]
                 |   A_TUP                                                                                   // v[5]
                 |   NUMBER:n                                    {: RESULT = new Value("Number", n); :}      // 1
                 |   VBOL:b                                      {: RESULT = new Value("Bol", b); :}        // true
-                |   CALLF:call                                  //{: RESULT = new Value(call); :}             // fn()
-                |   ID:id                                       //{: RESULT = new Value("Id", id); :}         // a
+                |   CALLF:call                                  {: RESULT = new Value(call); :}             // fn()
+                |   ININT LPAREN RPAREN                         {: RESULT = new Value (new Input(0)); :}
+                |   INBOL LPAREN RPAREN                         {: RESULT = new Value(new Input(1)); :}
+                |   ID:id                                       {: RESULT = new Value("Id", id); :}         // a
                 ;
 
 V_TUP           ::= LSKEY ARGS RSKEY; // No se permite []. Al menos debe tener un elemento i.e [A]
 
 A_TUP           ::= ID LSKEY NUMBER RSKEY;
 
-CALLF           ::= ID LPAREN ARGS RPAREN
-                |   ID LPAREN RPAREN
-                |   ININT LPAREN RPAREN
-                |   INBOL LPAREN RPAREN
+CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new CallFn(new Id(id), args); :}
+                |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id)); :}
                 ;
 
-ARGS            ::= EXPRESION COMMA ARGS
-                |   EXPRESION
+ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: RESULT = new L_Args(e, args); :}
+                |   EXPRESION:e                                 {: RESULT = new L_Args(e); :}
                 ;
 
-INSTRS          ::= INSTR INSTRS
-                |
+INSTRS          ::= INSTR:inst INSTRS:instrs                    {: RESULT = new L_Instrs(inst, instrs); :}
+                |                                               {: :}
                 ;
 
 INSTR           ::= IF LPAREN EXPRESION RPAREN LKEY INSTRS RKEY
@@ -135,20 +135,20 @@ INSTR           ::= IF LPAREN EXPRESION RPAREN LKEY INSTRS RKEY
                 |   CALLF SEMICOLON
                 ;
 
-FUNCTIONS        ::= FUNCTION FUNCTIONS
-                |
+FUNCTIONS        ::= FUNCTION:fn FUNCTIONS:fns                  {: RESULT = new L_Fn(fn, fns); :}
+                |                                               {: :}
                 ;
 
-FUNCTION         ::= TYPEVAR ALPHA ID LPAREN F_ARGS RPAREN LKEY DECLS BEGIN INSTRS RKEY
-                |   VOID ALPHA ID LPAREN F_ARGS RPAREN LKEY DECLS BEGIN INSTRS RKEY
-                |   TYPEVAR ALPHA ID LPAREN F_ARGS RPAREN LKEY INSTRS RKEY
-                |   VOID ALPHA ID LPAREN F_ARGS RPAREN LKEY INSTRS RKEY
+FUNCTION         ::= TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY
+                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY
+                |   TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY
+                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY
                 ;
 
-F_ARGS          ::= F_ARGS2
-                |
+F_ARGS          ::= F_ARGS2:args    //{: RESULT = new L_FArgs(args); :}
+                |                   {: :}
                 ;
 
-F_ARGS2        ::= TYPEVAR ID COMMA F_ARGS
-                |   TYPEVAR ID
+F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args
+                |   TYPEVAR:type ID:id
                 ;

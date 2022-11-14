@@ -8,6 +8,8 @@ public class Value {
     private Tuple tuple;
     private Id id;
     private CallFn callFn;
+    private A_Tuple aTuple;
+    private Input input;
 
     public Value(String instance, String value) {
         switch (instance) {
@@ -28,6 +30,16 @@ public class Value {
 
                 // return "not valid";
         }
+    }
+
+    public Value(A_Tuple aTuple) {
+        this.currentInstance = "A_Tuple";
+        this.aTuple = aTuple;
+    }
+
+    public Value(Input input) {
+        this.currentInstance = "Input";
+        this.input = input;
     }
 
     public Value(Expresion expresion) {
@@ -70,6 +82,10 @@ public class Value {
                 return "Value [id=" + id + "]";
             case "CallFn":
                 return "Value [callFn=" + callFn + "]";
+            case "A_Tuple":
+                return "Value [aTuple=" + aTuple + "]";
+            case "Input":
+                return "Value [input=" + input + "]";
             default:
                 return "not valid";
         }

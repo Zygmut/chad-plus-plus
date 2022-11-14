@@ -4,6 +4,10 @@ public class Number {
 
     private int value;
 
+    public Number(int value) {
+        this.value = value;
+    }
+
     public Number(String value) {
         this.value = Integer.parseInt(value);
     }
