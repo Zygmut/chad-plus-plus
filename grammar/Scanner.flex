@@ -41,6 +41,7 @@ ENDLINE       = [\r\n]+
 
 
 %{
+
     /*
      * Create ComplexSymbol without attribute
      */
@@ -55,11 +56,8 @@ ENDLINE       = [\r\n]+
         return new ComplexSymbol(ParserSym.terminalNames[type], type, value);
     }
 
-    private void error(int line){
-        System.out.println("token " + yytext());
-        System.out.println("line number " + line);
-        System.out.println("column number " + yycolumn);
-        ErrorHandler.addError(ErrorCodes.INVALID_TOKEN, yyline, yycolumn, Phase.LEXICAL_PHASE);
+    private void error(){
+        ErrorHandler.addError(ErrorCodes.INVALID_TOKEN, yyline+1, yycolumn, Phase.LEXICAL_PHASE);
 
     }
 %}
@@ -127,8 +125,8 @@ ENDLINE       = [\r\n]+
 {NUMBER}        { return symbol(ParserSym.NUMBER, this.yytext()); }
 {ID}            { return symbol(ParserSym.ID, this.yytext());     }
 
-{WS}            {                                                 }
+{WS}            {                                                }
 {COMMENT}       {                                                 }
-{ENDLINE}       {                                                 }
+{ENDLINE}       {                                      }
 
-[^]             { error(yyline);                }
+[^]             { error();                                        }

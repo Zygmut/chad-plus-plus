@@ -48,31 +48,20 @@ public class MainChpp {
 
         // Scanner
 
-        String fileContent = "";
+        FileReader input = null;
         try {
-            System.out.println(Env.FILE_DATA.getFilePath());
-            BufferedReader br = new BufferedReader(new FileReader(Env.FILE_DATA.getFilePath()));
-            String line = "";
-            while (true) {
-                line = br.readLine();
-                if (line == null) {
-                    break;
-                }
-                fileContent += line;
-            }
-            br.close();
+            input = new FileReader(Env.FILE_DATA.getFilePath());
         } catch (Exception e) {
             ErrorHandler.addError(ErrorCodes.FILE_NOT_FOUND, -1, Phase.PRE_COMPILER_PHASE);
+        }
+
+        Scanner scanner = new Scanner(input);
+
+        if (ErrorHandler.hasErrors()) {
+            ErrorHandler.printErrors();
             System.exit(0);
         }
 
-        Scanner scanner = new Scanner(new CharArrayReader(fileContent.toCharArray()));
-        /*
-         * if (ErrorHandler.hasErrors()) {
-         * ErrorHandler.printErrors();
-         * System.exit(0);
-         * }
-         */
         // Parser
         try {
             SymbolFactory sf = new ComplexSymbolFactory();
@@ -85,37 +74,14 @@ public class MainChpp {
             ErrorHandler.printErrors();
             System.exit(0);
         }
-        /*
-         * if (ErrorHandler.hasErrors()) {
-         * ErrorHandler.printErrors();
-         * System.exit(0);
-         * }
-         */
+
+        if (ErrorHandler.hasErrors()) {
+            ErrorHandler.printErrors();
+            System.exit(0);
+        }
+
         ErrorHandler.printErrors();
         WarningHandler.printWarnings();
-        /*
-         * Reader input;
-         * 
-         * try {
-         * if (args.length > 0) {
-         * input = new FileReader(args[0]);
-         * } else {
-         * System.out.println("Escriu l'expressió que vols calcular:");
-         * System.out.print(">>> ");
-         * BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-         * input = new CharArrayReader(in.readLine().toCharArray());
-         * }
-         * 
-         * SymbolFactory sf = new ComplexSymbolFactory();
-         * Scanner scanner = new Scanner(input);
-         * Parser parser = new Parser(scanner, sf);
-         * Symbol result = parser.parse();
-         * System.out.println("Resultat: " + result.value);
-         * System.out.println(parser.getTree());
-         * } catch (Exception e) {
-         * ErrorHandler.printErrors();
-         * }
-         */
 
     }
 
