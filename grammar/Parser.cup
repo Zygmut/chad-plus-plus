@@ -106,9 +106,10 @@ VALUE           ::= LPAREN EXPRESION:e RPAREN                   {: RESULT = new 
                 |   ID:id                                       {: RESULT = new Value("Id", id); :}         // a
                 ;
 
-V_TUP           ::= LSKEY ARGS RSKEY; // No se permite []. Al menos debe tener un elemento i.e [A]
+// No se permite []. Al menos debe tener un elemento i.e [A]
+V_TUP           ::= LSKEY ARGS:args RSKEY;                      {: RESULT = new Tuple(args); :}
 
-A_TUP           ::= ID LSKEY NUMBER RSKEY;
+A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY;               {: RESULT = new A_Tuple(id, num); :}
 
 CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new CallFn(new Id(id), args); :}
                 |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id)); :}
