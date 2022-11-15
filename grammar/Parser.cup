@@ -14,13 +14,8 @@ parser code {:
     Chadpp tree;
 
     public Chadpp getTree(){ return tree; }
+
 :}
-
-
-/**
- ** També aquí es poden afegir accions a realitzar quan es requereix un token.
-scan with {:     next_token(); :}
-**/
 
 terminal        BEGIN, MAIN, ALPHA, CONST, RETURN, INT, BOL, TUP, VOID,
                 IF, WHILE, LOOP, AND, OR, PLUS, MINUS, MULT,
@@ -37,7 +32,6 @@ non terminal    Main        MAINFN;
 non terminal    L_Decls     DECLS;
 non terminal    Decl        DECL;
 non terminal    TypeVar     TYPEVAR;
-non terminal    TypeFn      TYPEFN;
 non terminal    Asignation  ASIGNATION;
 non terminal    Expresion   EXPRESION;
 non terminal    Op          OP;
@@ -132,8 +126,15 @@ R_INSTRS        ::= R_INSTR:inst R_INSTRS:instrs                {: RESULT = new 
                 |                                               {: :}
                 ;
 
-R_INSTR         ::= INSTR:instr                                                                 {: RESULT = instr; :}
-                |   RETURN EXPRESION:e SEMICOLON                                                {: RESULT = new Instr(new ReturnNode(e)); :}
+R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                          {: RESULT = new Instr(new IfNode(e, instrs)); :}
+                |   WHILE LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                       {: RESULT = new Instr(new WhileNode(e, instrs)); :}
+                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY R_INSTRS:instrs RKEY    {: RESULT = new Instr(new LoopNode(e1, e2, instrs)); :}
+                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                         {: RESULT = new Instr(new Output(e)); :}
+                |   ININT LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(0)); :}
+                |   INBOL LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(1)); :}
+                |   ASIGNATION:a                                                                    {: RESULT = new Instr(a); :}
+                |   CALLF:fn SEMICOLON                                                              {: RESULT = new Instr(fn); :}
+                |   RETURN EXPRESION:e SEMICOLON                                                    {: RESULT = new Instr(new ReturnNode(e)); :}
                 ;
 
 INSTR           ::= IF LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                        {: RESULT = new Instr(new IfNode(e, instrs)); :}

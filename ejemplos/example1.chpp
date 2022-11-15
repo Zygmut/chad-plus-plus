@@ -5,7 +5,6 @@ main {
     BEGIN
     a = 1;
     test_global();
-    
 }
 
 # Hola que tal
@@ -18,7 +17,6 @@ bol alpha mayor5 (int n){
         return true;
     }
     return false;
-!!!!!
 }
 
 bol alpha mayor5_v2 (int n){
