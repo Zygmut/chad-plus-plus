@@ -69,20 +69,7 @@ public class Error {
      * @return the phase of the error
      */
     private String getPhase() {
-        switch (this.phase) {
-            case PRE_COMPILER_PHASE:
-                return "sanity check";
-            case LEXICAL_PHASE:
-                return "lexical";
-            case SYNTACTIC_PHASE:
-                return "syntactic";
-            case SEMANTIC_PHASE:
-                return "semantic";
-            case CODE_GENERATION_PHASE:
-                return "code generation";
-            default:
-                return "the phase set is not valid";
-        }
+        return this.phase.message;
     }
 
     /**
