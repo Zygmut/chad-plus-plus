@@ -8,19 +8,14 @@ import utils.Phase;
 import utils.Sanity;
 import warnings.WarningHandler;
 
-import java.io.CharArrayReader;
 import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.BufferedReader;
+
+import core.Chadpp;
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.Symbol;
 import java_cup.runtime.SymbolFactory;
 import grammar.Scanner;
 import grammar.Parser;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 /**
  * Main - Clase principal del programa
@@ -67,8 +62,8 @@ public class MainChpp {
             SymbolFactory sf = new ComplexSymbolFactory();
             Parser parser = new Parser(scanner, sf);
             Symbol s = parser.parse();
-            System.out.println(s.toString());
-            System.out.println(s.value.toString());
+            Chadpp tree = parser.getTree();
+            System.out.println(tree);
 
         } catch (Exception e) {
             ErrorHandler.printErrors();

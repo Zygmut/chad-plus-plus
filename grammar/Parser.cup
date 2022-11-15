@@ -7,7 +7,6 @@
 
 package grammar;
 
-import java_cup.runtime.*;
 import core.*;
 
 class Parser;
@@ -38,6 +37,7 @@ non terminal    Main        MAINFN;
 non terminal    L_Decls     DECLS;
 non terminal    Decl        DECL;
 non terminal    TypeVar     TYPEVAR;
+non terminal    TypeFn      TYPEFN;
 non terminal    Asignation  ASIGNATION;
 non terminal    Expresion   EXPRESION;
 non terminal    Op          OP;
@@ -77,6 +77,12 @@ TYPEVAR         ::= INT                                         {: RESULT = Type
                 |   TUP                                         {: RESULT = TypeVar.TUP; :}
                 ;
 
+TYPEFN          ::= VOID                                        {: RESULT = TypeFn.VOID; :}
+                |   INT                                         {: RESULT = TypeFn.BOOL; :}
+                |   BOL                                         {: RESULT = TypeFn.BOOL; :}
+                |   TUP                                         {: RESULT = TypeFn.TUP; :}
+                ;
+
 ASIGNATION      ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e); :};
 
 LID             ::= ID:id COMMA LID:lid                         {: RESULT = new L_Ids(id, lid); :}
@@ -105,7 +111,7 @@ VALUE           ::= LPAREN EXPRESION:e RPAREN                   {: RESULT = new 
                 |   NUMBER:n                                    {: RESULT = new Value("Number", n); :}      // 1
                 |   VBOL:b                                      {: RESULT = new Value("Bol", b); :}        // true
                 |   CALLF:call                                  {: RESULT = new Value(call); :}             // fn()
-                |   ININT LPAREN RPAREN                         {: RESULT = new Value (new Input(0)); :}
+                |   ININT LPAREN RPAREN                         {: RESULT = new Value(new Input(0)); :}
                 |   INBOL LPAREN RPAREN                         {: RESULT = new Value(new Input(1)); :}
                 |   ID:id                                       {: RESULT = new Value("Id", id); :}         // a
                 ;
@@ -126,29 +132,29 @@ INSTRS          ::= INSTR:inst INSTRS:instrs                    {: RESULT = new 
                 |                                               {: :}
                 ;
 
-INSTR           ::= IF LPAREN EXPRESION RPAREN LKEY INSTRS RKEY
-                |   WHILE LPAREN EXPRESION RPAREN LKEY INSTRS RKEY
-                |   LOOP LPAREN EXPRESION COMMA EXPRESION RPAREN LKEY INSTRS RKEY
-                |   RETURN EXPRESION SEMICOLON
-                |   OUT LPAREN EXPRESION RPAREN SEMICOLON
-                |   ASIGNATION
-                |   CALLF SEMICOLON
+INSTR           ::= IF LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                        {: RESULT = new Instr(new IfNode(e, instrs)); :}
+                |   WHILE LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                     {: RESULT = new Instr(new WhileNode(e, instrs)); :}
+                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY INSTRS:instrs RKEY  {: RESULT = new Instr(new LoopNode(e1, e2, instrs)); :}
+                |   RETURN EXPRESION:e SEMICOLON                                                {: RESULT = new Instr(new ReturnNode(e)); :}
+                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                     {: RESULT = new Instr(new Output(e)); :}
+                |   ININT LPAREN RPAREN SEMICOLON                                               {: RESULT = new Instr(new Input(0)); :}
+                |   INBOL LPAREN RPAREN SEMICOLON                                               {: RESULT = new Instr(new Input(1)); :}
+                |   ASIGNATION:a                                                                {: RESULT = new Instr(a); :}
+                |   CALLF:fn SEMICOLON                                                          {: RESULT = new Instr(fn); :}
                 ;
 
 FUNCTIONS        ::= FUNCTION:fn FUNCTIONS:fns                  {: RESULT = new L_Fn(fn, fns); :}
                 |                                               {: :}
                 ;
 
-FUNCTION         ::= TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY
-                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY
-                |   TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY
-                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY
+FUNCTION         ::= TYPEFN:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY  {: RESULT = new Function(t, new Id(id), args, decls,instrs); :}
+                |   TYPEFN:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                     {: RESULT = new Function(t, new Id(id), args, null, instrs); :}
                 ;
 
-F_ARGS          ::= F_ARGS2:args    //{: RESULT = new L_FArgs(args); :}
+F_ARGS          ::= F_ARGS2:args    {: RESULT = args; :}
                 |                   {: :}
                 ;
 
-F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args
-                |   TYPEVAR:type ID:id
+F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args    {: RESULT = new L_FArgs( new FnArg(type, new Id(id)), args); :}
+                |   TYPEVAR:type ID:id                      {: RESULT = new L_FArgs( new FnArg(type, new Id(id)), null); :}
                 ;

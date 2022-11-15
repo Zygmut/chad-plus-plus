@@ -1,0 +1,6 @@
+main{
+    test(a, b);
+}
+void alpha test(int a, int b){
+    return a;
+}
