@@ -3,6 +3,7 @@ package warnings;
 import java.util.ArrayList;
 
 import utils.Env;
+import utils.Phase;
 
 /**
  * WarningHandler - Clase para manejar los warnings de compilacion
@@ -32,10 +33,25 @@ public class WarningHandler {
      *
      * @param code
      * @param line
+     * @param phase
      */
-    public static void addWarning(int code, int line) {
+    public static void addWarning(int code, int line, Phase phase) {
         if (!Env.TEST_MODE) {
-            warnings.add(new Warning(code, line));
+            warnings.add(new Warning(code, line, phase));
+        }
+    }
+
+    /**
+     * Add a warning to the list of warnings
+     *
+     * @param code
+     * @param line
+     * @param charloc
+     * @param phase
+     */
+    public static void addWarning(int code, int line, int charloc, Phase phase) {
+        if (!Env.TEST_MODE) {
+            warnings.add(new Warning(code, line, charloc, phase));
         }
     }
 

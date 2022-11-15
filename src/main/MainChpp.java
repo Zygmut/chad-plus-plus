@@ -1,31 +1,21 @@
 package main;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import java.util.Arrays;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.gui.TreeViewer;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-
-import antlr.ChadppLexer;
-import antlr.ChadppParser;
-import errors.ErrorHandler;
 import errors.ErrorCodes;
+import errors.ErrorHandler;
 import tests.FileDataTests;
 import utils.Env;
+import utils.Phase;
 import utils.Sanity;
-import warnings.WarningCodes;
 import warnings.WarningHandler;
+
+import java.io.FileReader;
+
+import core.Chadpp;
+import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.Symbol;
+import java_cup.runtime.SymbolFactory;
+import grammar.Scanner;
+import grammar.Parser;
 
 /**
  * Main - Clase principal del programa
@@ -51,46 +41,43 @@ public class MainChpp {
             System.exit(0);
         }
 
+        // Scanner
+
+        FileReader input = null;
         try {
-            InputStream inputStream = new FileInputStream(Env.FILE_DATA.getFilePath());
-            Lexer lexer = new ChadppLexer(CharStreams.fromStream(inputStream));
-            TokenStream tokenStream = new CommonTokenStream(lexer);
-            ChadppParser parser = new ChadppParser(tokenStream);
-
-            if (Env.VISUALIZATION) {
-                guiTreeVisualization(parser);
-            } else {
-                /*
-                 * ChadppParser.ChadppContext chadppContext = parser.chadpp();
-                 * ChadppVisitor visitor = new ChadppVisitor();
-                 * visitor.visit(chadppContext);
-                 */
-                ChadppListener listener = new ChadppListener(parser);
-                listener.init();
-            }
-
-        } catch (IOException e) {
-            ErrorHandler.addError(ErrorCodes.ARGUMENT_FILE_NOT_FOUND, -1);
-            ErrorHandler.printErrors();
+            input = new FileReader(Env.FILE_DATA.getFilePath());
+        } catch (Exception e) {
+            ErrorHandler.addError(ErrorCodes.FILE_NOT_FOUND, -1, Phase.PRE_COMPILER_PHASE);
         }
 
+        Scanner scanner = new Scanner(input);
+
+        if (ErrorHandler.hasErrors()) {
+            ErrorHandler.printErrors();
+            System.exit(0);
+        }
+
+        // Parser
+        try {
+            SymbolFactory sf = new ComplexSymbolFactory();
+            Parser parser = new Parser(scanner, sf);
+            Symbol s = parser.parse();
+            // Chadpp tree = parser.getTree();
+            // System.out.println(tree);
+
+        } catch (Exception e) {
+            ErrorHandler.printErrors();
+            System.exit(0);
+        }
+
+        if (ErrorHandler.hasErrors()) {
+            ErrorHandler.printErrors();
+            System.exit(0);
+        }
+
+        ErrorHandler.printErrors();
         WarningHandler.printWarnings();
-    }
-
-    private static void guiTreeVisualization(ChadppParser parser) {
-        ParseTree tree = parser.chadpp();
-
-        JFrame frame = new JFrame("Antlr AST");
-        JPanel panel = new JPanel();
-        JScrollPane scrPane = new JScrollPane(panel);
-        TreeViewer viewer = new TreeViewer(Arrays.asList(
-                parser.getRuleNames()), tree);
-        viewer.setScale(1.5); // Scale a little
-        panel.add(viewer);
-        frame.add(scrPane);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
 
     }
+
 }

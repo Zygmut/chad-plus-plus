@@ -1,6 +1,16 @@
-int alpha hola (bol t, int c){
-    return t + c;
+main {
+    int a = 0;
+    int b = 0;
+    int c = 0;
+    BEGIN
+    a = 1;
+    test_global();
 }
+
+# Hola que tal
+$
+ hola
+$
 
 bol alpha mayor5 (int n){
     if (n > 5){
@@ -14,21 +24,9 @@ bol alpha mayor5_v2 (int n){
 }
 
 bol alpha mayor5_v3 (int n){
-    return !((n < 5) && (n == 5));
+    return ((n < 5) && (n == 5));
 }
 
-void alpha test_global (){
-    // Creara un reminder para el metodo main
+int alpha test_global (){
     return a;
 }
-
-main {
-    int a, b, c = 0;
-    BEGIN
-    hola(a, c);
-    a = 1;
-    test_global();
-    output("Valor de a: " , a , "\n Adios!");
-}
-/* al salir, main checkeara los reminders de todas las funciones y
- si tienen comprobara que esta declarada esa variable, sino revienta */

@@ -1,61 +1,36 @@
 package core;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.HashMap;
 
-/**
- * Chadpp
- */
 public class Chadpp {
 
-    private List<Function> listOfFunctions;
+    HashMap<String, Object> hm = new HashMap<>();
+
+    private L_Fn functions;
     private Main main;
 
     public Chadpp() {
-        this.listOfFunctions = new ArrayList<>();
         this.main = new Main();
+        this.functions = null;
     }
 
-    public List<Function> getListOfFunctions() {
-        return this.listOfFunctions;
-    }
-
-    public void setListOfFunctions(List<Function> listOfFunctions) {
-        this.listOfFunctions = listOfFunctions;
-    }
-
-    public Main getMain() {
-        return this.main;
-    }
-
-    public void setMain(Main main) {
+    public Chadpp(Main main) {
         this.main = main;
+        this.functions = null;
     }
 
-    public void addFunction(Function function) {
-        this.listOfFunctions.add(function);
+    public Chadpp(Main main, L_Fn functions) {
+        this.main = main;
+        this.functions = functions;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof Chadpp)) {
-            return false;
-        }
-        Chadpp chadpp = (Chadpp) o;
-        return Objects.equals(listOfFunctions, chadpp.listOfFunctions) && Objects.equals(main, chadpp.main);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(listOfFunctions, main);
+    public void exec() {
+        this.main.run(hm);
     }
 
     @Override
     public String toString() {
-        return "Chadpp [listOfFunctions=" + listOfFunctions + ", main=" + main + "]";
+        return "Chadpp [listOfFunctions=" + functions + ", main=" + main + "]";
     }
 
 }

@@ -3,6 +3,7 @@ package errors;
 import java.util.ArrayList;
 
 import utils.Env;
+import utils.Phase;
 
 /**
  * ErrorHandler - Clase para manejar los errores de compilacion
@@ -34,10 +35,30 @@ public class ErrorHandler {
      *
      * @param int line
      *
+     * @param int phase
+     *
      */
-    public static void addError(int code, int line) {
+    public static void addError(int code, int line, Phase phase) {
         if (!Env.TEST_MODE) {
-            errors.add(new Error(code, line));
+            errors.add(new Error(code, line, phase));
+        }
+    }
+
+    /*
+     * Add an error to the list of errors
+     *
+     * @param int code
+     *
+     * @param int line
+     *
+     * @param int charloc
+     * 
+     * @param int phase
+     *
+     */
+    public static void addError(int code, int line, int charloc, Phase phase) {
+        if (!Env.TEST_MODE) {
+            errors.add(new Error(code, line, charloc, phase));
         }
     }
 
