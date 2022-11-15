@@ -47,7 +47,9 @@ non terminal    A_Tuple     A_TUP;
 non terminal    CallFn      CALLF;
 non terminal    L_Args      ARGS;
 non terminal    L_Instrs    INSTRS;
+non terminal    L_Instrs    R_INSTRS;
 non terminal    Instr       INSTR;
+non terminal    Instr       R_INSTR;
 non terminal    L_FArgs     F_ARGS;
 non terminal    L_FArgs     F_ARGS2;
 non terminal    L_Fn        FUNCTIONS;
@@ -75,12 +77,6 @@ DECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {: RESULT = new 
 TYPEVAR         ::= INT                                         {: RESULT = TypeVar.INT; :}
                 |   BOL                                         {: RESULT = TypeVar.BOOL; :}
                 |   TUP                                         {: RESULT = TypeVar.TUP; :}
-                ;
-
-TYPEFN          ::= VOID                                        {: RESULT = TypeFn.VOID; :}
-                |   INT                                         {: RESULT = TypeFn.BOOL; :}
-                |   BOL                                         {: RESULT = TypeFn.BOOL; :}
-                |   TUP                                         {: RESULT = TypeFn.TUP; :}
                 ;
 
 ASIGNATION      ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e); :};
@@ -132,10 +128,17 @@ INSTRS          ::= INSTR:inst INSTRS:instrs                    {: RESULT = new 
                 |                                               {: :}
                 ;
 
+R_INSTRS        ::= R_INSTR:inst R_INSTRS:instrs                {: RESULT = new L_Instrs(inst, instrs); :}
+                |                                               {: :}
+                ;
+
+R_INSTR         ::= INSTR:instr                                                                 {: RESULT = instr; :}
+                |   RETURN EXPRESION:e SEMICOLON                                                {: RESULT = new Instr(new ReturnNode(e)); :}
+                ;
+
 INSTR           ::= IF LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                        {: RESULT = new Instr(new IfNode(e, instrs)); :}
                 |   WHILE LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                     {: RESULT = new Instr(new WhileNode(e, instrs)); :}
                 |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY INSTRS:instrs RKEY  {: RESULT = new Instr(new LoopNode(e1, e2, instrs)); :}
-                |   RETURN EXPRESION:e SEMICOLON                                                {: RESULT = new Instr(new ReturnNode(e)); :}
                 |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                     {: RESULT = new Instr(new Output(e)); :}
                 |   ININT LPAREN RPAREN SEMICOLON                                               {: RESULT = new Instr(new Input(0)); :}
                 |   INBOL LPAREN RPAREN SEMICOLON                                               {: RESULT = new Instr(new Input(1)); :}
@@ -147,8 +150,10 @@ FUNCTIONS        ::= FUNCTION:fn FUNCTIONS:fns                  {: RESULT = new 
                 |                                               {: :}
                 ;
 
-FUNCTION         ::= TYPEFN:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY  {: RESULT = new Function(t, new Id(id), args, decls,instrs); :}
-                |   TYPEFN:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                     {: RESULT = new Function(t, new Id(id), args, null, instrs); :}
+FUNCTION         ::= TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY    {: RESULT = new Function(t, new Id(id), args, decls,instrs); :}
+                |   TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: RESULT = new Function(t, new Id(id), args, null, instrs); :}
+                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: RESULT = new Function(null, new Id(id), args, null, instrs); :}
+                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                              {: RESULT = new Function(null, new Id(id), args, null, instrs); :}
                 ;
 
 F_ARGS          ::= F_ARGS2:args    {: RESULT = args; :}

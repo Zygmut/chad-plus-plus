@@ -1,13 +1,13 @@
 package core;
 
 public class Function {
-    private TypeFn returnType;
+    private TypeVar returnType;
     private Id id;
     private L_FArgs arguments;
     private L_Decls decls;
     private L_Instrs instrs;
 
-    public Function(TypeFn returnType, Id id, L_FArgs arguments, L_Decls decls, L_Instrs instrs) {
+    public Function(TypeVar returnType, Id id, L_FArgs arguments, L_Decls decls, L_Instrs instrs) {
         this.returnType = returnType;
         this.id = id;
         this.arguments = arguments;
@@ -15,11 +15,11 @@ public class Function {
         this.instrs = instrs;
     }
 
-    public TypeFn getReturnType() {
+    public TypeVar getReturnType() {
         return returnType;
     }
 
-    public void setReturnType(TypeFn returnType) {
+    public void setReturnType(TypeVar returnType) {
         this.returnType = returnType;
     }
 

@@ -62,8 +62,8 @@ public class MainChpp {
             SymbolFactory sf = new ComplexSymbolFactory();
             Parser parser = new Parser(scanner, sf);
             Symbol s = parser.parse();
-            Chadpp tree = parser.getTree();
-            System.out.println(tree);
+            // Chadpp tree = parser.getTree();
+            // System.out.println(tree);
 
         } catch (Exception e) {
             ErrorHandler.printErrors();

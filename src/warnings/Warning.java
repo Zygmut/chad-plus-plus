@@ -1,7 +1,6 @@
 package warnings;
 
 import utils.ConsoleColor;
-import utils.Env;
 import utils.Phase;
 
 public class Warning {
