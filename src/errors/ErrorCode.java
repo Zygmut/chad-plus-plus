@@ -14,9 +14,9 @@ package errors;
 public enum ErrorCode {
 
     CUSTOM(""),
-    FILE_NOT_FOUND("Invalid argument, couldn't find file."),
-    INVALID_FILE_EXTENSION("Invalid argument, invalid file extension."),
-    INVALID_FILE("Invalid argument, invalid file."),
+    FILE_NOT_FOUND("Couldn't find file."),
+    INVALID_FILE_EXTENSION("Invalid file extension."),
+    INVALID_FILE("Invalid file."),
     INVALID_TOKEN("Invalid Token."),
     PARSER_ERROR("Parser error.");
 
