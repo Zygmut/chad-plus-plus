@@ -11,8 +11,15 @@ package warnings;
  * Curs: 2022 - 2023
  *
  */
-public class WarningCodes {
-    public static final int UNUSED_VARIABLE = 0;
-    public static final int UNUSED_METHOD = 1;
-    public static final int INACCESIBLE_LINE = 2;
+public enum WarningCode {
+    CUSTOM(""),
+    UNUSED_VARIABLE("Unused variable."),
+    UNUSED_METHOD("Unused method."),
+    INACCESIBLE_LINE("Line cannot be accessed.");
+
+    public String message;
+
+    WarningCode(String message) {
+        this.message = message;
+    }
 }
