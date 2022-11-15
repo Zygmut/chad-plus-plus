@@ -1,6 +1,6 @@
 package utils;
 
-import errors.ErrorCodes;
+import errors.ErrorCode;
 import errors.ErrorHandler;
 
 public class FileData {
@@ -50,7 +50,7 @@ public class FileData {
             }
         }
 
-        ErrorHandler.addError(ErrorCodes.INVALID_FILE_EXTENSION, -1, Phase.PRE_COMPILER_PHASE);
+        ErrorHandler.addError(ErrorCode.INVALID_FILE_EXTENSION, -1, Phase.PRE_COMPILER_PHASE);
 
         return false;
     }
@@ -86,13 +86,13 @@ public class FileData {
         try {
             this.fileName = substring.split("[.]")[0];
         } catch (Exception e) {
-            ErrorHandler.addError(ErrorCodes.INVALID_FILE, -1, Phase.PRE_COMPILER_PHASE);
+            ErrorHandler.addError(ErrorCode.INVALID_FILE, -1, Phase.PRE_COMPILER_PHASE);
             this.fileName = "";
         }
         try {
             this.fileExtension = substring.split("[.]")[1];
         } catch (Exception e) {
-            ErrorHandler.addError(ErrorCodes.INVALID_FILE, -1, Phase.PRE_COMPILER_PHASE);
+            ErrorHandler.addError(ErrorCode.INVALID_FILE, -1, Phase.PRE_COMPILER_PHASE);
             this.fileExtension = "";
         }
 

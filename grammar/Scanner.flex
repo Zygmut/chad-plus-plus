@@ -12,7 +12,7 @@ import java.io.*;
 import java_cup.runtime.*;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import errors.ErrorHandler;
-import errors.ErrorCodes;
+import errors.ErrorCode;
 import utils.Phase;
 
 import grammar.ParserSym;
@@ -58,7 +58,7 @@ ENDLINE       = [\r\n]+
     }
 
     private void error(){
-        ErrorHandler.addError(ErrorCodes.INVALID_TOKEN, yyline+1, yycolumn, Phase.LEXICAL_PHASE);
+        ErrorHandler.addError(ErrorCode.INVALID_TOKEN, yyline+1, yycolumn, Phase.LEXICAL_PHASE);
 
     }
 %}

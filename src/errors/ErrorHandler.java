@@ -28,37 +28,45 @@ public class ErrorHandler {
         }
     }
 
-    /*
+    /**
      * Add an error to the list of errors
      *
-     * @param int code
-     *
-     * @param int line
-     *
-     * @param int phase
-     *
+     * @param code
+     * @param line
+     * @param phase
      */
-    public static void addError(int code, int line, Phase phase) {
+    public static void addError(ErrorCode code, int line, Phase phase) {
         if (!Env.TEST_MODE) {
             errors.add(new Error(code, line, phase));
         }
     }
 
-    /*
+    /**
      * Add an error to the list of errors
      *
-     * @param int code
-     *
-     * @param int line
-     *
-     * @param int charloc
-     * 
-     * @param int phase
-     *
+     * @param code
+     * @param line
+     * @param charloc
+     * @param phase
      */
-    public static void addError(int code, int line, int charloc, Phase phase) {
+    public static void addError(ErrorCode code, int line, int charloc, Phase phase) {
         if (!Env.TEST_MODE) {
             errors.add(new Error(code, line, charloc, phase));
+        }
+    }
+
+    /**
+     *
+     * Add an error to the list of errors
+     *
+     * @param message
+     * @param line
+     * @param charloc
+     * @param phase
+     */
+    public static void addError(String message, int line, int charloc, Phase phase) {
+        if (!Env.TEST_MODE) {
+            errors.add(new Error(message, line, charloc, phase));
         }
     }
 
