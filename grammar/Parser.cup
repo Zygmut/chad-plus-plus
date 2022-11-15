@@ -96,8 +96,8 @@ OP              ::= PLUS                                        {: RESULT = Op.P
                 ;
 
 VALUE           ::= LPAREN EXPRESION:e RPAREN                   {: RESULT = new Value(e); :}                // (E)
-                |   V_TUP                                                                                   // [a,b,c]
-                |   A_TUP                                                                                   // v[5]
+                |   V_TUP:v                                     {: RESULT = new Value(v); :}                                            // [a,b,c]
+                |   A_TUP:a                                     {: RESULT = new Value(a); :}                                            // v[5]
                 |   NUMBER:n                                    {: RESULT = new Value("Number", n); :}      // 1
                 |   VBOL:b                                      {: RESULT = new Value("Bol", b); :}        // true
                 |   CALLF:call                                  {: RESULT = new Value(call); :}             // fn()
@@ -107,9 +107,11 @@ VALUE           ::= LPAREN EXPRESION:e RPAREN                   {: RESULT = new 
                 ;
 
 // No se permite []. Al menos debe tener un elemento i.e [A]
-V_TUP           ::= LSKEY ARGS:args RSKEY;                      {: RESULT = new Tuple(args); :}
+V_TUP           ::= LSKEY ARGS:a RSKEY                          {: RESULT = new Tuple(a); :}
+                ;
 
-A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY;               {: RESULT = new A_Tuple(id, num); :}
+A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: RESULT = new A_Tuple(new Id(id), new core.Number(num)); :}
+                ;
 
 CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new CallFn(new Id(id), args); :}
                 |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id)); :}
