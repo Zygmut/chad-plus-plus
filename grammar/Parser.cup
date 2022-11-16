@@ -46,7 +46,7 @@ parser code {:
      */
     private String showExpectedTokenIds() {
         List<String> list = this.expected_token_ids().stream().map(this::symbl_name_from_id).toList();
-        return (list.size() > 0) ? list.toString() : "MAIN";
+        return (list.size() > 0) ? list.toString() : "something else";
     }
 
 :}
