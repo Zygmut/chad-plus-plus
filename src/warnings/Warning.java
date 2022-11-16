@@ -37,10 +37,11 @@ public class Warning {
     @Override
     public String toString() {
         setMessage();
-
         StringBuilder sb = new StringBuilder();
+
+        sb.append(ConsoleColor.printColored(color, this.getPhase().toUpperCase()));
+        sb.append(ConsoleColor.printColored(color, " "));
         sb.append(ConsoleColor.printColored(color, "WARNING"));
-        sb.append(ConsoleColor.printColored(color, " during the " + this.getPhase() + " phase of the compilation"));
         if (this.line != -1) {
             sb.append(ConsoleColor.printColored(color, " at line "));
             sb.append(ConsoleColor.printColored(color, Integer.toString(line)));
