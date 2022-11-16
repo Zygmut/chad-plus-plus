@@ -8,12 +8,31 @@
 package grammar;
 
 import core.*;
+import errors.ErrorHandler;
+import utils.Phase;
+import java.util.List;
 
 class Parser;
 parser code {:
     Chadpp tree;
 
     public Chadpp getTree(){ return tree; }
+
+
+    @Override
+    public void syntax_error(java_cup.runtime.Symbol cur_token) {
+        String message = "Got " + cur_token.toString().split(" ")[1] + " and expected " + this.showExpectedTokenIds();
+        ErrorHandler.addError(message, 1, 0, Phase.SYNTACTIC);
+    }
+    
+    @Override
+    public void report_fatal_error(String mensaje, Object info) {}
+
+    
+    private String showExpectedTokenIds() {
+        List<String> list = this.expected_token_ids().stream().map(this::symbl_name_from_id).toList();
+        return (list.size() > 0) ? list.toString() : "";
+    }
 
 :}
 

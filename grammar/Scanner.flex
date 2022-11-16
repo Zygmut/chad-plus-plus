@@ -58,7 +58,7 @@ ENDLINE       = [\r\n]+
     }
 
     private void error(){
-        ErrorHandler.addError(ErrorCode.INVALID_TOKEN, yyline+1, yycolumn, Phase.LEXICAL_PHASE);
+        ErrorHandler.addError(ErrorCode.INVALID_TOKEN, yyline+1, yycolumn, Phase.LEXICAL);
 
     }
 %}
