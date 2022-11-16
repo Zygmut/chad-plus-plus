@@ -47,19 +47,24 @@ ENDLINE       = [\r\n]+
      * Create ComplexSymbol without attribute
      */
     private ComplexSymbol symbol(int type) {
-        return new ComplexSymbol(ParserSym.terminalNames[type], type);
+        ComplexSymbol cs = new ComplexSymbol(ParserSym.terminalNames[type], type);
+        cs.left = yyline + 1;
+        cs.right = yycolumn;
+        return cs;
     }
 
     /*
      * Create ComplexSymbol with attribute
      */
     private ComplexSymbol symbol(int type, Object value) {
-        return new ComplexSymbol(ParserSym.terminalNames[type], type, value);
+        ComplexSymbol cs = new ComplexSymbol(ParserSym.terminalNames[type], type, value);
+        cs.left = yyline + 1;
+        cs.right = yycolumn;
+        return cs;
     }
 
     private void error(){
-        ErrorHandler.addError(ErrorCode.INVALID_TOKEN, yyline+1, yycolumn, Phase.LEXICAL);
-
+        ErrorHandler.addError(ErrorCode.INVALID_TOKEN, yyline + 1, yycolumn, Phase.LEXICAL);
     }
 %}
 

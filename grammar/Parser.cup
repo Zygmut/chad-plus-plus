@@ -19,16 +19,31 @@ parser code {:
     public Chadpp getTree(){ return tree; }
 
 
+    /**
+     * Adds a custom errror to the error handler
+     *
+     * @param cur_token
+     */
     @Override
     public void syntax_error(java_cup.runtime.Symbol cur_token) {
         String message = "Got " + cur_token.toString().split(" ")[1] + " and expected " + this.showExpectedTokenIds();
-        ErrorHandler.addError(message, 1, 0, Phase.SYNTACTIC);
+        ErrorHandler.addError(message, cur_token.left, -1, Phase.SYNTACTIC);
     }
-    
-    @Override
-    public void report_fatal_error(String mensaje, Object info) {}
 
-    
+    /**
+     * Ignore fatal errors
+     *
+     * @param message
+     * @param info
+     */
+    @Override
+    public void report_fatal_error(String message, Object info) {}
+
+    /**
+     *
+     *
+     * @return String with all the expected tokens for the current token
+     */
     private String showExpectedTokenIds() {
         List<String> list = this.expected_token_ids().stream().map(this::symbl_name_from_id).toList();
         return (list.size() > 0) ? list.toString() : "";
