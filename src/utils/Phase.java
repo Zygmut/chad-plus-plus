@@ -2,11 +2,11 @@ package utils;
 
 // Constantes para deteminar el que fase del programa se ha producido el error o
 public enum Phase {
-    PRE_COMPILER_PHASE("sanity checker"),
-    LEXICAL_PHASE("lexical"),
-    SYNTACTIC_PHASE("syntactic"),
-    SEMANTIC_PHASE("semantic"),
-    CODE_GENERATION_PHASE("code generation");
+    PRE_COMPILER("sanity checker"),
+    LEXICAL("lexical"),
+    SYNTACTIC("syntactic"),
+    SEMANTIC("semantic"),
+    CODE_GENERATION("code generation");
 
     public String message;
 

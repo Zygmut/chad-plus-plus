@@ -50,7 +50,7 @@ public class FileData {
             }
         }
 
-        ErrorHandler.addError(ErrorCode.INVALID_FILE_EXTENSION, -1, Phase.PRE_COMPILER_PHASE);
+        ErrorHandler.addError(ErrorCode.INVALID_FILE_EXTENSION, -1, Phase.PRE_COMPILER);
 
         return false;
     }
@@ -86,13 +86,13 @@ public class FileData {
         try {
             this.fileName = substring.split("[.]")[0];
         } catch (Exception e) {
-            ErrorHandler.addError(ErrorCode.INVALID_FILE, -1, Phase.PRE_COMPILER_PHASE);
+            ErrorHandler.addError(ErrorCode.INVALID_FILE, -1, Phase.PRE_COMPILER);
             this.fileName = "";
         }
         try {
             this.fileExtension = substring.split("[.]")[1];
         } catch (Exception e) {
-            ErrorHandler.addError(ErrorCode.INVALID_FILE, -1, Phase.PRE_COMPILER_PHASE);
+            ErrorHandler.addError(ErrorCode.INVALID_FILE, -1, Phase.PRE_COMPILER);
             this.fileExtension = "";
         }
 
