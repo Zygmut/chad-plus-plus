@@ -202,7 +202,7 @@ FUNCTIONS        ::= FUNCTION:fn FUNCTIONS:fns                  {: RESULT = new 
 
 FUNCTION         ::= TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY    {: RESULT = new Function(t, new Id(id), args, decls,instrs); :}
                 |   TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: RESULT = new Function(t, new Id(id), args, null, instrs); :}
-                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: RESULT = new Function(null, new Id(id), args, null, instrs); :}
+                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: RESULT = new Function(null, new Id(id), args, decls, instrs); :}
                 |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                              {: RESULT = new Function(null, new Id(id), args, null, instrs); :}
                 ;
 
