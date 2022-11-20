@@ -1,24 +1,40 @@
 package symbol_table;
 
+import java.util.HashMap;
+
 public class SymbolTable {
 
-    private int n;
-    // public scopeTable st;
-    // public expansionTable et;
-    // public descriptionTable dt;
+    private HashMap<String, Symbol> SymbolTable;
 
-    public void empty() {
+    public SymbolTable() {
+        this.SymbolTable = new HashMap<String, Symbol>();
     }
 
-    public void add(Symbol s) {
+    public void addSymbol(String name, Symbol type) {
+        this.SymbolTable.put(name, type);
     }
 
-    public void find() {
+    public void addSymbol(String name, String type, String value, String scope) {
+        this.SymbolTable.put(name, new Symbol(name, type, value, scope));
     }
 
-    public void enter() {
+    public void removeSymbol(String name) {
+        this.SymbolTable.remove(name);
     }
 
-    public void exit() {
+    public Symbol getSymbol(String name) {
+        return this.SymbolTable.get(name);
     }
+
+    public boolean containsSymbol(String name) {
+        return this.SymbolTable.containsKey(name);
+    }
+
+    @Override
+    public String toString() {
+        return "SymbolTable{" +
+                "SymbolTable=" + SymbolTable +
+                '}';
+    }
+
 }
