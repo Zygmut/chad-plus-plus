@@ -7,15 +7,11 @@ public class SymbolTable {
     private HashMap<String, Symbol> SymbolTable;
 
     public SymbolTable() {
-        this.SymbolTable = new HashMap<String, Symbol>();
+        this.SymbolTable = new HashMap<>();
     }
 
     public void addSymbol(String name, Symbol type) {
         this.SymbolTable.put(name, type);
-    }
-
-    public void addSymbol(String name, String type, String value, String scope) {
-        this.SymbolTable.put(name, new Symbol(name, type, value, scope));
     }
 
     public void removeSymbol(String name) {
