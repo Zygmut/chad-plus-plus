@@ -2,7 +2,7 @@
 
 ## Core Packet
 
-En el paquete Core se encuentran todas las clases necesarias para guardar los datos del `Scanner.Flex`
+En el paquete Core se encuentran todas las clases necesarias para guardar los datos del `Scanner.Flex`.
 El resultado es una secuencia de instrucciones básicas para poder reconocer las sentencias, construir su árbol y graficarlo.
 Para llamar a cualquiera de estas clases se hará mediante el paquete `package core`.
 
