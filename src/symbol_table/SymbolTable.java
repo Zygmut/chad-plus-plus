@@ -1,21 +1,20 @@
 package symbol_table;
 
 import java.util.HashMap;
-import java.util.ArrayList;
 
 public class SymbolTable {
 
     private HashMap<String, Symbol> SymbolTable;
-    private ArrayList<SymbolTable> children;
+    private SymbolTable parent;
 
     public SymbolTable() {
         this.SymbolTable = new HashMap<>();
-        this.children = null;
+        this.parent = null;
     }
 
-    public SymbolTable(HashMap<String, Symbol> symbolTable, ArrayList<SymbolTable> children) {
-        SymbolTable = symbolTable;
-        this.children = children;
+    public SymbolTable(SymbolTable parent) {
+        this.SymbolTable = new HashMap<>();
+        this.parent = parent;
     }
 
     public HashMap<String, Symbol> getSymbolTable() {
@@ -26,12 +25,12 @@ public class SymbolTable {
         SymbolTable = symbolTable;
     }
 
-    public ArrayList<SymbolTable> getChildren() {
-        return children;
+    public SymbolTable getParent() {
+        return parent;
     }
 
-    public void setChildren(ArrayList<SymbolTable> children) {
-        this.children = children;
+    public void setParent(SymbolTable parent) {
+        this.parent = parent;
     }
 
     public void addSymbol(String name, Symbol type) {
