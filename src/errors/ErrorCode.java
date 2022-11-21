@@ -18,7 +18,8 @@ public enum ErrorCode {
     INVALID_FILE_EXTENSION("Invalid file extension."),
     INVALID_FILE("Invalid file."),
     INVALID_TOKEN("Invalid Token."),
-    PARSER_ERROR("Parser error.");
+    PARSER_ERROR("Parser error."),
+    TUPLE_ASSIGNATION_TO_NON_TUPLE("Tuple assignation to non-tuple.");
 
     public String message;
 
