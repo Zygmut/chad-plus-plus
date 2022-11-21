@@ -1,12 +1,21 @@
 package symbol_table;
 
+import java.util.ArrayList;
+
+import errors.ErrorCode;
+import errors.ErrorHandler;
+import utils.Phase;
+
 public class Symbol {
 
-    private final String id;
+    private final String name;
     private final Type type;
     private final SubType subType;
-    private final String value;
-    private final String scope;
+    private final ArrayList<Object> value;
+    private int depth;
+    private final boolean isConstant;
+    private final boolean isInitialized;
+    private int line;
 
     public enum Type {
         FUNCTION,
@@ -21,43 +30,71 @@ public class Symbol {
         VOID,
     }
 
-    public Symbol(String id, Type type, SubType subType, String value, String scope) {
-        this.id = id;
+    public Symbol(String name, Type type, SubType subType,
+            int depth, boolean isConstant, boolean isInitialized, int line) {
+        this.name = name;
         this.type = type;
         this.subType = subType;
-        this.value = value;
-        this.scope = scope;
+        this.value = new ArrayList<>();
+        this.depth = depth;
+        this.isConstant = isConstant;
+        this.isInitialized = isInitialized;
+        this.line = line;
     }
 
-    public String getId() {
-        return id;
+    public String getName() {
+        return this.name;
     }
 
     public Type getType() {
-        return type;
+        return this.type;
     }
 
     public SubType getSubType() {
-        return subType;
+        return this.subType;
     }
 
-    public String getValue() {
-        return value;
+    public ArrayList<Object> getValue() {
+        return this.value;
     }
 
-    public String getScope() {
-        return scope;
+    public int getDepth() {
+        return this.depth;
+    }
+
+    public boolean getIsConstant() {
+        return this.isConstant;
+    }
+
+    public boolean isIsConstant() {
+        return this.isConstant;
+    }
+
+    public boolean getIsInitialized() {
+        return this.isInitialized;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+
+    public void setValue(Object value) {
+        if (this.subType != SubType.TUP && this.value.size() > 1) {
+            ErrorHandler.addError(ErrorCode.TUPLE_ASSIGNATION_TO_NON_TUPLE, this.line, Phase.SEMANTIC);
+        }
+        this.value.add(value);
     }
 
     @Override
     public String toString() {
         return "Symbol{" +
-                "id='" + id + '\'' +
+                "name='" + name + '\'' +
                 ", type=" + type +
                 ", subType=" + subType +
-                ", value='" + value + '\'' +
-                ", scope='" + scope + '\'' +
+                ", value=" + value +
+                ", depth=" + depth +
+                ", isConstant=" + isConstant +
+                ", isInitialized=" + isInitialized +
                 '}';
     }
-
 }
