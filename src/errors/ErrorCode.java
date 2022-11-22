@@ -19,7 +19,12 @@ public enum ErrorCode {
     INVALID_FILE("Invalid file."),
     INVALID_TOKEN("Invalid Token."),
     PARSER_ERROR("Parser error."),
-    TUPLE_ASSIGNATION_TO_NON_TUPLE("Tuple assignation to non-tuple.");
+    TUPLE_ASSIGNATION_TO_NON_TUPLE("Tuple assignation to non-tuple."),
+    UNDECLARED_IDENTIFIER("Undeclared identifier."),
+    INCOMPATIBLE_TYPES(
+            "Incompatible types. The return type of the function is not the same as the return type of the expression."),
+    INVALID_ASSIGNMENT("Invalid assignment."),
+    INVALID_RETURN("Invalid return.");
 
     public String message;
 
