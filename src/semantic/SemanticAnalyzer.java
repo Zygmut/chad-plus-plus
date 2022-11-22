@@ -6,8 +6,14 @@ import symbol_table.Symbol.Type;
 import symbol_table.Symbol.SubType;
 import utils.Phase;
 import errors.ErrorHandler;
+
+import java.util.ArrayList;
+
+import core.Expresion;
 import core.Instr;
+import core.L_Args;
 import core.ReturnNode;
+import core.Value;
 import errors.ErrorCode;
 
 public class SemanticAnalyzer {
@@ -23,9 +29,55 @@ public class SemanticAnalyzer {
         return false;
     }
 
-    public boolean checkFunctionDeclaration() {
-        // !TODO: Implement this method
-        return false;
+    public boolean checkFunctionDeclaration(String id, L_Args args, int line) {
+
+        Symbol symbol = this.symbolTable.getSymbol(id);
+        if (symbol == null) {
+            ErrorHandler.addError(ErrorCode.UNDECLARED_FUNCTION, line, Phase.SEMANTIC);
+            return false;
+        }
+
+        if (symbol.getType() != Type.FUNCTION) {
+            ErrorHandler.addError(ErrorCode.NOT_A_FUNCTION, line, Phase.SEMANTIC);
+            return false;
+        }
+
+        ArrayList<Object> values = symbol.getValue();
+        ArrayList<Expresion> argsList = new ArrayList<>();
+        int argsSize = 0;
+
+        while (args != null) {
+            argsSize++;
+            args = args.getNextArg();
+            argsList.add(args.getArg());
+        }
+
+        if (values.size() != argsSize) {
+            ErrorHandler.addError(ErrorCode.WRONG_NUMBER_OF_ARGUMENTS, line, Phase.SEMANTIC);
+            return false;
+        }
+
+        ArrayList<Value> valuesList = new ArrayList<>();
+        for (Expresion arg : argsList) {
+            Expresion exp = arg;
+            while (exp != null) {
+                valuesList.add(exp.getValue());
+                exp = exp.getNextExpresion();
+            }
+        }
+
+        // !TODO: Implement this part
+        // Hay que comprobar que los tipos de los argumentos de la llamada a la función
+        // son los mismos que los de la función
+        for (int i = 0; i < argsSize; i++) {
+            if (values.get(i) != argsList.get(i)) {
+                // ErrorHandler.addError(ErrorCode.WRONG_ARGUMENT_TYPE, line, Phase.SEMANTIC);
+                return false;
+            }
+        }
+        // Hasta aquí
+
+        return true;
     }
 
     public boolean checkExpression() {
