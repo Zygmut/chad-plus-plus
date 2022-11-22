@@ -2,6 +2,9 @@ package symbol_table;
 
 import java.util.HashMap;
 
+import symbol_table.Symbol.SubType;
+import symbol_table.Symbol.Type;
+
 public class SymbolTable {
 
     private HashMap<String, Symbol> SymbolTable;
@@ -33,8 +36,10 @@ public class SymbolTable {
         this.parent = parent;
     }
 
-    public void addSymbol(String name, Symbol type) {
-        this.SymbolTable.put(name, type);
+    public boolean addSymbol(String name, Type type, SubType subType,
+            int depth, boolean isConstant, boolean isInitialized, int line) {
+        // !TODO: Implement this method
+        return false;
     }
 
     public void removeSymbol(String name) {
