@@ -14,42 +14,42 @@ public class SemanticAnalyzer {
 
     public boolean checkVariableDeclaration() {
         // !TODO: Implement this method
-        return true;
+        return false;
     }
 
     public boolean checkFunctionDeclaration() {
         // !TODO: Implement this method
-        return true;
+        return false;
     }
 
     public boolean checkExpression() {
         // !TODO: Implement this method
-        return true;
+        return false;
     }
 
     public boolean checkAssignment() {
         // !TODO: Implement this method
-        return true;
+        return false;
     }
 
     public boolean checkReturn() {
         // !TODO: Implement this method
-        return true;
+        return false;
     }
 
     public boolean checkFunctionCall() {
         // !TODO: Implement this method
-        return true;
+        return false;
     }
 
     public boolean checkInstruction() {
         // !TODO: Implement this method
-        return true;
+        return false;
     }
 
     public boolean checkIdentifier() {
         // !TODO: Implement this method
-        return true;
+        return false;
     }
 
 }
