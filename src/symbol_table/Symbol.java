@@ -79,9 +79,6 @@ public class Symbol {
     }
 
     public void setValue(Object value) {
-        if (this.subType != SubType.TUP && this.value.size() > 1) {
-            ErrorHandler.addError(ErrorCode.TUPLE_ASSIGNATION_TO_NON_TUPLE, this.line, Phase.SEMANTIC);
-        }
         this.value.add(value);
     }
 
