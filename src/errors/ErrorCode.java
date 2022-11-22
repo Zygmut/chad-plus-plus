@@ -28,7 +28,9 @@ public enum ErrorCode {
     WRONG_NUMBER_OF_ARGUMENTS("Wrong number of arguments."),
     INVALID_FUNCTION_CALL("Invalid function call."),
     INVALID_EXPRESSION("Invalid expression."),
-    INVALID_INSTRUCTION("Invalid instruction.");
+    INVALID_INSTRUCTION("Invalid instruction."),
+    UNDECLARED_FUNCTION("Undeclared function."),
+    NOT_A_FUNCTION("A function was expected but a variable was found.");
 
     public String message;
 
