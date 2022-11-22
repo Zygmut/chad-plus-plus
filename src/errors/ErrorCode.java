@@ -24,7 +24,11 @@ public enum ErrorCode {
     INCOMPATIBLE_TYPES(
             "Incompatible types. The return type of the function is not the same as the return type of the expression."),
     INVALID_ASSIGNMENT("Invalid assignment."),
-    INVALID_RETURN("Invalid return.");
+    INVALID_RETURN("Invalid return."),
+    WRONG_NUMBER_OF_ARGUMENTS("Wrong number of arguments."),
+    INVALID_FUNCTION_CALL("Invalid function call."),
+    INVALID_EXPRESSION("Invalid expression."),
+    INVALID_INSTRUCTION("Invalid instruction.");
 
     public String message;
 
