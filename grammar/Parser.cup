@@ -11,13 +11,22 @@ import core.*;
 import errors.ErrorHandler;
 import utils.Phase;
 import java.util.List;
+import semantic.SemanticAnalyzer;
+import symbol_table.SymbolTable;
 
 class Parser;
 parser code {:
     Chadpp tree;
+    SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer();
+    SymbolTable symbolTable = new SymbolTable();
 
     public Chadpp getTree(){ return tree; }
+    public SemanticAnalyzer getSemanticAnalyzer(){ return semanticAnalyzer; }
 
+    private boolean addSymbol(String name, Type type, SubType subType,
+            int depth, boolean isConstant, boolean isInitialized, int line){
+        return symbolTable.addSymbol(name, type, subType, depth, isConstant, isInitialized, line);
+    } 
 
     /**
      * Override syntax error to use custom message and error handling
