@@ -29,8 +29,16 @@ public class SemanticAnalyzer {
         return false;
     }
 
+    /**
+     * Checks the use of a function
+     * 
+     * @param id
+     * @param args
+     * @param line
+     * 
+     * @return true if the function is valid, false otherwise
+     */
     public boolean checkFunctionDeclaration(String id, L_Args args, int line) {
-
         Symbol symbol = this.symbolTable.getSymbol(id);
         if (symbol == null) {
             ErrorHandler.addError(ErrorCode.UNDECLARED_FUNCTION, line, Phase.SEMANTIC);
