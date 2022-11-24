@@ -15,6 +15,7 @@ import semantic.SemanticAnalyzer;
 import symbol_table.SymbolTable;
 import symbol_table.Symbol.SubType;
 import symbol_table.Symbol.Type;
+import core.TypeVar;
 
 class Parser;
 parser code {:
@@ -25,7 +26,7 @@ parser code {:
     public Chadpp getTree(){ return tree; }
     public SemanticAnalyzer getSemanticAnalyzer(){ return semanticAnalyzer; }
 
-    private boolean addSymbol(String name, Type type, SubType subType,
+    private boolean addSymbol(String name, Type type, TypeVar subType,
             int depth, boolean isConstant, boolean isInitialized, int line){
         return symbolTable.addSymbol(name, type, subType, depth, isConstant, isInitialized, line);
     } 
@@ -167,11 +168,11 @@ VALUE           ::= LPAREN EXPRESION:e RPAREN                   {: RESULT = new 
 V_TUP           ::= LSKEY ARGS:a RSKEY                          {: RESULT = new Tuple(a); :}
                 ;
 
-A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: if(semanticAnalyzer.checkIdentifier(id, cur_token.left)){/*Verificar acceso tupla*/} RESULT = new A_Tuple(new Id(id), new core.Number(num)); :}
+A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: if(addSymbol(id, Type.PARAMETER, TypeVar.TUP, 0, false, true, cur_token.left)){/*Verificar acceso tupla*/} RESULT = new A_Tuple(new Id(id), new core.Number(num)); :}
                 ;
 
-CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: if(semanticAnalyzer.checkIdentifier(id, cur_token.left)){semanticAnalyzer.checkFunctionDeclaration(id, args, cur_token.left);} RESULT = new CallFn(new Id(id), args); :}
-                |   ID:id LPAREN RPAREN                         {: if(semanticAnalyzer.checkIdentifier(id, cur_token.left)){semanticAnalyzer.checkFunctionDeclaration(id, args, cur_token.left);} RESULT = new CallFn(new Id(id)); :}
+CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: if(addSymbol(id, Type.FUCNTION, ??, 0, false, false, cur_token.left)){semanticAnalyzer.checkFunctionDeclaration(id, args, cur_token.left);} RESULT = new CallFn(new Id(id), args); :}
+                |   ID:id LPAREN RPAREN                         {: if(addSymbol(id, Type.FUCNTION, null, 0, false, false, cur_token.left)){semanticAnalyzer.checkFunctionDeclaration(id, args, cur_token.left);} RESULT = new CallFn(new Id(id)); :}
                 ;
 
 ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: RESULT = new L_Args(e, args); :}
@@ -211,16 +212,16 @@ FUNCTIONS       ::= FUNCTION:fn FUNCTIONS:fns                  {: RESULT = new L
                 |                                               {: :}
                 ;
 
-FUNCTION        ::= TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY     {: if(semanticAnalyzer.checkIdentifier(id, cur_token.left)){/*Verificar función*/} RESULT = new Function(t, new Id(id), args, decls,instrs); :}
-                |   TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: if(semanticAnalyzer.checkIdentifier(id, cur_token.left)){/*Verificar función*/} RESULT = new Function(t, new Id(id), args, null, instrs); :}
-                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: if(semanticAnalyzer.checkIdentifier(id, cur_token.left)){/*Verificar función*/} RESULT = new Function(null, new Id(id), args, decls, instrs); :}
-                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                              {: if(semanticAnalyzer.checkIdentifier(id, cur_token.left)){/*Verificar función*/} RESULT = new Function(null, new Id(id), args, null, instrs); :}
+FUNCTION        ::= TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY     {: if(addSymbol(id, Type.FUCNTION, t, 0, false, true, cur_token.left)){/*Verificar función*/} RESULT = new Function(t, new Id(id), args, decls,instrs); :}
+                |   TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: if(addSymbol(id, Type.FUCNTION, t, 0, false, true, cur_token.left)){/*Verificar función*/} RESULT = new Function(t, new Id(id), args, null, instrs); :}
+                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: if(addSymbol(id, Type.FUCNTION, null, 0, false, true, cur_token.left)){/*Verificar función*/} RESULT = new Function(null, new Id(id), args, decls, instrs); :}
+                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                              {: if(addSymbol(id, Type.FUCNTION, null, 0, false, true, cur_token.left)){/*Verificar función*/} RESULT = new Function(null, new Id(id), args, null, instrs); :}
                 ;
 
 F_ARGS          ::= F_ARGS2:args    {: RESULT = args; :}
                 |                   {: :}
                 ;
 
-F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args    {: if(semanticAnalyzer.checkIdentifier(id, cur_token.left)){/*Verificar args función*/} RESULT = new L_FArgs( new FnArg(type, new Id(id)), args); :}
-                |  TYPEVAR:type ID:id                       {: if(semanticAnalyzer.checkIdentifier(id, cur_token.left)){/*Verificar args función*/} RESULT = new L_FArgs( new FnArg(type, new Id(id)), null); :}
+F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args    {: if(addSymbol(id, Type.PARAMETER, type, 0, false, true, cur_token.left)){/*Verificar args función*/} RESULT = new L_FArgs( new FnArg(type, new Id(id)), args); :}
+                |  TYPEVAR:type ID:id                       {: if(addSymbol(id, Type.PARAMETER, type, 0, false, true, cur_token.left)){/*Verificar args función*/} RESULT = new L_FArgs( new FnArg(type, new Id(id)), null); :}
                 ;
