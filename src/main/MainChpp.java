@@ -1,6 +1,6 @@
 package main;
 
-import errors.ErrorCodes;
+import errors.ErrorCode;
 import errors.ErrorHandler;
 import tests.FileDataTests;
 import utils.Env;
@@ -47,7 +47,7 @@ public class MainChpp {
         try {
             input = new FileReader(Env.FILE_DATA.getFilePath());
         } catch (Exception e) {
-            ErrorHandler.addError(ErrorCodes.FILE_NOT_FOUND, -1, Phase.PRE_COMPILER_PHASE);
+            ErrorHandler.addError(ErrorCode.FILE_NOT_FOUND, -1, Phase.PRE_COMPILER);
         }
 
         Scanner scanner = new Scanner(input);

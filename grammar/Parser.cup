@@ -8,12 +8,58 @@
 package grammar;
 
 import core.*;
+import errors.ErrorHandler;
+import utils.Phase;
+import java.util.List;
 
 class Parser;
 parser code {:
     Chadpp tree;
 
     public Chadpp getTree(){ return tree; }
+
+
+    /**
+     * Override syntax error to use custom message and error handling
+     *
+     * @param cur_token
+     */
+    @Override
+    public void syntax_error(java_cup.runtime.Symbol cur_token) {
+        String message = "Got " + cur_token.toString().split(" ")[1] + " and expected " + this.showExpectedTokenIds();
+        this.report_error(message, cur_token);
+    }
+
+
+    /**
+     * Use custom add error function
+     *
+     * @param message
+     * @param token
+     */
+    @Override
+    public void report_error(String message, Object token) {
+        ErrorHandler.addError(message, ((java_cup.runtime.Symbol) token).left, -1, Phase.SYNTACTIC);
+    }
+
+    /**
+     * Ignore fatal errors
+     *
+     * @param message
+     * @param info
+     */
+    @Override
+    public void report_fatal_error(String message, Object info) {}
+
+    /**
+     *
+     *
+     * @return String with all the expected tokens for the current token
+     */
+    private String showExpectedTokenIds() {
+        List<String> list = this.expected_token_ids().stream().map(this::symbl_name_from_id).toList();
+        return (list.size() > 0) ? list.toString() : "something else";
+    }
 
 :}
 
@@ -156,7 +202,7 @@ FUNCTIONS        ::= FUNCTION:fn FUNCTIONS:fns                  {: RESULT = new 
 
 FUNCTION         ::= TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY    {: RESULT = new Function(t, new Id(id), args, decls,instrs); :}
                 |   TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: RESULT = new Function(t, new Id(id), args, null, instrs); :}
-                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: RESULT = new Function(null, new Id(id), args, null, instrs); :}
+                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: RESULT = new Function(null, new Id(id), args, decls, instrs); :}
                 |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                              {: RESULT = new Function(null, new Id(id), args, null, instrs); :}
                 ;
 

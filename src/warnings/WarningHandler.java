@@ -35,7 +35,7 @@ public class WarningHandler {
      * @param line
      * @param phase
      */
-    public static void addWarning(int code, int line, Phase phase) {
+    public static void addWarning(WarningCode code, int line, Phase phase) {
         if (!Env.TEST_MODE) {
             warnings.add(new Warning(code, line, phase));
         }
@@ -49,9 +49,23 @@ public class WarningHandler {
      * @param charloc
      * @param phase
      */
-    public static void addWarning(int code, int line, int charloc, Phase phase) {
+    public static void addWarning(WarningCode code, int line, int charloc, Phase phase) {
         if (!Env.TEST_MODE) {
             warnings.add(new Warning(code, line, charloc, phase));
+        }
+    }
+
+    /**
+     * Add a warning to the list of warnings
+     *
+     * @param code
+     * @param line
+     * @param charloc
+     * @param phase
+     */
+    public static void addWarning(String message, int line, int charloc, Phase phase) {
+        if (!Env.TEST_MODE) {
+            warnings.add(new Warning(message, line, charloc, phase));
         }
     }
 

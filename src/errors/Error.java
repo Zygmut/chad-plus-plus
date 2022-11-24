@@ -17,7 +17,7 @@ public class Error {
     // Error message
     private String message;
     // Error code
-    private int code;
+    private ErrorCode code;
     // Error line
     private int line;
     // Character
@@ -25,15 +25,23 @@ public class Error {
     // Phase of the compiler
     private Phase phase;
 
-    public Error(int code, int line, Phase phase) {
+    public Error(ErrorCode code, int line, Phase phase) {
         this.code = code;
         this.line = line;
         this.charloc = -1;
         this.phase = phase;
     }
 
-    public Error(int code, int line, int charloc, Phase phase) {
+    public Error(ErrorCode code, int line, int charloc, Phase phase) {
         this.code = code;
+        this.line = line;
+        this.charloc = charloc;
+        this.phase = phase;
+    }
+
+    public Error(String message, int line, int charloc, Phase phase) {
+        this.code = ErrorCode.CUSTOM;
+        this.message = message;
         this.line = line;
         this.charloc = charloc;
         this.phase = phase;
@@ -44,10 +52,11 @@ public class Error {
         setMessage(); // Set the message based on the code
         StringBuilder sb = new StringBuilder();
 
+        sb.append(ConsoleColor.printColored(color, this.getPhase().toUpperCase()));
+        sb.append(ConsoleColor.printColored(color, " "));
         sb.append(ConsoleColor.printColored(color, "ERROR"));
         // CLI argument error
         if (this.line != -1) {
-            sb.append(ConsoleColor.printColored(color, " during the " + this.getPhase() + " phase of the compilation"));
             sb.append(ConsoleColor.printColored(color, " at line "));
             sb.append(ConsoleColor.printColored(color, Integer.toString(line)));
 
@@ -69,20 +78,7 @@ public class Error {
      * @return the phase of the error
      */
     private String getPhase() {
-        switch (this.phase) {
-            case PRE_COMPILER_PHASE:
-                return "sanity check";
-            case LEXICAL_PHASE:
-                return "lexical";
-            case SYNTACTIC_PHASE:
-                return "syntactic";
-            case SEMANTIC_PHASE:
-                return "semantic";
-            case CODE_GENERATION_PHASE:
-                return "code generation";
-            default:
-                return "the phase set is not valid";
-        }
+        return this.phase.message;
     }
 
     /**
@@ -90,25 +86,8 @@ public class Error {
      * the ErrorCodes class.
      */
     private void setMessage() {
-        switch (this.code) {
-            case ErrorCodes.FILE_NOT_FOUND:
-                this.message = "Invalid argument, couldn't find file.";
-                break;
-            case ErrorCodes.INVALID_FILE_EXTENSION:
-                this.message = "Invalid argument, invalid file extension.";
-                break;
-            case ErrorCodes.INVALID_FILE:
-                this.message = "Invalid argument, invalid file.";
-                break;
-            case ErrorCodes.INVALID_TOKEN:
-                this.message = "Invalid Token.";
-                break;
-            case ErrorCodes.PARSER_ERROR:
-                this.message = "Parser error.";
-                break;
-            default:
-                this.message = "Error code not found, invalid error code.";
-                break;
+        if (this.code != ErrorCode.CUSTOM) {
+            this.message = this.code.message;
         }
     }
 
