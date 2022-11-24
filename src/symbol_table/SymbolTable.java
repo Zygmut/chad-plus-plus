@@ -2,6 +2,8 @@ package symbol_table;
 
 import java.util.HashMap;
 
+import core.TypeFn;
+import core.TypeVar;
 import symbol_table.Symbol.SubType;
 import symbol_table.Symbol.Type;
 
@@ -36,7 +38,7 @@ public class SymbolTable {
         this.parent = parent;
     }
 
-    public boolean addSymbol(String name, Type type, SubType subType,
+    public boolean addSymbol(String name, Type type, TypeVar subType,
             int depth, boolean isConstant, boolean isInitialized, int line) {
         // !TODO: Implement this method
         return false;
