@@ -82,6 +82,14 @@ public class Symbol {
         this.value.add(value);
     }
 
+    public void setLine(int line) {
+        this.line = line;
+    }
+
+    public int getLine() {
+        return this.line;
+    }
+
     @Override
     public String toString() {
         return "Symbol{" +
@@ -92,6 +100,7 @@ public class Symbol {
                 ", depth=" + depth +
                 ", isConstant=" + isConstant +
                 ", isInitialized=" + isInitialized +
+                ", line=" + line +
                 '}';
     }
 }
