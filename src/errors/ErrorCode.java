@@ -18,7 +18,19 @@ public enum ErrorCode {
     INVALID_FILE_EXTENSION("Invalid file extension."),
     INVALID_FILE("Invalid file."),
     INVALID_TOKEN("Invalid Token."),
-    PARSER_ERROR("Parser error.");
+    PARSER_ERROR("Parser error."),
+    TUPLE_ASSIGNATION_TO_NON_TUPLE("Tuple assignation to non-tuple."),
+    UNDECLARED_IDENTIFIER("Undeclared identifier."),
+    INCOMPATIBLE_TYPES(
+            "Incompatible types. The return type of the function is not the same as the return type of the expression."),
+    INVALID_ASSIGNMENT("Invalid assignment."),
+    INVALID_RETURN("Invalid return."),
+    WRONG_NUMBER_OF_ARGUMENTS("Wrong number of arguments."),
+    INVALID_FUNCTION_CALL("Invalid function call."),
+    INVALID_EXPRESSION("Invalid expression."),
+    INVALID_INSTRUCTION("Invalid instruction."),
+    UNDECLARED_FUNCTION("Undeclared function."),
+    NOT_A_FUNCTION("A function was expected but a variable was found.");
 
     public String message;
 
