@@ -44,7 +44,6 @@ public class SymbolTable {
 
         // Get subType from TypeVar
         SubType subTypeSymbol = (subType == null) ? SubType.VOID : getSubType(subType);
-        System.out.println("subTypeSymbol: " + subTypeSymbol);
         this.SymbolTable.put(name, new Symbol(name, type, subTypeSymbol, depth, isConstant, isInitialized, line));
         return false;
     }
@@ -58,7 +57,7 @@ public class SymbolTable {
             case TUP:
                 return SubType.TUP;
         }
-        return null;
+        return SubType.VOID;
     }
 
     public void removeSymbol(String name) {
