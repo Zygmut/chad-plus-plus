@@ -43,8 +43,8 @@ public class SymbolTable {
         // !TODO: Implement this method
 
         // Get subType from TypeVar
-        SubType subTypeSymbol = getSubType(subType);
-
+        SubType subTypeSymbol = (subType == null) ? SubType.VOID : getSubType(subType);
+        System.out.println("subTypeSymbol: " + subTypeSymbol);
         this.SymbolTable.put(name, new Symbol(name, type, subTypeSymbol, depth, isConstant, isInitialized, line));
         return false;
     }
@@ -57,9 +57,8 @@ public class SymbolTable {
                 return SubType.BOOL;
             case TUP:
                 return SubType.TUP;
-            default:
-                return SubType.VOID;
         }
+        return null;
     }
 
     public void removeSymbol(String name) {
