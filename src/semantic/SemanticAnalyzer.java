@@ -146,4 +146,8 @@ public class SemanticAnalyzer {
         return true;
     }
 
+    public SymbolTable getSymbolTable() {
+        return this.symbolTable;
+    }
+
 }
