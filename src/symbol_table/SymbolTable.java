@@ -41,7 +41,25 @@ public class SymbolTable {
     public boolean addSymbol(String name, Type type, TypeVar subType,
             int depth, boolean isConstant, boolean isInitialized, int line) {
         // !TODO: Implement this method
+
+        // Get subType from TypeVar
+        SubType subTypeSymbol = getSubType(subType);
+
+        this.SymbolTable.put(name, new Symbol(name, type, subTypeSymbol, depth, isConstant, isInitialized, line));
         return false;
+    }
+
+    private SubType getSubType(TypeVar subType) {
+        switch (subType) {
+            case INT:
+                return SubType.INT;
+            case BOOL:
+                return SubType.BOOL;
+            case TUP:
+                return SubType.TUP;
+            default:
+                return SubType.VOID;
+        }
     }
 
     public void removeSymbol(String name) {
