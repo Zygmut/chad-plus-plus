@@ -14,6 +14,7 @@ import core.Chadpp;
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.Symbol;
 import java_cup.runtime.SymbolFactory;
+import symbol_table.SymbolTable;
 import grammar.Scanner;
 import grammar.Parser;
 
@@ -62,7 +63,8 @@ public class MainChpp {
             SymbolFactory sf = new ComplexSymbolFactory();
             Parser parser = new Parser(scanner, sf);
             Symbol s = parser.parse();
-            System.out.println(parser.getSemanticAnalyzer().getSymbolTable());
+            SymbolTable symbolTable = parser.getSemanticAnalyzer().getSymbolTable();
+            System.out.println(symbolTable.getPrintSymbolTable());
             // Chadpp tree = parser.getTree();
             // System.out.println(tree);
 

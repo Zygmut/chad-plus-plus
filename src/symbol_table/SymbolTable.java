@@ -79,4 +79,12 @@ public class SymbolTable {
                 '}';
     }
 
+    public String getPrintSymbolTable() {
+        StringBuilder print = new StringBuilder();
+        for (String key : this.SymbolTable.keySet()) {
+            print.append("Key: " + this.SymbolTable.get(key) + "\n");
+        }
+        return print.toString();
+    }
+
 }
