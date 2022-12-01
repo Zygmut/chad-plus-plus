@@ -30,7 +30,9 @@ public enum ErrorCode {
     INVALID_EXPRESSION("Invalid expression."),
     INVALID_INSTRUCTION("Invalid instruction."),
     UNDECLARED_FUNCTION("Undeclared function."),
-    NOT_A_FUNCTION("A function was expected but a variable was found.");
+    UNDECLARED_VARIABLE("Undeclared variable."),
+    NOT_A_FUNCTION("A function was expected but a variable was found."),
+    NOT_A_VARIABLE("A variable was expected but a function was found.");
 
     public String message;
 

@@ -24,9 +24,29 @@ public class SemanticAnalyzer {
         this.symbolTable = symbolTable;
     }
 
-    public boolean checkVariableDeclaration() {
-        // !TODO: Implement this method
-        return false;
+    /**
+     * Checks the use of a variable
+     * 
+     * @param id
+     * @param line
+     * 
+     * @return true if the variable is valid, false otherwise
+     */
+
+    public boolean checkVariableDeclaration(String id, int line) {
+        Symbol symbol = this.symbolTable.getSymbol(id);
+        if (symbol == null) {
+            // Variable no declarada
+            ErrorHandler.addError(ErrorCode.UNDECLARED_VARIABLE, line, Phase.SEMANTIC);
+            return false;
+        }
+
+        if (symbol.getType() != Type.VARIABLE) {
+            // No es una variable
+            ErrorHandler.addError(ErrorCode.NOT_A_VARIABLE, line, Phase.SEMANTIC);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -89,7 +109,7 @@ public class SemanticAnalyzer {
     }
 
     public boolean checkExpression() {
-        // !TODO: Implement this method
+
         return false;
     }
 
@@ -120,7 +140,7 @@ public class SemanticAnalyzer {
     }
 
     public boolean checkFunctionCall() {
-        // !TODO: Implement this method
+
         return false;
     }
 
