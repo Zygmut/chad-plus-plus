@@ -9,19 +9,198 @@ import errors.ErrorHandler;
 
 import java.util.ArrayList;
 
-import core.Expresion;
-import core.Instr;
-import core.L_Args;
-import core.ReturnNode;
-import core.Value;
+import core.*;
 import errors.ErrorCode;
 
 public class SemanticAnalyzer {
 
-    private SymbolTable symbolTable;
+    private SymbolTable actualSymbolTable;
+    private Chadpp chadpp;
 
-    public SemanticAnalyzer(SymbolTable symbolTable) {
-        this.symbolTable = symbolTable;
+    public SemanticAnalyzer(Chadpp chadpp) {
+        this.chadpp = chadpp;
+    }
+
+    public void run() {
+        Main main = chadpp.getMain();
+        this.actualSymbolTable = main.getSymbolTable();
+        checkMain(main);
+        L_Fn l_fn = chadpp.getL_Fn();
+        while (l_fn.getNextFn() != null) {
+            checkFunction(l_fn.getFn());
+            l_fn = l_fn.getNextFn();
+        }
+        checkFunction(l_fn.getFn());
+    }
+
+    public boolean checkMain(Main main) {
+        L_Decls l_Decls = main.getListaDecl();
+        while (l_Decls.nextDecl() != null) {
+            exVariableDeclaration(l_Decls.getDecl());
+            l_Decls = l_Decls.nextDecl();
+        }
+        exVariableDeclaration(l_Decls.getDecl());
+
+        L_Instrs l_Instrs = main.getListaInstr();
+        while (l_Instrs.nextInstr() != null) {
+            checkInstruction(l_Instrs.getInstr());
+            l_Instrs = l_Instrs.nextInstr();
+        }
+        checkInstruction(l_Instrs.getInstr());
+
+        return true;
+    }
+
+    public boolean checkFunction(Function function) {
+        function.getSymbolTable().setParent(actualSymbolTable);
+        this.actualSymbolTable = function.getSymbolTable();
+
+        L_Decls l_Decls = function.getDecls();
+        while (l_Decls.nextDecl() != null) {
+            exVariableDeclaration(l_Decls.getDecl());
+            l_Decls = l_Decls.nextDecl();
+        }
+        exVariableDeclaration(l_Decls.getDecl());
+
+        L_Instrs l_Instrs = function.getInstrs();
+        while (l_Instrs.nextInstr() != null) {
+            checkInstruction(l_Instrs.getInstr());
+            l_Instrs = l_Instrs.nextInstr();
+        }
+        checkInstruction(l_Instrs.getInstr());
+
+        this.actualSymbolTable = this.actualSymbolTable.getParent();
+
+        return true;
+    }
+
+    public boolean exVariableDeclaration(Decl decl) {
+        boolean isConstant = decl.isConstant();
+        TypeVar typevar = decl.getType();
+        Asignation asignation = decl.getAsignation();
+
+        int depth = 1;
+        if (this.actualSymbolTable.getParent() == null) {
+            depth = 0;
+        }
+
+        Boolean isCorrect = checkExpresion(asignation.getExpresion(), typevar);
+        if (!isCorrect) {
+            System.out.println("Error evaluando declaración: " + decl);
+            return false;
+        }
+
+        boolean isInitialized = true;
+        if (asignation.getExpresion().getValue() == null) {
+            isInitialized = false;
+        }
+
+        L_Ids l_ids = asignation.getL_Ids();
+        String id;
+        while (l_ids.nextId() != null) {
+            // addSymbol con este ID
+            id = l_ids.getId();
+            if (this.actualSymbolTable.addSymbol(id, Type.VARIABLE, typevar, depth, isConstant, isInitialized, 0)) {
+
+            }
+            l_ids = l_ids.nextId();
+
+        }
+        // addSymbol con el último ID
+        id = l_ids.getId();
+        if (this.actualSymbolTable.addSymbol(id, Type.VARIABLE, typevar, depth, isConstant, isInitialized, 0)) {
+
+        }
+
+        return true;
+    }
+
+    public boolean checkExpresion(Expresion expresion, TypeVar typeVar) {
+        Value value = expresion.getValue();
+        // Expression: value Op Expresion
+        // value
+        switch (value.getCurrentInstance()) {
+            case "Expresion":
+                Expresion ex = value.getExpresion();
+                if (!checkExpresion(ex, typeVar)) {
+                    // System.out.println("Error, ");
+                    return false;
+                }
+                break;
+            case "Number":
+                if (typeVar != TypeVar.INT) {
+                    // System.out.println("Error, ");
+                    ErrorHandler.addError(ErrorCode.INCOMPATIBLE_TYPES, 0, Phase.SEMANTIC);
+                    return false;
+                }
+                break;
+            case "Tuple":
+                value.getTuple();
+                // TODO: implement this
+                return false;
+            // break;
+            case "Bol":
+                if (typeVar != TypeVar.BOOL) {
+                    // System.out.println("Error, ");
+                    ErrorHandler.addError(ErrorCode.INCOMPATIBLE_TYPES, 0, Phase.SEMANTIC);
+                    return false;
+                }
+                break;
+            case "Id":
+                String id = value.getId().getValue();
+                if (!checkVariableDeclaration(id, 0, typeVar)) {
+                    System.out.println("no declarada o no tipo variable");
+                    return false;
+                }
+                break;
+            case "CallFn":
+                value.getCallFn();
+                // TODO: implement this
+                return false;
+            // break;
+            case "A_Tuple":
+                value.getaTuple();
+                // TODO: implement this
+                return false;
+            // break;
+            case "Input":
+                value.getInput();
+                // TODO: implement this
+                return false;
+            // break;
+            default:
+                // ERROR DEL COMPILADOR
+                return false;
+        }
+
+        Op op = expresion.getOp();
+        if (op == null) {
+            return true;
+        }
+
+        if (typeVar == TypeVar.BOOL) {
+            if (op.ordinal() < 4) {
+                // operación Incompatible (operaciones aritméticas cuando la variable es tipo
+                // BOOL)
+                return false;
+            }
+            // todo ok
+        } else if (typeVar == TypeVar.INT) {
+            if (op.ordinal() >= 4) {
+                // operación Incompatible (operaciones lógicas cuando la variable es tipo INT)
+                return false;
+            }
+            // todo ok
+        } else { // typeVar == TypeVar.TUP
+            // TODO: Implement this
+        }
+
+        return (checkExpresion(expresion.getNextExpresion(), typeVar));
+    }
+
+    public boolean checkInstruction(Instr instr) {
+        // addSymbol
+        return true;
     }
 
     /**
@@ -33,17 +212,31 @@ public class SemanticAnalyzer {
      * @return true if the variable is valid, false otherwise
      */
 
-    public boolean checkVariableDeclaration(String id, int line) {
-        Symbol symbol = this.symbolTable.getSymbol(id);
+    public boolean checkVariableDeclaration(String id, int line, TypeVar typeVar) {
+        Symbol symbol = this.actualSymbolTable.getSymbol(id);
         if (symbol == null) {
-            // Variable no declarada
-            ErrorHandler.addError(ErrorCode.UNDECLARED_VARIABLE, line, Phase.SEMANTIC);
-            return false;
+            SymbolTable parentSymbolTable = this.actualSymbolTable.getParent();
+
+            if (parentSymbolTable != null) {
+                symbol = parentSymbolTable.getSymbol(id);
+
+                if (symbol == null) {
+                    // Variable no declarada
+                    ErrorHandler.addError(ErrorCode.UNDECLARED_VARIABLE, line, Phase.SEMANTIC);
+                    return false;
+                }
+            }
         }
 
         if (symbol.getType() != Type.VARIABLE) {
             // No es una variable
             ErrorHandler.addError(ErrorCode.NOT_A_VARIABLE, line, Phase.SEMANTIC);
+            return false;
+        }
+
+        if (symbol.getSubType().ordinal() != typeVar.ordinal()) {
+            // No es una variable
+            ErrorHandler.addError(ErrorCode.INCOMPATIBLE_TYPES, line, Phase.SEMANTIC);
             return false;
         }
         return true;
@@ -59,7 +252,7 @@ public class SemanticAnalyzer {
      * @return true if the function is valid, false otherwise
      */
     public boolean checkFunctionDeclaration(String id, L_Args args, int line) {
-        Symbol symbol = this.symbolTable.getSymbol(id);
+        Symbol symbol = this.actualSymbolTable.getSymbol(id);
         if (symbol == null) {
             ErrorHandler.addError(ErrorCode.UNDECLARED_FUNCTION, line, Phase.SEMANTIC);
             return false;
@@ -131,7 +324,7 @@ public class SemanticAnalyzer {
     public boolean checkReturn(String id, SubType subType, ReturnNode returnExp, int line) {
         // Check if the return type of the function is the same as the return type of
         // the expression. If not, add an error to the error handler
-        SubType functionSubType = this.symbolTable.getSymbol(id).getSubType();
+        SubType functionSubType = this.actualSymbolTable.getSymbol(id).getSubType();
         if (functionSubType != subType) {
             ErrorHandler.addError(ErrorCode.INCOMPATIBLE_TYPES, line, Phase.SEMANTIC);
             return false;
@@ -158,7 +351,7 @@ public class SemanticAnalyzer {
      * @return true if the ID is declared in the current scope, false otherwise.
      */
     public boolean checkIdentifier(String id, int line) {
-        Symbol symbol = this.symbolTable.getSymbol(id);
+        Symbol symbol = this.actualSymbolTable.getSymbol(id);
         if (symbol == null) {
             ErrorHandler.addError(ErrorCode.UNDECLARED_IDENTIFIER, line, Phase.SEMANTIC);
             return false;
@@ -167,7 +360,29 @@ public class SemanticAnalyzer {
     }
 
     public SymbolTable getSymbolTable() {
-        return this.symbolTable;
+        return this.actualSymbolTable;
+    }
+
+    public String printSymbolTables() {
+        String r = "Main:\n" + this.chadpp.getMain().getSymbolTable().getPrintSymbolTable() + "\n";
+
+        L_Fn l_fn = chadpp.getL_Fn();
+        Function function;
+        while (l_fn.getNextFn() != null) {
+            function = l_fn.getFn();
+
+            r += function.getId().getValue() + ":\n";
+            r += function.getSymbolTable().getPrintSymbolTable() + "\n";
+
+            l_fn = l_fn.getNextFn();
+        }
+        function = l_fn.getFn();
+
+        r += function.getId().getValue() + ":\n";
+        r += function.getSymbolTable().getPrintSymbolTable() + "\n";
+
+        return r;
+
     }
 
 }

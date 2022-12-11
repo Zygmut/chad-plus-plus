@@ -67,6 +67,42 @@ public class Value {
         this.currentInstance = "CallFn";
     }
 
+    public String getCurrentInstance() {
+        return currentInstance;
+    }
+
+    public Expresion getExpresion() {
+        return expresion;
+    }
+
+    public Number getNumber() {
+        return number;
+    }
+
+    public Bol getBol() {
+        return bol;
+    }
+
+    public Tuple getTuple() {
+        return tuple;
+    }
+
+    public Id getId() {
+        return id;
+    }
+
+    public CallFn getCallFn() {
+        return callFn;
+    }
+
+    public A_Tuple getaTuple() {
+        return aTuple;
+    }
+
+    public Input getInput() {
+        return input;
+    }
+
     @Override
     public String toString() {
         switch (currentInstance) {

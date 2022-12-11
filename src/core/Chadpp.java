@@ -4,8 +4,6 @@ import java.util.HashMap;
 
 public class Chadpp {
 
-    HashMap<String, Object> hm = new HashMap<>();
-
     private L_Fn functions;
     private Main main;
 
@@ -24,8 +22,12 @@ public class Chadpp {
         this.functions = functions;
     }
 
-    public void exec() {
-        this.main.run(hm);
+    public Main getMain() {
+        return this.main;
+    }
+
+    public L_Fn getL_Fn() {
+        return this.functions;
     }
 
     @Override

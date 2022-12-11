@@ -1,18 +1,28 @@
 package core;
 
+import java_cup.runtime.Symbol;
+import symbol_table.SymbolTable;
+
 public class Function {
     private TypeVar returnType;
     private Id id;
     private L_FArgs arguments;
     private L_Decls decls;
     private L_Instrs instrs;
+    private SymbolTable symbolTable;
 
-    public Function(TypeVar returnType, Id id, L_FArgs arguments, L_Decls decls, L_Instrs instrs) {
+    public Function(TypeVar returnType, Id id, L_FArgs arguments, L_Decls decls, L_Instrs instrs,
+            SymbolTable symbolTableParent) {
         this.returnType = returnType;
         this.id = id;
         this.arguments = arguments;
         this.decls = decls;
         this.instrs = instrs;
+        this.symbolTable = new SymbolTable(symbolTableParent);
+    }
+
+    public SymbolTable getSymbolTable() {
+        return this.symbolTable;
     }
 
     public TypeVar getReturnType() {
@@ -58,7 +68,7 @@ public class Function {
     @Override
     public String toString() {
         return "Function [returnType=" + returnType + ", id=" + id + ", arguments=" + arguments + ", decls=" + decls
-                + ", instrs=" + instrs + "]";
+                + ", instrs=" + instrs + ", symbolTable=" + symbolTable + "]";
     }
 
 }

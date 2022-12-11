@@ -22,7 +22,7 @@ parser code {:
     TypeVar PENDIENTE_A_RESOLVER = null;
     Chadpp tree;
     SymbolTable symbolTable = new SymbolTable();
-    SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(symbolTable);
+    SemanticAnalyzer semanticAnalyzer;
 
     public Chadpp getTree(){ return tree; }
     public SemanticAnalyzer getSemanticAnalyzer(){ return semanticAnalyzer; }
@@ -111,11 +111,11 @@ non terminal    L_Ids       LID;
 
 start with CHADPP;
 
-CHADPP          ::= MAINFN:main FUNCTIONS:fun                   {: tree = new Chadpp(main, fun); :}
+CHADPP          ::= MAINFN:main FUNCTIONS:fun                   {: tree = new Chadpp(main, fun); semanticAnalyzer = new SemanticAnalyzer(tree); :}                                              
                 ;
 
-MAINFN          ::= MAIN LKEY DECLS:decls BEGIN INSTRS:i RKEY   {: RESULT = new Main(decls, i); :}
-                |   MAIN LKEY INSTRS:i RKEY                     {: RESULT = new Main(null, i); :}
+MAINFN          ::= MAIN LKEY DECLS:decls BEGIN INSTRS:i RKEY   {: RESULT = new Main(decls, i, symbolTable); :}
+                |   MAIN LKEY INSTRS:i RKEY                     {: RESULT = new Main(null, i, symbolTable); :}
                 ;
 
 
@@ -162,18 +162,18 @@ VALUE           ::= LPAREN EXPRESION:e RPAREN                   {: RESULT = new 
                 |   CALLF:call                                  {: RESULT = new Value(call); :}             // fn()
                 |   ININT LPAREN RPAREN                         {: RESULT = new Value(new Input(0)); :}
                 |   INBOL LPAREN RPAREN                         {: RESULT = new Value(new Input(1)); :}
-                |   ID:id                                       {: semanticAnalyzer.checkIdentifier(id, cur_token.left); RESULT = new Value("Id", id); :}         // a
+                |   ID:id                                       {: RESULT = new Value("Id", id); :}         // a
                 ;
 
 // No se permite []. Al menos debe tener un elemento i.e [A]
 V_TUP           ::= LSKEY ARGS:a RSKEY                          {: RESULT = new Tuple(a); :}
                 ;
 
-A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: if(addSymbol(id, Type.PARAMETER, TypeVar.TUP, 0, false, true, cur_token.left)){/*Verificar acceso tupla*/} RESULT = new A_Tuple(new Id(id), new core.Number(num)); :}
+A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: RESULT = new A_Tuple(new Id(id), new core.Number(num)); :}
                 ;
 
-CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: if(addSymbol(id, Type.FUNCTION, PENDIENTE_A_RESOLVER, 0, false, false, cur_token.left)){semanticAnalyzer.checkFunctionDeclaration(id, args, cur_token.left);} RESULT = new CallFn(new Id(id), args); :}
-                |   ID:id LPAREN RPAREN                         {: if(addSymbol(id, Type.FUNCTION, null, 0, false, false, cur_token.left)){semanticAnalyzer.checkFunctionDeclaration(id, null, cur_token.left);} RESULT = new CallFn(new Id(id)); :}
+CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new CallFn(new Id(id), args); :}
+                |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id)); :}
                 ;
 
 ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: RESULT = new L_Args(e, args); :}
@@ -213,16 +213,16 @@ FUNCTIONS       ::= FUNCTION:fn FUNCTIONS:fns                  {: RESULT = new L
                 |                                               {: :}
                 ;
 
-FUNCTION        ::= TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY     {: if(addSymbol(id, Type.FUNCTION, t, 0, false, true, cur_token.left)){/*Verificar función*/} RESULT = new Function(t, new Id(id), args, decls,instrs); :}
-                |   TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: if(addSymbol(id, Type.FUNCTION, t, 0, false, true, cur_token.left)){/*Verificar función*/} RESULT = new Function(t, new Id(id), args, null, instrs); :}
-                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: if(addSymbol(id, Type.FUNCTION, null, 0, false, true, cur_token.left)){/*Verificar función*/} RESULT = new Function(null, new Id(id), args, decls, instrs); :}
-                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                              {: if(addSymbol(id, Type.FUNCTION, null, 0, false, true, cur_token.left)){/*Verificar función*/} RESULT = new Function(null, new Id(id), args, null, instrs); :}
+FUNCTION        ::= TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY     {: if(addSymbol(id, Type.FUNCTION, t, 0, false, true, cur_token.left)){/*Verificar función*/} RESULT = new Function(t, new Id(id), args, decls,instrs, new SymbolTable(symbolTable)); :}
+                |   TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: if(addSymbol(id, Type.FUNCTION, t, 0, false, true, cur_token.left)){/*Verificar función*/} RESULT = new Function(t, new Id(id), args, null, instrs,new SymbolTable(symbolTable)); :}
+                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: if(addSymbol(id, Type.FUNCTION, null, 0, false, true, cur_token.left)){/*Verificar función*/} RESULT = new Function(null, new Id(id), args, decls, instrs,new SymbolTable(symbolTable)); :}
+                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                              {: if(addSymbol(id, Type.FUNCTION, null, 0, false, true, cur_token.left)){/*Verificar función*/} RESULT = new Function(null, new Id(id), args, null, instrs,new SymbolTable(symbolTable)); :}
                 ;
 
 F_ARGS          ::= F_ARGS2:args    {: RESULT = args; :}
                 |                   {: :}
                 ;
 
-F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args    {: if(addSymbol(id, Type.PARAMETER, type, 0, false, true, cur_token.left)){/*Verificar args función*/} RESULT = new L_FArgs( new FnArg(type, new Id(id)), args); :}
-                |  TYPEVAR:type ID:id                       {: if(addSymbol(id, Type.PARAMETER, type, 0, false, true, cur_token.left)){/*Verificar args función*/} RESULT = new L_FArgs( new FnArg(type, new Id(id)), null); :}
+F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args    {: RESULT = new L_FArgs( new FnArg(type, new Id(id)), args); :}
+                |  TYPEVAR:type ID:id                       {: RESULT = new L_FArgs( new FnArg(type, new Id(id)), null); :}
                 ;

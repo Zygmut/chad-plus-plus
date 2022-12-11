@@ -62,9 +62,14 @@ public class MainChpp {
         try {
             SymbolFactory sf = new ComplexSymbolFactory();
             Parser parser = new Parser(scanner, sf);
-            Symbol s = parser.parse();
-            SymbolTable symbolTable = parser.getSemanticAnalyzer().getSymbolTable();
-            System.out.println(symbolTable.getPrintSymbolTable());
+            parser.parse();
+
+            parser.getSemanticAnalyzer().run();
+            System.out.println(parser.getSemanticAnalyzer().printSymbolTables());
+
+            // SymbolTable symbolTable = parser.getSemanticAnalyzer().getSymbolTable();
+            // System.out.println(symbolTable.getPrintSymbolTable());
+
             // Chadpp tree = parser.getTree();
             // System.out.println(tree);
 

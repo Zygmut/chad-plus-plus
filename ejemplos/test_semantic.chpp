@@ -1,0 +1,21 @@
+main {
+    int a, b = 0;
+    bol c = true;
+    BEGIN
+    a = 1;
+    test_global();
+}
+
+# Hola que tal
+$
+ hola
+$
+
+bol alpha mayor5 (int n){
+    int tonto = a;
+    BEGIN
+    if (n > 5){
+        return true;
+    }
+    return false;
+}
