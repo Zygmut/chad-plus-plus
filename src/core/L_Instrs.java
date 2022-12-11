@@ -21,7 +21,7 @@ public class L_Instrs {
         this.instr = instr;
     }
 
-    public L_Instrs getNextInstr() {
+    public L_Instrs nextInstr() {
         return nextInstr;
     }
 
