@@ -1,9 +1,10 @@
 package core;
 
-public class Tuple {
+public class Tuple extends BaseNode {
     private L_Args tupleContent;
 
-    public Tuple(L_Args tupleContent) {
+    public Tuple(L_Args tupleContent, int line, int column) {
+        super(line, column);
         this.tupleContent = tupleContent;
     }
 
@@ -17,7 +18,8 @@ public class Tuple {
 
     @Override
     public String toString() {
-        return "Tuple [tupleContent=" + tupleContent + "]";
+        return "Tuple [tupleContent=" + tupleContent + " line=" + line + " column=" + column + "]";
+
     }
 
 }

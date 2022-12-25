@@ -1,15 +1,17 @@
 package core;
 
-public class L_Args {
+public class L_Args extends BaseNode {
     private Expresion arg;
     private L_Args nextArg;
 
-    public L_Args(Expresion arg, L_Args nextArg) {
+    public L_Args(Expresion arg, L_Args nextArg, int line, int column) {
+        super(line, column);
         this.arg = arg;
         this.nextArg = nextArg;
     }
 
-    public L_Args(Expresion arg) {
+    public L_Args(Expresion arg, int line, int column) {
+        super(line, column);
         this.arg = arg;
     }
 
@@ -31,7 +33,8 @@ public class L_Args {
 
     @Override
     public String toString() {
-        return "L_Args [arg=" + arg + ", nextArg=" + nextArg + "]";
+        return "L_Args [arg=" + arg + ", nextArg=" + nextArg + " line=" + line + " column=" + column + "]";
+
     }
 
 }

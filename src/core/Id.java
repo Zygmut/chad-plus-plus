@@ -1,9 +1,10 @@
 package core;
 
-public class Id {
+public class Id extends BaseNode {
     private String value;
 
-    public Id(String value) {
+    public Id(String value, int line, int column) {
+        super(line, column);
         this.value = value;
     }
 
@@ -17,7 +18,8 @@ public class Id {
 
     @Override
     public String toString() {
-        return "Id [value=" + value + "]";
+        return "Id [value=" + value + " line=" + line + " column=" + column + "]";
+
     }
 
 }

@@ -1,9 +1,10 @@
 package core;
 
-public class Output {
+public class Output extends BaseNode {
     private Expresion expresion;
 
-    public Output(Expresion expresion) {
+    public Output(Expresion expresion, int line, int column) {
+        super(line, column);
         this.expresion = expresion;
     }
 
@@ -17,7 +18,8 @@ public class Output {
 
     @Override
     public String toString() {
-        return "Output [expresion=" + expresion + "]";
+        return "Output [expresion=" + expresion + " line=" + line + " column=" + column + "]";
+
     }
 
 }

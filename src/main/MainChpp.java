@@ -10,9 +10,7 @@ import warnings.WarningHandler;
 
 import java.io.FileReader;
 
-import core.Chadpp;
 import java_cup.runtime.ComplexSymbolFactory;
-import java_cup.runtime.Symbol;
 import java_cup.runtime.SymbolFactory;
 import symbol_table.SymbolTable;
 import grammar.Scanner;
@@ -64,11 +62,11 @@ public class MainChpp {
             Parser parser = new Parser(scanner, sf);
             parser.parse();
 
-            parser.getSemanticAnalyzer().run();
+            // parser.getSemanticAnalyzer().run();
             System.out.println(parser.getSemanticAnalyzer().printSymbolTables());
 
-            // SymbolTable symbolTable = parser.getSemanticAnalyzer().getSymbolTable();
-            // System.out.println(symbolTable.getPrintSymbolTable());
+            SymbolTable symbolTable = parser.getSemanticAnalyzer().getSymbolTable();
+            System.out.println(symbolTable.printSymbolTable());
 
             // Chadpp tree = parser.getTree();
             // System.out.println(tree);

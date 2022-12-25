@@ -1,10 +1,11 @@
 package core;
 
-public class IfNode {
+public class IfNode extends BaseNode {
     private Expresion expresion;
     private L_Instrs instrs;
 
-    public IfNode(Expresion expresion, L_Instrs instrs) {
+    public IfNode(Expresion expresion, L_Instrs instrs, int line, int column) {
+        super(line, column);
         this.expresion = expresion;
         this.instrs = instrs;
     }
@@ -27,7 +28,8 @@ public class IfNode {
 
     @Override
     public String toString() {
-        return "IfNode [expresion=" + expresion + ", instrs=" + instrs + "]";
+        return "IfNode [expresion=" + expresion + ", instrs=" + instrs + " line=" + line + " column=" + column + "]";
+
     }
 
 }

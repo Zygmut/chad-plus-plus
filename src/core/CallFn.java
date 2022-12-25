@@ -1,15 +1,17 @@
 package core;
 
-public class CallFn {
+public class CallFn extends BaseNode {
     private Id id;
     private L_Args args;
 
-    public CallFn(Id id, L_Args args) {
+    public CallFn(Id id, L_Args args, int line, int column) {
+        super(line, column);
         this.id = id;
         this.args = args;
     }
 
-    public CallFn(Id id) {
+    public CallFn(Id id, int line, int column) {
+        super(line, column);
         this.id = id;
         this.args = null;
     }
@@ -32,7 +34,8 @@ public class CallFn {
 
     @Override
     public String toString() {
-        return "CallFn [id=" + id + ", args=" + args + "]";
+        return "CallFn [id=" + id + ", args=" + args + " line=" + line + " column=" + column + "]";
+
     }
 
 }

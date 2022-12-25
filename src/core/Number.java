@@ -1,14 +1,16 @@
 package core;
 
-public class Number {
+public class Number extends BaseNode {
 
     private int value;
 
-    public Number(int value) {
+    public Number(int value, int line, int column) {
+        super(line, column);
         this.value = value;
     }
 
-    public Number(String value) {
+    public Number(String value, int line, int column) {
+        super(line, column);
         this.value = Integer.parseInt(value);
     }
 
@@ -22,7 +24,8 @@ public class Number {
 
     @Override
     public String toString() {
-        return "Number [value=" + value + "]";
+        return "Number [value=" + value + " line=" + line + " column=" + column + "]";
+
     }
 
 }

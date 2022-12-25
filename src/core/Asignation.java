@@ -1,11 +1,12 @@
 package core;
 
-public class Asignation {
+public class Asignation extends BaseNode {
 
     private L_Ids lid;
     private Expresion expresion;
 
-    public Asignation(L_Ids id, Expresion expresion) {
+    public Asignation(L_Ids id, Expresion expresion, int line, int column) {
+        super(line, column);
         this.lid = id;
         this.expresion = expresion;
     }
@@ -28,7 +29,8 @@ public class Asignation {
 
     @Override
     public String toString() {
-        return "Asignation [L_Ids=" + lid + ", expresion=" + expresion + "]";
+        return "Asignation [L_Ids=" + lid + ", expresion=" + expresion + " line=" + line + " column=" + column + "]";
+
     }
 
 }

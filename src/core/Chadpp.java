@@ -1,23 +1,24 @@
 package core;
 
-import java.util.HashMap;
-
-public class Chadpp {
+public class Chadpp extends BaseNode {
 
     private L_Fn functions;
     private Main main;
 
     public Chadpp() {
+        super(0, 0);
         this.main = new Main();
         this.functions = null;
     }
 
-    public Chadpp(Main main) {
+    public Chadpp(Main main, int line, int column) {
+        super(line, column);
         this.main = main;
         this.functions = null;
     }
 
-    public Chadpp(Main main, L_Fn functions) {
+    public Chadpp(Main main, L_Fn functions, int line, int column) {
+        super(line, column);
         this.main = main;
         this.functions = functions;
     }
@@ -32,7 +33,8 @@ public class Chadpp {
 
     @Override
     public String toString() {
-        return "Chadpp [listOfFunctions=" + functions + ", main=" + main + "]";
+        return "Chadpp [listOfFunctions=" + functions + ", main=" + main + " line=" + line + " column=" + column + "]";
+
     }
 
 }

@@ -1,10 +1,11 @@
 package core;
 
-public class WhileNode {
+public class WhileNode extends BaseNode {
     private Expresion expresion;
     private L_Instrs instrs;
 
-    public WhileNode(Expresion expresion, L_Instrs instrs) {
+    public WhileNode(Expresion expresion, L_Instrs instrs, int line, int column) {
+        super(line, column);
         this.expresion = expresion;
         this.instrs = instrs;
     }
@@ -27,7 +28,8 @@ public class WhileNode {
 
     @Override
     public String toString() {
-        return "WhileNode [expresion=" + expresion + ", instrs=" + instrs + "]";
+        return "WhileNode [expresion=" + expresion + ", instrs=" + instrs + " line=" + line + " column=" + column + "]";
+
     }
 
 }

@@ -22,53 +22,94 @@ public class SemanticAnalyzer {
     }
 
     public void run() {
+
+        // Checkeamos el main
         Main main = chadpp.getMain();
         this.actualSymbolTable = main.getSymbolTable();
         checkMain(main);
-        L_Fn l_fn = chadpp.getL_Fn();
-        while (l_fn.getNextFn() != null) {
+
+        // Checkeamos todas las funciones
+        for (L_Fn l_fn = chadpp.getL_Fn(); l_fn != null; l_fn.getNextFn()) {
             checkFunction(l_fn.getFn());
-            l_fn = l_fn.getNextFn();
         }
-        checkFunction(l_fn.getFn());
+        /*
+         * L_Fn l_fn = chadpp.getL_Fn();
+         * while (l_fn.getNextFn() != null) {
+         * checkFunction(l_fn.getFn());
+         * l_fn = l_fn.getNextFn();
+         * }
+         * checkFunction(l_fn.getFn());
+         */
     }
 
     public boolean checkMain(Main main) {
-        L_Decls l_Decls = main.getListaDecl();
-        while (l_Decls.nextDecl() != null) {
-            exVariableDeclaration(l_Decls.getDecl());
-            l_Decls = l_Decls.nextDecl();
-        }
-        exVariableDeclaration(l_Decls.getDecl());
 
-        L_Instrs l_Instrs = main.getListaInstr();
-        while (l_Instrs.nextInstr() != null) {
-            checkInstruction(l_Instrs.getInstr());
-            l_Instrs = l_Instrs.nextInstr();
+        // Checkeamos las declaraciones
+        for (L_Decls l_Decls = main.getListaDecl(); l_Decls != null; l_Decls.nextDecl()) {
+            exVariableDeclaration(l_Decls.getDecl());
         }
-        checkInstruction(l_Instrs.getInstr());
+
+        /*
+         * L_Decls l_Decls = main.getListaDecl();
+         * while (l_Decls.nextDecl() != null) {
+         * exVariableDeclaration(l_Decls.getDecl());
+         * l_Decls = l_Decls.nextDecl();
+         * }
+         * exVariableDeclaration(l_Decls.getDecl());
+         */
+
+        // Checkeamos instrucciones
+        for (L_Instrs l_Instrs = main.getListaInstr(); l_Instrs != null; l_Instrs.nextInstr()) {
+            checkInstruction(l_Instrs.getInstr());
+        }
+        /*
+         * L_Instrs l_Instrs = main.getListaInstr();
+         * while (l_Instrs.nextInstr() != null) {
+         * checkInstruction(l_Instrs.getInstr());
+         * l_Instrs = l_Instrs.nextInstr();
+         * }
+         * checkInstruction(l_Instrs.getInstr());
+         */
 
         return true;
     }
 
     public boolean checkFunction(Function function) {
+        // Enlazamos la tabla de simbolos de la funcion a la de su padre y la ponemos
+        // como la actual para que los nodos interiores puedan acceder a ella.
         function.getSymbolTable().setParent(actualSymbolTable);
         this.actualSymbolTable = function.getSymbolTable();
 
-        L_Decls l_Decls = function.getDecls();
-        while (l_Decls.nextDecl() != null) {
+        // Comprobar declaraciones de la función
+        for (L_Decls l_Decls = function.getDecls(); l_Decls != null; l_Decls = l_Decls.nextDecl()) {
             exVariableDeclaration(l_Decls.getDecl());
-            l_Decls = l_Decls.nextDecl();
         }
-        exVariableDeclaration(l_Decls.getDecl());
 
-        L_Instrs l_Instrs = function.getInstrs();
-        while (l_Instrs.nextInstr() != null) {
+        /*
+         * L_Decls l_Decls = function.getDecls();
+         * while (l_Decls.nextDecl() != null) {
+         * exVariableDeclaration(l_Decls.getDecl());
+         * l_Decls = l_Decls.nextDecl();
+         * }
+         * exVariableDeclaration(l_Decls.getDecl());
+         */
+
+        // Comprobar instrucciones de la función
+        for (L_Instrs l_Instrs = function.getInstrs(); l_Instrs != null; l_Instrs.nextInstr()) {
             checkInstruction(l_Instrs.getInstr());
-            l_Instrs = l_Instrs.nextInstr();
         }
-        checkInstruction(l_Instrs.getInstr());
 
+        /*
+         * L_Instrs l_Instrs = function.getInstrs();
+         * while (l_Instrs.nextInstr() != null) {
+         * checkInstruction(l_Instrs.getInstr());
+         * l_Instrs = l_Instrs.nextInstr();
+         * }
+         * checkInstruction(l_Instrs.getInstr());
+         */
+
+        // Finalmente, cuando acabamos con los elementos de la funcion, dejamos la tabla
+        // actual a la de su padre
         this.actualSymbolTable = this.actualSymbolTable.getParent();
 
         return true;
@@ -79,21 +120,24 @@ public class SemanticAnalyzer {
         TypeVar typevar = decl.getType();
         Asignation asignation = decl.getAsignation();
 
-        int depth = 1;
-        if (this.actualSymbolTable.getParent() == null) {
-            depth = 0;
-        }
+        // Solo puede ocurrir cuando estamos mirando las declaraciones de la funcion
+        // main
+        int depth = (this.actualSymbolTable.getParent() == null) ? 0 : 1;
 
-        Boolean isCorrect = checkExpresion(asignation.getExpresion(), typevar);
-        if (!isCorrect) {
+        // Boolean isCorrect = checkExpresion(asignation.getExpresion(), typevar);
+        if (!checkExpresion(asignation.getExpresion(), typevar)) {
+            // Añadir error
             System.out.println("Error evaluando declaración: " + decl);
             return false;
         }
 
-        boolean isInitialized = true;
-        if (asignation.getExpresion().getValue() == null) {
-            isInitialized = false;
-        }
+        /*
+         * boolean isInitialized = true;
+         * if (asignation.getExpresion().getValue() == null) {
+         * isInitialized = false;
+         * }
+         */
+        boolean isInitialized = asignation.getExpresion().getValue() != null;
 
         L_Ids l_ids = asignation.getL_Ids();
         String id;
@@ -101,7 +145,7 @@ public class SemanticAnalyzer {
             // addSymbol con este ID
             id = l_ids.getId();
             if (this.actualSymbolTable.addSymbol(id, Type.VARIABLE, typevar, depth, isConstant, isInitialized, 0)) {
-
+                // Error
             }
             l_ids = l_ids.nextId();
 
@@ -109,7 +153,7 @@ public class SemanticAnalyzer {
         // addSymbol con el último ID
         id = l_ids.getId();
         if (this.actualSymbolTable.addSymbol(id, Type.VARIABLE, typevar, depth, isConstant, isInitialized, 0)) {
-
+            // Error
         }
 
         return true;
@@ -364,7 +408,7 @@ public class SemanticAnalyzer {
     }
 
     public String printSymbolTables() {
-        String r = "Main:\n" + this.chadpp.getMain().getSymbolTable().getPrintSymbolTable() + "\n";
+        String r = "Main:\n" + this.chadpp.getMain().getSymbolTable().printSymbolTable() + "\n";
 
         L_Fn l_fn = chadpp.getL_Fn();
         Function function;
@@ -372,14 +416,14 @@ public class SemanticAnalyzer {
             function = l_fn.getFn();
 
             r += function.getId().getValue() + ":\n";
-            r += function.getSymbolTable().getPrintSymbolTable() + "\n";
+            r += function.getSymbolTable().printSymbolTable() + "\n";
 
             l_fn = l_fn.getNextFn();
         }
         function = l_fn.getFn();
 
         r += function.getId().getValue() + ":\n";
-        r += function.getSymbolTable().getPrintSymbolTable() + "\n";
+        r += function.getSymbolTable().printSymbolTable() + "\n";
 
         return r;
 

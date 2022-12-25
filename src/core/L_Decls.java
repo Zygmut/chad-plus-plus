@@ -1,20 +1,23 @@
 package core;
 
-public class L_Decls {
+public class L_Decls extends BaseNode {
     private L_Decls nextDecl;
     private Decl decl;
 
     public L_Decls() {
+        super(0, 0);
         this.nextDecl = null;
         this.decl = null;
     }
 
-    public L_Decls(Decl decl) {
+    public L_Decls(Decl decl, int line, int column) {
+        super(line, column);
         this.nextDecl = null;
         this.decl = decl;
     }
 
-    public L_Decls(Decl decl, L_Decls nextDecl) {
+    public L_Decls(Decl decl, L_Decls nextDecl, int line, int column) {
+        super(line, column);
         this.nextDecl = nextDecl;
         this.decl = decl;
     }
@@ -37,7 +40,8 @@ public class L_Decls {
 
     @Override
     public String toString() {
-        return "L_Decls [decl=" + decl + ", nextDecl=" + nextDecl + "]";
+        return "L_Decls [decl=" + decl + ", nextDecl=" + nextDecl + " line=" + line + " column=" + column + "]";
+
     }
 
 }

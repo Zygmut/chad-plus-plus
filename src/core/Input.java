@@ -1,9 +1,10 @@
 package core;
 
-public class Input {
+public class Input extends BaseNode {
     private int type; // 0 int, 1 bool
 
-    public Input(int type) {
+    public Input(int type, int line, int column) {
+        super(line, column);
         this.type = type;
     }
 
@@ -17,7 +18,8 @@ public class Input {
 
     @Override
     public String toString() {
-        return "Input [type=" + type + "]";
+        return "Input [type=" + type + " line=" + line + " column=" + column + "]";
+
     }
 
 }

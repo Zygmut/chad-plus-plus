@@ -1,11 +1,12 @@
 package core;
 
-public class L_FArgs {
+public class L_FArgs extends BaseNode {
 
     private FnArg arg;
     private L_FArgs nextArg;
 
-    public L_FArgs(FnArg arg, L_FArgs nextArg) {
+    public L_FArgs(FnArg arg, L_FArgs nextArg, int line, int column) {
+        super(line, column);
         this.arg = arg;
         this.nextArg = nextArg;
     }
@@ -28,7 +29,8 @@ public class L_FArgs {
 
     @Override
     public String toString() {
-        return "L_FArgs [arg=" + arg + ", nextArg=" + nextArg + "]";
+        return "L_FArgs [arg=" + arg + ", nextArg=" + nextArg + " line=" + line + " column=" + column + "]";
+
     }
 
 }

@@ -2,7 +2,6 @@ package symbol_table;
 
 import java.util.HashMap;
 
-import core.TypeFn;
 import core.TypeVar;
 import symbol_table.Symbol.SubType;
 import symbol_table.Symbol.Type;
@@ -79,7 +78,7 @@ public class SymbolTable {
                 '}';
     }
 
-    public String getPrintSymbolTable() {
+    public String printSymbolTable() {
         StringBuilder print = new StringBuilder();
         for (String key : this.SymbolTable.keySet()) {
             print.append("Key: " + this.SymbolTable.get(key) + "\n");

@@ -1,10 +1,11 @@
 package core;
 
-public class FnArg {
+public class FnArg extends BaseNode {
     private TypeVar type;
     private Id id;
 
-    public FnArg(TypeVar type, Id id) {
+    public FnArg(TypeVar type, Id id, int line, int column) {
+        super(line, column);
         this.type = type;
         this.id = id;
     }
@@ -27,7 +28,8 @@ public class FnArg {
 
     @Override
     public String toString() {
-        return "Arg [type=" + type + ", id=" + id + "]";
+        return "Arg [type=" + type + ", id=" + id + " line=" + line + " column=" + column + "]";
+
     }
 
 }

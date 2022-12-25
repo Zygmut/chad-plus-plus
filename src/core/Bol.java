@@ -1,9 +1,10 @@
 package core;
 
-public class Bol {
+public class Bol extends BaseNode {
     private boolean value;
 
-    public Bol(String value) {
+    public Bol(String value, int line, int column) {
+        super(line, column);
         this.value = Boolean.parseBoolean(value);
     }
 
@@ -17,7 +18,8 @@ public class Bol {
 
     @Override
     public String toString() {
-        return "Bol [value=" + value + "]";
+        return "Bol [value=" + value + " line=" + line + " column=" + column + "]";
+
     }
 
 }

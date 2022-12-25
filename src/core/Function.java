@@ -1,9 +1,8 @@
 package core;
 
-import java_cup.runtime.Symbol;
 import symbol_table.SymbolTable;
 
-public class Function {
+public class Function extends BaseNode {
     private TypeVar returnType;
     private Id id;
     private L_FArgs arguments;
@@ -12,7 +11,8 @@ public class Function {
     private SymbolTable symbolTable;
 
     public Function(TypeVar returnType, Id id, L_FArgs arguments, L_Decls decls, L_Instrs instrs,
-            SymbolTable symbolTableParent) {
+            SymbolTable symbolTableParent, int line, int column) {
+        super(line, column);
         this.returnType = returnType;
         this.id = id;
         this.arguments = arguments;
@@ -68,7 +68,8 @@ public class Function {
     @Override
     public String toString() {
         return "Function [returnType=" + returnType + ", id=" + id + ", arguments=" + arguments + ", decls=" + decls
-                + ", instrs=" + instrs + ", symbolTable=" + symbolTable + "]";
+                + ", instrs=" + instrs + ", symbolTable=" + symbolTable + " line=" + line + " column=" + column + "]";
+
     }
 
 }

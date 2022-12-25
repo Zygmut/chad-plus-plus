@@ -1,10 +1,11 @@
 package core;
 
-public class L_Fn {
+public class L_Fn extends BaseNode {
     private Function fn;
     private L_Fn nextFn;
 
-    public L_Fn(Function fn, L_Fn nextFn) {
+    public L_Fn(Function fn, L_Fn nextFn, int line, int column) {
+        super(line, column);
         this.fn = fn;
         this.nextFn = nextFn;
     }
@@ -27,7 +28,8 @@ public class L_Fn {
 
     @Override
     public String toString() {
-        return "L_Fn [fn=" + fn + ", nextFn=" + nextFn + "]";
+        return "L_Fn [fn=" + fn + ", nextFn=" + nextFn + " line=" + line + " column=" + column + "]";
+
     }
 
 }

@@ -1,17 +1,19 @@
 package core;
 
-public class Expresion {
+public class Expresion extends BaseNode {
     private Value value;
     private Expresion nextExpresion;
     private Op op;
 
-    public Expresion(Value value, Expresion nextExpresion, Op op) {
+    public Expresion(Value value, Expresion nextExpresion, Op op, int line, int column) {
+        super(line, column);
         this.value = value;
         this.nextExpresion = nextExpresion;
         this.op = op;
     }
 
-    public Expresion(Value value) {
+    public Expresion(Value value, int line, int column) {
+        super(line, column);
         this.value = value;
         this.nextExpresion = null;
         this.op = null;
@@ -43,7 +45,9 @@ public class Expresion {
 
     @Override
     public String toString() {
-        return "Expresion [value=" + value + ", nextExpresion=" + nextExpresion + ", op=" + op + "]";
+        return "Expresion [value=" + value + ", nextExpresion=" + nextExpresion + ", op=" + op + " line=" + line
+                + " column=" + column + "]";
+
     }
 
 }

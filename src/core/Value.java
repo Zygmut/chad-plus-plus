@@ -11,19 +11,19 @@ public class Value {
     private A_Tuple aTuple;
     private Input input;
 
-    public Value(String instance, String value) {
+    public Value(String instance, String value, int line, int column) {
         switch (instance) {
             case "Number":
                 this.currentInstance = instance;
-                this.number = new Number(value);
+                this.number = new Number(value, line, column);
                 break;
             case "Bol":
                 this.currentInstance = instance;
-                this.bol = new Bol(value);
+                this.bol = new Bol(value, line, column);
                 break;
             case "Id":
                 this.currentInstance = instance;
-                this.id = new Id(value);
+                this.id = new Id(value, line, column);
                 break;
             default:
                 this.currentInstance = "error";

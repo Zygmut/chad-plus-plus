@@ -1,11 +1,12 @@
 package core;
 
-public class LoopNode {
+public class LoopNode extends BaseNode {
     private Expresion expresion1;
     private Expresion expresion2;
     private L_Instrs instrs;
 
-    public LoopNode(Expresion expresion1, Expresion expresion2, L_Instrs instrs) {
+    public LoopNode(Expresion expresion1, Expresion expresion2, L_Instrs instrs, int line, int column) {
+        super(line, column);
         this.expresion1 = expresion1;
         this.expresion2 = expresion2;
         this.instrs = instrs;
@@ -37,7 +38,9 @@ public class LoopNode {
 
     @Override
     public String toString() {
-        return "LoopNode [expresion1=" + expresion1 + ", expresion2=" + expresion2 + ", instrs=" + instrs + "]";
+        return "LoopNode [expresion1=" + expresion1 + ", expresion2=" + expresion2 + ", instrs=" + instrs + " line="
+                + line + " column=" + column + "]";
+
     }
 
 }

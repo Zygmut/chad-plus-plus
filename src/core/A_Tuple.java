@@ -1,10 +1,11 @@
 package core;
 
-public class A_Tuple {
+public class A_Tuple extends BaseNode {
     private Id id;
     private Number access;
 
-    public A_Tuple(Id id, Number access) {
+    public A_Tuple(Id id, Number access, int line, int column) {
+        super(line, column);
         this.id = id;
         this.access = access;
     }
@@ -27,7 +28,7 @@ public class A_Tuple {
 
     @Override
     public String toString() {
-        return "A_Tuple [id=" + id + ", access=" + access + "]";
+        return "A_Tuple [id=" + id + ", access=" + access + " line=" + line + " column=" + column + "]";
     }
 
 }
