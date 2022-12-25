@@ -1,5 +1,8 @@
 package core;
 
+import intermediate_code.Instruction;
+import java.util.ArrayList;
+
 public class CallFn extends BaseNode {
     private Id id;
     private L_Args args;
@@ -35,6 +38,12 @@ public class CallFn extends BaseNode {
     @Override
     public String toString() {
         return "CallFn [id=" + id + ", args=" + args + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

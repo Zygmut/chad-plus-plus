@@ -1,5 +1,9 @@
 package core;
 
+import java.util.ArrayList;
+
+import intermediate_code.Instruction;
+
 public class Output extends BaseNode {
     private Expresion expresion;
 
@@ -19,6 +23,12 @@ public class Output extends BaseNode {
     @Override
     public String toString() {
         return "Output [expresion=" + expresion + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

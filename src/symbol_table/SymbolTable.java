@@ -1,5 +1,6 @@
 package symbol_table;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import core.TypeVar;
@@ -37,13 +38,26 @@ public class SymbolTable {
         this.parent = parent;
     }
 
+    // Se emplea para el CUP
     public boolean addSymbol(String name, Type type, TypeVar subType,
             int depth, boolean isConstant, boolean isInitialized, int line) {
-        // !TODO: Implement this method
+        return internalCheckAndAddSymbol(name, type, subType, depth, isConstant, isInitialized, line, null);
+    }
 
+    // Se emplea en el semantico
+    public boolean addSymbol(String name, Type type, TypeVar subType,
+            int depth, boolean isConstant, boolean isInitialized, int line, ArrayList<Object> values) {
+        return internalCheckAndAddSymbol(name, type, subType, depth, isConstant, isInitialized, line, values);
+    }
+
+    private boolean internalCheckAndAddSymbol(String name, Type type, TypeVar subType,
+            int depth, boolean isConstant, boolean isInitialized, int line, ArrayList<Object> values) {
+        // !TODO: Implement this method
         // Get subType from TypeVar
         SubType subTypeSymbol = (subType == null) ? SubType.VOID : getSubType(subType);
-        this.SymbolTable.put(name, new Symbol(name, type, subTypeSymbol, depth, isConstant, isInitialized, line));
+        Symbol symbol = new Symbol(name, type, subTypeSymbol, depth, isConstant, isInitialized, line);
+        symbol.setValue(null);
+        this.SymbolTable.put(name, symbol);
         return false;
     }
 

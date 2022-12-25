@@ -1,28 +1,34 @@
 package core;
 
-class BaseNode {
-    protected int line;
-    protected int column;
+import java.util.ArrayList;
 
-    public BaseNode(int line, int column) {
-        this.line = line;
-        this.column = column;
-    }
+import intermediate_code.Instruction;
 
-    public int getLine() {
-        return this.line;
-    }
+abstract class BaseNode {
 
-    public void setLine(int line) {
-        this.line = line;
-    }
+  protected int line;
+  protected int column;
 
-    public int getColumn() {
-        return this.column;
-    }
+  public BaseNode(int line, int column) {
+    this.line = line;
+    this.column = column;
+  }
 
-    public void setColumn(int column) {
-        this.column = column;
-    }
+  public int getLine() {
+    return this.line;
+  }
 
+  public void setLine(int line) {
+    this.line = line;
+  }
+
+  public int getColumn() {
+    return this.column;
+  }
+
+  public void setColumn(int column) {
+    this.column = column;
+  }
+
+  public abstract void generate3dc(ArrayList<Instruction> code);
 }

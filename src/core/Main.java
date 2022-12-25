@@ -1,6 +1,8 @@
 package core;
 
 import symbol_table.SymbolTable;
+import intermediate_code.Instruction;
+import java.util.ArrayList;
 
 public class Main extends BaseNode {
     private L_Decls listaDecl;
@@ -37,6 +39,12 @@ public class Main extends BaseNode {
     public String toString() {
         return "Main [nextDecl=" + listaDecl + ", nextInstr=" + listaInstr + ", symbolTable=" + symbolTable + " line="
                 + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

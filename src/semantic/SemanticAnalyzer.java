@@ -29,51 +29,34 @@ public class SemanticAnalyzer {
         checkMain(main);
 
         // Checkeamos todas las funciones
-        for (L_Fn l_fn = chadpp.getL_Fn(); l_fn != null; l_fn.getNextFn()) {
+        for (L_Fn l_fn = chadpp.getL_Fn(); l_fn != null; l_fn = l_fn.getNextFn()) {
             checkFunction(l_fn.getFn());
         }
-        /*
-         * L_Fn l_fn = chadpp.getL_Fn();
-         * while (l_fn.getNextFn() != null) {
-         * checkFunction(l_fn.getFn());
-         * l_fn = l_fn.getNextFn();
-         * }
-         * checkFunction(l_fn.getFn());
-         */
     }
 
+    /**
+     * @param main
+     * @return boolean
+     */
     public boolean checkMain(Main main) {
 
         // Checkeamos las declaraciones
-        for (L_Decls l_Decls = main.getListaDecl(); l_Decls != null; l_Decls.nextDecl()) {
+        for (L_Decls l_Decls = main.getListaDecl(); l_Decls != null; l_Decls = l_Decls.nextDecl()) {
             exVariableDeclaration(l_Decls.getDecl());
         }
 
-        /*
-         * L_Decls l_Decls = main.getListaDecl();
-         * while (l_Decls.nextDecl() != null) {
-         * exVariableDeclaration(l_Decls.getDecl());
-         * l_Decls = l_Decls.nextDecl();
-         * }
-         * exVariableDeclaration(l_Decls.getDecl());
-         */
-
         // Checkeamos instrucciones
-        for (L_Instrs l_Instrs = main.getListaInstr(); l_Instrs != null; l_Instrs.nextInstr()) {
+        for (L_Instrs l_Instrs = main.getListaInstr(); l_Instrs != null; l_Instrs = l_Instrs.nextInstr()) {
             checkInstruction(l_Instrs.getInstr());
         }
-        /*
-         * L_Instrs l_Instrs = main.getListaInstr();
-         * while (l_Instrs.nextInstr() != null) {
-         * checkInstruction(l_Instrs.getInstr());
-         * l_Instrs = l_Instrs.nextInstr();
-         * }
-         * checkInstruction(l_Instrs.getInstr());
-         */
 
         return true;
     }
 
+    /**
+     * @param function
+     * @return boolean
+     */
     public boolean checkFunction(Function function) {
         // Enlazamos la tabla de simbolos de la funcion a la de su padre y la ponemos
         // como la actual para que los nodos interiores puedan acceder a ella.
@@ -85,28 +68,10 @@ public class SemanticAnalyzer {
             exVariableDeclaration(l_Decls.getDecl());
         }
 
-        /*
-         * L_Decls l_Decls = function.getDecls();
-         * while (l_Decls.nextDecl() != null) {
-         * exVariableDeclaration(l_Decls.getDecl());
-         * l_Decls = l_Decls.nextDecl();
-         * }
-         * exVariableDeclaration(l_Decls.getDecl());
-         */
-
         // Comprobar instrucciones de la función
-        for (L_Instrs l_Instrs = function.getInstrs(); l_Instrs != null; l_Instrs.nextInstr()) {
+        for (L_Instrs l_Instrs = function.getInstrs(); l_Instrs != null; l_Instrs = l_Instrs.nextInstr()) {
             checkInstruction(l_Instrs.getInstr());
         }
-
-        /*
-         * L_Instrs l_Instrs = function.getInstrs();
-         * while (l_Instrs.nextInstr() != null) {
-         * checkInstruction(l_Instrs.getInstr());
-         * l_Instrs = l_Instrs.nextInstr();
-         * }
-         * checkInstruction(l_Instrs.getInstr());
-         */
 
         // Finalmente, cuando acabamos con los elementos de la funcion, dejamos la tabla
         // actual a la de su padre
@@ -115,6 +80,11 @@ public class SemanticAnalyzer {
         return true;
     }
 
+    /**
+     *
+     * @param decl
+     * @return boolean
+     */
     public boolean exVariableDeclaration(Decl decl) {
         boolean isConstant = decl.isConstant();
         TypeVar typevar = decl.getType();
@@ -122,6 +92,9 @@ public class SemanticAnalyzer {
 
         // Solo puede ocurrir cuando estamos mirando las declaraciones de la funcion
         // main
+        // ! Depth esta mal, ya que podemos tener más de 1 de profundidad
+        // ? Podriamos poner un atributo en la tabla de simbolos que sea "depth" y aqui
+        // ? coger el depth del padre y sumarle 1
         int depth = (this.actualSymbolTable.getParent() == null) ? 0 : 1;
 
         // Boolean isCorrect = checkExpresion(asignation.getExpresion(), typevar);
@@ -131,92 +104,112 @@ public class SemanticAnalyzer {
             return false;
         }
 
-        /*
-         * boolean isInitialized = true;
-         * if (asignation.getExpresion().getValue() == null) {
-         * isInitialized = false;
-         * }
-         */
         boolean isInitialized = asignation.getExpresion().getValue() != null;
 
-        L_Ids l_ids = asignation.getL_Ids();
-        String id;
-        while (l_ids.nextId() != null) {
-            // addSymbol con este ID
-            id = l_ids.getId();
-            if (this.actualSymbolTable.addSymbol(id, Type.VARIABLE, typevar, depth, isConstant, isInitialized, 0)) {
-                // Error
-            }
-            l_ids = l_ids.nextId();
+        for (L_Ids l_ids = asignation.getL_Ids(); l_ids != null; l_ids = l_ids.nextId()) {
+            String id = l_ids.getId();
 
-        }
-        // addSymbol con el último ID
-        id = l_ids.getId();
-        if (this.actualSymbolTable.addSymbol(id, Type.VARIABLE, typevar, depth, isConstant, isInitialized, 0)) {
-            // Error
+            if (this.actualSymbolTable.addSymbol(id, Type.VARIABLE, typevar, depth, isConstant, isInitialized,
+                    l_ids.getLine(), getPossibleValues(asignation.getExpresion()))) {
+                // TODO: Create the pertinent Error
+                // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
+                return false;
+            }
         }
 
         return true;
     }
 
+    private ArrayList<Object> getPossibleValues(Expresion expresion) {
+        // int a = (1 + 3)
+        // tup b = [a, fn(), 1];
+        //
+
+        if (expresion.getNextExpresion() != null) {
+            return null;
+        }
+        /*
+         * Possible values of value: - callfn - input - int - bol - tup - variable ->
+         * make a copy of the value -> check its value -> recursive - expresion
+         */
+
+        Value v = expresion.getValue();
+
+        return null;
+    }
+
+    /**
+     * @param expresion
+     * @param typeVar
+     * @return boolean
+     */
     public boolean checkExpresion(Expresion expresion, TypeVar typeVar) {
         Value value = expresion.getValue();
         // Expression: value Op Expresion
         // value
         switch (value.getCurrentInstance()) {
-            case "Expresion":
-                Expresion ex = value.getExpresion();
-                if (!checkExpresion(ex, typeVar)) {
-                    // System.out.println("Error, ");
-                    return false;
-                }
-                break;
-            case "Number":
-                if (typeVar != TypeVar.INT) {
-                    // System.out.println("Error, ");
-                    ErrorHandler.addError(ErrorCode.INCOMPATIBLE_TYPES, 0, Phase.SEMANTIC);
-                    return false;
-                }
-                break;
-            case "Tuple":
-                value.getTuple();
-                // TODO: implement this
+        case "Expresion":
+            Expresion ex = value.getExpresion();
+            if (!checkExpresion(ex, typeVar)) {
+                // TODO: Create the pertinent Error
                 return false;
-            // break;
-            case "Bol":
-                if (typeVar != TypeVar.BOOL) {
-                    // System.out.println("Error, ");
-                    ErrorHandler.addError(ErrorCode.INCOMPATIBLE_TYPES, 0, Phase.SEMANTIC);
-                    return false;
-                }
-                break;
-            case "Id":
-                String id = value.getId().getValue();
-                if (!checkVariableDeclaration(id, 0, typeVar)) {
-                    System.out.println("no declarada o no tipo variable");
-                    return false;
-                }
-                break;
-            case "CallFn":
-                value.getCallFn();
-                // TODO: implement this
+            }
+            break;
+        case "Number":
+            if (typeVar != TypeVar.INT) {
+                // TODO: Create the pertinent Error
+                // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
                 return false;
-            // break;
-            case "A_Tuple":
-                value.getaTuple();
-                // TODO: implement this
+            }
+            break;
+        // Unico caso => [1,2] == [1,2]
+        case "Tuple":
+            value.getTuple();
+            // TODO: implement this
+            return false;
+        // break;
+        case "Bol":
+            if (typeVar != TypeVar.BOOL) {
+                // TODO: Create the pertinent Error
+                // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
                 return false;
-            // break;
-            case "Input":
-                value.getInput();
-                // TODO: implement this
+            }
+            break;
+        case "Id":
+            String id = value.getId().getValue();
+            if (!checkVariableDeclaration(id, 0, typeVar)) {
+                // TODO: Create the pertinent Error
+                // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
                 return false;
-            // break;
-            default:
-                // ERROR DEL COMPILADOR
-                return false;
+            }
+            break;
+        case "CallFn":
+            value.getCallFn();
+            // TODO: implement this
+            return false;
+        // break;
+        case "A_Tuple":
+            value.getaTuple();
+            // TODO: implement this
+            return false;
+        // break;
+        case "Input":
+            value.getInput();
+            // TODO: implement this
+            return false;
+        // break;
+        default:
+            // ERROR DEL COMPILADOR
+            return false;
         }
 
+        // OP
+        /*
+         * 1. Descomponer la expresion --> (Token, valor) Token --> id y valor -->
+         * Operando 2. Comprobar tipos (operación tiene sentido) --> (1+2) < (1<3) -->
+         * Error de tipos 3. Orden operaciones --> A+B*C --> A + (B*C). Stack from =>
+         * BC*A+
+         */
         Op op = expresion.getOp();
         if (op == null) {
             return true;
@@ -242,6 +235,10 @@ public class SemanticAnalyzer {
         return (checkExpresion(expresion.getNextExpresion(), typeVar));
     }
 
+    /**
+     * @param instr
+     * @return boolean
+     */
     public boolean checkInstruction(Instr instr) {
         // addSymbol
         return true;
@@ -345,11 +342,17 @@ public class SemanticAnalyzer {
         return true;
     }
 
+    /**
+     * @return boolean
+     */
     public boolean checkExpression() {
 
         return false;
     }
 
+    /**
+     * @return boolean
+     */
     public boolean checkAssignment() {
         // !TODO: Implement this method
         return false;
@@ -376,11 +379,17 @@ public class SemanticAnalyzer {
         return true;
     }
 
+    /**
+     * @return boolean
+     */
     public boolean checkFunctionCall() {
 
         return false;
     }
 
+    /**
+     * @return boolean
+     */
     public boolean checkInstruction() {
         // !TODO: Implement this method
         return false;
@@ -403,10 +412,16 @@ public class SemanticAnalyzer {
         return true;
     }
 
+    /**
+     * @return SymbolTable
+     */
     public SymbolTable getSymbolTable() {
         return this.actualSymbolTable;
     }
 
+    /**
+     * @return String
+     */
     public String printSymbolTables() {
         String r = "Main:\n" + this.chadpp.getMain().getSymbolTable().printSymbolTable() + "\n";
 

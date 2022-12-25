@@ -1,5 +1,9 @@
 package core;
 
+import java.util.ArrayList;
+
+import intermediate_code.Instruction;
+
 public class IfNode extends BaseNode {
     private Expresion expresion;
     private L_Instrs instrs;
@@ -29,6 +33,12 @@ public class IfNode extends BaseNode {
     @Override
     public String toString() {
         return "IfNode [expresion=" + expresion + ", instrs=" + instrs + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

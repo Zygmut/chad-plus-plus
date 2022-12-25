@@ -14,6 +14,7 @@ import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.SymbolFactory;
 import symbol_table.SymbolTable;
 import grammar.Scanner;
+import intermediate_code.ThreeAddressCode;
 import grammar.Parser;
 
 /**
@@ -58,16 +59,20 @@ public class MainChpp {
 
         // Parser
         try {
+            // lexer + sintactic
             SymbolFactory sf = new ComplexSymbolFactory();
             Parser parser = new Parser(scanner, sf);
             parser.parse();
 
-            // parser.getSemanticAnalyzer().run();
+            // semantic
+            parser.getSemanticAnalyzer().run();
             System.out.println(parser.getSemanticAnalyzer().printSymbolTables());
 
             SymbolTable symbolTable = parser.getSemanticAnalyzer().getSymbolTable();
             System.out.println(symbolTable.printSymbolTable());
 
+            // c3@
+            ThreeAddressCode c3d = new ThreeAddressCode(parser.getTree());
             // Chadpp tree = parser.getTree();
             // System.out.println(tree);
 

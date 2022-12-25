@@ -1,5 +1,9 @@
 package core;
 
+import java.util.ArrayList;
+
+import intermediate_code.Instruction;
+
 public class Decl extends BaseNode {
 
     private boolean isConstant;
@@ -41,6 +45,12 @@ public class Decl extends BaseNode {
     public String toString() {
         return "Decl [isConstant=" + isConstant + ", type=" + type + ", asignation=" + asignation + " line=" + line
                 + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

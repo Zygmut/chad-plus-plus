@@ -1,5 +1,9 @@
 package core;
 
+import java.util.ArrayList;
+
+import intermediate_code.Instruction;
+
 public class L_Fn extends BaseNode {
     private Function fn;
     private L_Fn nextFn;
@@ -29,6 +33,12 @@ public class L_Fn extends BaseNode {
     @Override
     public String toString() {
         return "L_Fn [fn=" + fn + ", nextFn=" + nextFn + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

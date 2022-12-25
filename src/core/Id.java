@@ -1,5 +1,9 @@
 package core;
 
+import java.util.ArrayList;
+
+import intermediate_code.Instruction;
+
 public class Id extends BaseNode {
     private String value;
 
@@ -19,6 +23,12 @@ public class Id extends BaseNode {
     @Override
     public String toString() {
         return "Id [value=" + value + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

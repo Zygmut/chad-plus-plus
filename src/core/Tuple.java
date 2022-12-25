@@ -1,5 +1,9 @@
 package core;
 
+import java.util.ArrayList;
+
+import intermediate_code.Instruction;
+
 public class Tuple extends BaseNode {
     private L_Args tupleContent;
 
@@ -19,6 +23,12 @@ public class Tuple extends BaseNode {
     @Override
     public String toString() {
         return "Tuple [tupleContent=" + tupleContent + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

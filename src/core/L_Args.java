@@ -1,5 +1,9 @@
 package core;
 
+import java.util.ArrayList;
+
+import intermediate_code.Instruction;
+
 public class L_Args extends BaseNode {
     private Expresion arg;
     private L_Args nextArg;
@@ -34,6 +38,12 @@ public class L_Args extends BaseNode {
     @Override
     public String toString() {
         return "L_Args [arg=" + arg + ", nextArg=" + nextArg + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

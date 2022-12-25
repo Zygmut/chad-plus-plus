@@ -1,5 +1,8 @@
 package core;
 
+import java.util.ArrayList;
+
+import intermediate_code.Instruction;
 import symbol_table.SymbolTable;
 
 public class Function extends BaseNode {
@@ -69,6 +72,12 @@ public class Function extends BaseNode {
     public String toString() {
         return "Function [returnType=" + returnType + ", id=" + id + ", arguments=" + arguments + ", decls=" + decls
                 + ", instrs=" + instrs + ", symbolTable=" + symbolTable + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

@@ -11,7 +11,7 @@ public class Symbol {
     private final String name;
     private final Type type;
     private final SubType subType;
-    private final ArrayList<Object> value;
+    private ArrayList<Object> value;
     private int depth;
     private final boolean isConstant;
     private final boolean isInitialized;
@@ -80,6 +80,10 @@ public class Symbol {
 
     public void setValue(Object value) {
         this.value.add(value);
+    }
+
+    public void setValue(ArrayList<Object> values) {
+        this.value = values;
     }
 
     public void setLine(int line) {

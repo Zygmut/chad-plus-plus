@@ -1,5 +1,9 @@
 package core;
 
+import java.util.ArrayList;
+
+import intermediate_code.Instruction;
+
 public class Number extends BaseNode {
 
     private int value;
@@ -25,6 +29,12 @@ public class Number extends BaseNode {
     @Override
     public String toString() {
         return "Number [value=" + value + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

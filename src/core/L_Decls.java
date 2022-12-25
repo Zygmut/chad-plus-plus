@@ -1,5 +1,9 @@
 package core;
 
+import java.util.ArrayList;
+
+import intermediate_code.Instruction;
+
 public class L_Decls extends BaseNode {
     private L_Decls nextDecl;
     private Decl decl;
@@ -41,6 +45,12 @@ public class L_Decls extends BaseNode {
     @Override
     public String toString() {
         return "L_Decls [decl=" + decl + ", nextDecl=" + nextDecl + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

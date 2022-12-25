@@ -1,5 +1,9 @@
 package core;
 
+import java.util.ArrayList;
+
+import intermediate_code.Instruction;
+
 public class Instr extends BaseNode {
     private String currentInstance;
     private IfNode ifNode;
@@ -62,24 +66,30 @@ public class Instr extends BaseNode {
     @Override
     public String toString() {
         switch (currentInstance) {
-            case "IfNode":
-                return "Instr [ifnode=" + ifNode + ", line=" + line + ", column=" + column + "]";
-            case "WhileNode":
-                return "Instr [whileNode=" + whileNode + ", line=" + line + ", column=" + column + "]";
-            case "LoopNode":
-                return "Instr [loopNode=" + loopNode + ", line=" + line + ", column=" + column + "]";
-            case "ReturnNode":
-                return "Instr [returnNode=" + returnNode + ", line=" + line + ", column=" + column + "]";
-            case "Output":
-                return "Instr [output=" + output + ", line=" + line + ", column=" + column + "]";
-            case "Input":
-                return "Instr [input=" + input + ", line=" + line + ", column=" + column + "]";
-            case "Asignation":
-                return "Instr [asignation=" + asignation + ", line=" + line + ", column=" + column + "]";
-            case "CallFn":
-                return "Instr [callFn=" + callFn + ", line=" + line + ", column=" + column + "]";
-            default:
-                return "Not valid";
+        case "IfNode":
+            return "Instr [ifnode=" + ifNode + ", line=" + line + ", column=" + column + "]";
+        case "WhileNode":
+            return "Instr [whileNode=" + whileNode + ", line=" + line + ", column=" + column + "]";
+        case "LoopNode":
+            return "Instr [loopNode=" + loopNode + ", line=" + line + ", column=" + column + "]";
+        case "ReturnNode":
+            return "Instr [returnNode=" + returnNode + ", line=" + line + ", column=" + column + "]";
+        case "Output":
+            return "Instr [output=" + output + ", line=" + line + ", column=" + column + "]";
+        case "Input":
+            return "Instr [input=" + input + ", line=" + line + ", column=" + column + "]";
+        case "Asignation":
+            return "Instr [asignation=" + asignation + ", line=" + line + ", column=" + column + "]";
+        case "CallFn":
+            return "Instr [callFn=" + callFn + ", line=" + line + ", column=" + column + "]";
+        default:
+            return "Not valid";
         }
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
+
     }
 }

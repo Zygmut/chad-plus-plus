@@ -1,5 +1,8 @@
 package core;
 
+import intermediate_code.Instruction;
+import java.util.ArrayList;
+
 public class Asignation extends BaseNode {
 
     private L_Ids lid;
@@ -30,6 +33,12 @@ public class Asignation extends BaseNode {
     @Override
     public String toString() {
         return "Asignation [L_Ids=" + lid + ", expresion=" + expresion + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

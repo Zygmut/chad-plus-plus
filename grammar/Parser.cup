@@ -53,7 +53,7 @@ parser code {:
      */
     @Override
     public void report_error(String message, Object token) {
-        ErrorHandler.addError(message, ((java_cup.runtime.Symbol) token).left, -1, Phase.SYNTACTIC);
+        ErrorHandler.addError(message, ((java_cup.runtime.Symbol) token).left, -1 , Phase.SYNTACTIC);
     }
 
     /**
@@ -112,19 +112,19 @@ non terminal    L_Ids       LID;
 
 start with CHADPP;
 
-CHADPP          ::= MAINFN:main FUNCTIONS:fun                   {: tree = new Chadpp(main, fun, cur_token.left-1, cur_token.right); semanticAnalyzer = new SemanticAnalyzer(tree); :}                                              
+CHADPP          ::= MAINFN:main FUNCTIONS:fun                   {: tree = new Chadpp(main, fun, cur_token.left, cur_token.right); semanticAnalyzer = new SemanticAnalyzer(tree); :}                                              
                 ;
 
-MAINFN          ::= MAIN LKEY DECLS:decls BEGIN INSTRS:i RKEY   {: RESULT = new Main(decls, i, symbolTable, cur_token.left-1, cur_token.right); :}
-                |   MAIN LKEY INSTRS:i RKEY                     {: RESULT = new Main(null, i, symbolTable, cur_token.left-1, cur_token.right);  :}
+MAINFN          ::= MAIN LKEY DECLS:decls BEGIN INSTRS:i RKEY   {: RESULT = new Main(decls, i, symbolTable, cur_token.left, cur_token.right); :}
+                |   MAIN LKEY INSTRS:i RKEY                     {: RESULT = new Main(null, i, symbolTable, cur_token.left, cur_token.right);  :}
                 ;
 
-DECLS           ::= DECL:d DECLS:ld                             {: RESULT = new L_Decls(d, ld, cur_token.left-1, cur_token.right);  :}
-                | DECL:d                                        {: RESULT = new L_Decls(d, cur_token.left-1, cur_token.right);      :}
+DECLS           ::= DECL:d DECLS:ld                             {: RESULT = new L_Decls(d, ld, cur_token.left, cur_token.right);  :}
+                | DECL:d                                        {: RESULT = new L_Decls(d, cur_token.left, cur_token.right);      :}
                 ;
 
-DECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {: RESULT = new Decl(true, type, assig, cur_token.left-1, cur_token.right);  :}
-                |   TYPEVAR:type ASIGNATION:assig               {: RESULT = new Decl(false, type, assig, cur_token.left-1, cur_token.right); :}
+DECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {: RESULT = new Decl(true, type, assig, cur_token.left, cur_token.right);  :}
+                |   TYPEVAR:type ASIGNATION:assig               {: RESULT = new Decl(false, type, assig, cur_token.left, cur_token.right); :}
                 ;
 
 TYPEVAR         ::= INT                                         {: RESULT = TypeVar.INT; :}
@@ -132,14 +132,14 @@ TYPEVAR         ::= INT                                         {: RESULT = Type
                 |   TUP                                         {: RESULT = TypeVar.TUP; :}
                 ;
 
-ASIGNATION      ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e, cur_token.left-1, cur_token.right); :};
+ASIGNATION      ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e, cur_token.left, cur_token.right); :};
 
-LID             ::= ID:id COMMA LID:lid                         {: RESULT = new L_Ids(id, lid, cur_token.left-1, cur_token.right); :}
-                | ID:id                                         {: RESULT = new L_Ids(id, cur_token.left-1, cur_token.right); :}
+LID             ::= ID:id COMMA LID:lid                         {: RESULT = new L_Ids(id, lid, cur_token.left, cur_token.right); :}
+                | ID:id                                         {: RESULT = new L_Ids(id, cur_token.left, cur_token.right); :}
                 ;
 
-EXPRESION       ::= VALUE:v OP:op EXPRESION:e                   {: RESULT = new Expresion(v, e, op, cur_token.left-1, cur_token.right); :}
-                |   VALUE:v                                     {: RESULT = new Expresion(v, cur_token.left-1, cur_token.right); :}
+EXPRESION       ::= VALUE:v OP:op EXPRESION:e                   {: RESULT = new Expresion(v, e, op, cur_token.left, cur_token.right); :}
+                |   VALUE:v                                     {: RESULT = new Expresion(v, cur_token.left, cur_token.right); :}
                 ;
 
 OP              ::= PLUS                                        {: RESULT = Op.PLUS; :}
@@ -157,72 +157,72 @@ OP              ::= PLUS                                        {: RESULT = Op.P
 VALUE           ::= LPAREN EXPRESION:e RPAREN                   {: RESULT = new Value(e); :}                // (E)
                 |   V_TUP:v                                     {: RESULT = new Value(v); :}                // [a,b,c]
                 |   A_TUP:a                                     {: RESULT = new Value(a); :}                // v[5]
-                |   NUMBER:n                                    {: RESULT = new Value("Number", n, cur_token.left-1, cur_token.right); :}      // 1
-                |   VBOL:b                                      {: RESULT = new Value("Bol", b, cur_token.left-1, cur_token.right); :}         // true
+                |   NUMBER:n                                    {: RESULT = new Value("Number", n, cur_token.left, cur_token.right); :}      // 1
+                |   VBOL:b                                      {: RESULT = new Value("Bol", b, cur_token.left, cur_token.right); :}         // true
                 |   CALLF:call                                  {: RESULT = new Value(call); :}             // fn()
-                |   ININT LPAREN RPAREN                         {: RESULT = new Value(new Input(0, cur_token.left-1, cur_token.right)); :}
-                |   INBOL LPAREN RPAREN                         {: RESULT = new Value(new Input(1, cur_token.left-1, cur_token.right)); :}
-                |   ID:id                                       {: RESULT = new Value("Id", id, cur_token.left-1, cur_token.right); :}         // a
+                |   ININT LPAREN RPAREN                         {: RESULT = new Value(new Input(0, cur_token.left, cur_token.right)); :}
+                |   INBOL LPAREN RPAREN                         {: RESULT = new Value(new Input(1, cur_token.left, cur_token.right)); :}
+                |   ID:id                                       {: RESULT = new Value("Id", id, cur_token.left, cur_token.right); :}         // a
                 ;
 
 // No se permite []. Al menos debe tener un elemento i.e [A]
-V_TUP           ::= LSKEY ARGS:a RSKEY                          {: RESULT = new Tuple(a, cur_token.left-1, cur_token.right); :}
+V_TUP           ::= LSKEY ARGS:a RSKEY                          {: RESULT = new Tuple(a, cur_token.left, cur_token.right); :}
                 ;
 
-A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: RESULT = new A_Tuple(new Id(id, cur_token.left-1, cur_token.right), new core.Number(num, cur_token.left-1, cur_token.right), cur_token.left-1, cur_token.right); :}
+A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: RESULT = new A_Tuple(new Id(id, cur_token.left, cur_token.right), new core.Number(num, cur_token.left, cur_token.right), cur_token.left, cur_token.right); :}
                 ;
 
-CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new CallFn(new Id(id, cur_token.left-1, cur_token.right), args, cur_token.left-1, cur_token.right); :}
-                |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id, cur_token.left-1, cur_token.right), cur_token.left-1, cur_token.right); :}
+CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new CallFn(new Id(id, cur_token.left, cur_token.right), args, cur_token.left, cur_token.right); :}
+                |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id, cur_token.left, cur_token.right), cur_token.left, cur_token.right); :}
                 ;
 
-ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: RESULT = new L_Args(e, args, cur_token.left-1, cur_token.right); :}
-                |   EXPRESION:e                                 {: RESULT = new L_Args(e, cur_token.left-1, cur_token.right); :}
+ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: RESULT = new L_Args(e, args, cur_token.left, cur_token.right); :}
+                |   EXPRESION:e                                 {: RESULT = new L_Args(e, cur_token.left, cur_token.right); :}
                 ;
 
-INSTRS          ::= INSTR:inst INSTRS:instrs                    {: RESULT = new L_Instrs(inst, instrs, cur_token.left-1, cur_token.right); :}
+INSTRS          ::= INSTR:inst INSTRS:instrs                    {: RESULT = new L_Instrs(inst, instrs, cur_token.left, cur_token.right); :}
                 |                                               {: :}
                 ;
 
-R_INSTRS        ::= R_INSTR:inst R_INSTRS:instrs                {: RESULT = new L_Instrs(inst, instrs, cur_token.left-1, cur_token.right); :}
+R_INSTRS        ::= R_INSTR:inst R_INSTRS:instrs                {: RESULT = new L_Instrs(inst, instrs, cur_token.left, cur_token.right); :}
                 |                                               {: :}
                 ;
 
-R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                          {: RESULT = new Instr(new IfNode(e, instrs, cur_token.left-1, cur_token.right), cur_token.left-1, cur_token.right); :}
-                |   WHILE LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                       {: RESULT = new Instr(new WhileNode(e, instrs, cur_token.left-1, cur_token.right), cur_token.left-1, cur_token.right); :}
-                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY R_INSTRS:instrs RKEY    {: RESULT = new Instr(new LoopNode(e1, e2, instrs, cur_token.left-1, cur_token.right), cur_token.left-1, cur_token.right); :}
-                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                         {: RESULT = new Instr(new Output(e, cur_token.left -1, cur_token.right), cur_token.left -1, cur_token.right); :}
-                |   ININT LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(0, cur_token.left -1, cur_token.right), cur_token.left -1, cur_token.right); :}
-                |   INBOL LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(1, cur_token.left -1, cur_token.right), cur_token.left -1, cur_token.right); :}
-                |   ASIGNATION:a                                                                    {: RESULT = new Instr(a, cur_token.left -1, cur_token.right); :}
-                |   CALLF:fn SEMICOLON                                                              {: RESULT = new Instr(fn, cur_token.left -1, cur_token.right); :}
-                |   RETURN EXPRESION:e SEMICOLON                                                    {: RESULT = new Instr(new ReturnNode(e, cur_token.left -1, cur_token.right), cur_token.left -1, cur_token.right); :}
+R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                          {: RESULT = new Instr(new IfNode(e, instrs, cur_token.left, cur_token.right), cur_token.left, cur_token.right); :}
+                |   WHILE LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                       {: RESULT = new Instr(new WhileNode(e, instrs, cur_token.left, cur_token.right), cur_token.left, cur_token.right); :}
+                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY R_INSTRS:instrs RKEY    {: RESULT = new Instr(new LoopNode(e1, e2, instrs, cur_token.left, cur_token.right), cur_token.left, cur_token.right); :}
+                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                         {: RESULT = new Instr(new Output(e, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   ININT LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(0, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   INBOL LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(1, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   ASIGNATION:a                                                                    {: RESULT = new Instr(a, cur_token.left , cur_token.right); :}
+                |   CALLF:fn SEMICOLON                                                              {: RESULT = new Instr(fn, cur_token.left , cur_token.right); :}
+                |   RETURN EXPRESION:e SEMICOLON                                                    {: RESULT = new Instr(new ReturnNode(e, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
                 ;
 
-INSTR           ::= IF LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                        {: RESULT = new Instr(new IfNode(e, instrs, cur_token.left -1, cur_token.right), cur_token.left -1, cur_token.right); :}
-                |   WHILE LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                     {: RESULT = new Instr(new WhileNode(e, instrs, cur_token.left -1, cur_token.right), cur_token.left -1, cur_token.right); :}
-                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY INSTRS:instrs RKEY  {: RESULT = new Instr(new LoopNode(e1, e2, instrs, cur_token.left -1, cur_token.right), cur_token.left -1, cur_token.right); :}
-                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                     {: RESULT = new Instr(new Output(e, cur_token.left -1, cur_token.right), cur_token.left -1, cur_token.right); :}
-                |   ININT LPAREN RPAREN SEMICOLON                                               {: RESULT = new Instr(new Input(0, cur_token.left -1, cur_token.right), cur_token.left -1, cur_token.right); :}
-                |   INBOL LPAREN RPAREN SEMICOLON                                               {: RESULT = new Instr(new Input(1, cur_token.left -1, cur_token.right), cur_token.left -1, cur_token.right); :}
-                |   ASIGNATION:a                                                                {: RESULT = new Instr(a, cur_token.left -1, cur_token.right); :}
-                |   CALLF:fn SEMICOLON                                                          {: RESULT = new Instr(fn, cur_token.left -1, cur_token.right); :}
+INSTR           ::= IF LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                        {: RESULT = new Instr(new IfNode(e, instrs, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   WHILE LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                     {: RESULT = new Instr(new WhileNode(e, instrs, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY INSTRS:instrs RKEY  {: RESULT = new Instr(new LoopNode(e1, e2, instrs, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                     {: RESULT = new Instr(new Output(e, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   ININT LPAREN RPAREN SEMICOLON                                               {: RESULT = new Instr(new Input(0, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   INBOL LPAREN RPAREN SEMICOLON                                               {: RESULT = new Instr(new Input(1, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   ASIGNATION:a                                                                {: RESULT = new Instr(a, cur_token.left , cur_token.right); :}
+                |   CALLF:fn SEMICOLON                                                          {: RESULT = new Instr(fn, cur_token.left , cur_token.right); :}
                 ;
 
-FUNCTIONS       ::= FUNCTION:fn FUNCTIONS:fns                   {: RESULT = new L_Fn(fn, fns, cur_token.left-1, cur_token.right); :}
+FUNCTIONS       ::= FUNCTION:fn FUNCTIONS:fns                  {: RESULT = new L_Fn(fn, fns, cur_token.left, cur_token.right); :}
                 |                                               {: :}
                 ;
 
-FUNCTION        ::= TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY     {: if(addSymbol(id, Type.FUNCTION, t, 0, false, true, cur_token.left)){/*Verificar función*/}    currentSymbolTable = new SymbolTable(currentSymbolTable); RESULT = new Function(t, new Id(id, cur_token.left -1, cur_token.right), args, decls,instrs,    currentSymbolTable, cur_token.left -1, cur_token.right); :}
-                |   TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: if(addSymbol(id, Type.FUNCTION, t, 0, false, true, cur_token.left)){/*Verificar función*/}    currentSymbolTable = new SymbolTable(currentSymbolTable); RESULT = new Function(t, new Id(id, cur_token.left -1, cur_token.right), args, null, instrs,    currentSymbolTable, cur_token.left -1, cur_token.right); :}
-                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: if(addSymbol(id, Type.FUNCTION, null, 0, false, true, cur_token.left)){/*Verificar función*/} currentSymbolTable = new SymbolTable(currentSymbolTable); RESULT = new Function(null, new Id(id, cur_token.left -1, cur_token.right), args, decls, instrs,currentSymbolTable, cur_token.left -1, cur_token.right); :}
-                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                              {: if(addSymbol(id, Type.FUNCTION, null, 0, false, true, cur_token.left)){/*Verificar función*/} currentSymbolTable = new SymbolTable(currentSymbolTable); RESULT = new Function(null, new Id(id, cur_token.left -1, cur_token.right), args, null, instrs, currentSymbolTable, cur_token.left -1, cur_token.right); :}
+FUNCTION        ::= TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY     {: if(addSymbol(id, Type.FUNCTION, t, 0, false, true, cur_token.left)){/*Verificar función*/}    currentSymbolTable = new SymbolTable(currentSymbolTable); RESULT = new Function(t, new Id(id, cur_token.left , cur_token.right), args, decls,instrs,    currentSymbolTable, cur_token.left , cur_token.right); :}
+                |   TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: if(addSymbol(id, Type.FUNCTION, t, 0, false, true, cur_token.left)){/*Verificar función*/}    currentSymbolTable = new SymbolTable(currentSymbolTable); RESULT = new Function(t, new Id(id, cur_token.left , cur_token.right), args, null, instrs,    currentSymbolTable, cur_token.left , cur_token.right); :}
+                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: if(addSymbol(id, Type.FUNCTION, null, 0, false, true, cur_token.left)){/*Verificar función*/} currentSymbolTable = new SymbolTable(currentSymbolTable); RESULT = new Function(null, new Id(id, cur_token.left , cur_token.right), args, decls, instrs,currentSymbolTable, cur_token.left , cur_token.right); :}
+                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                              {: if(addSymbol(id, Type.FUNCTION, null, 0, false, true, cur_token.left)){/*Verificar función*/} currentSymbolTable = new SymbolTable(currentSymbolTable); RESULT = new Function(null, new Id(id, cur_token.left , cur_token.right), args, null, instrs, currentSymbolTable, cur_token.left , cur_token.right); :}
                 ;
 
 F_ARGS          ::= F_ARGS2:args    {: RESULT = args;   :}
                 |                   {:                  :}
                 ;
 
-F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args    {: RESULT = new L_FArgs( new FnArg(type, new Id(id, cur_token.left -1, cur_token.right), cur_token.left -1, cur_token.right), args, cur_token.left -1, cur_token.right); :}
-                |  TYPEVAR:type ID:id                       {: RESULT = new L_FArgs( new FnArg(type, new Id(id, cur_token.left -1, cur_token.right), cur_token.left -1, cur_token.right), null, cur_token.left -1, cur_token.right); :}
+F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args    {: RESULT = new L_FArgs( new FnArg(type, new Id(id, cur_token.left , cur_token.right), cur_token.left , cur_token.right), args, cur_token.left , cur_token.right); :}
+                |  TYPEVAR:type ID:id                       {: RESULT = new L_FArgs( new FnArg(type, new Id(id, cur_token.left , cur_token.right), cur_token.left , cur_token.right), null, cur_token.left , cur_token.right); :}
                 ;

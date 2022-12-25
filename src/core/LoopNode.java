@@ -1,5 +1,9 @@
 package core;
 
+import java.util.ArrayList;
+
+import intermediate_code.Instruction;
+
 public class LoopNode extends BaseNode {
     private Expresion expresion1;
     private Expresion expresion2;
@@ -40,6 +44,12 @@ public class LoopNode extends BaseNode {
     public String toString() {
         return "LoopNode [expresion1=" + expresion1 + ", expresion2=" + expresion2 + ", instrs=" + instrs + " line="
                 + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 

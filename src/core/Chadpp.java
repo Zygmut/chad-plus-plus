@@ -1,5 +1,8 @@
 package core;
 
+import intermediate_code.Instruction;
+import java.util.ArrayList;
+
 public class Chadpp extends BaseNode {
 
     private L_Fn functions;
@@ -34,6 +37,12 @@ public class Chadpp extends BaseNode {
     @Override
     public String toString() {
         return "Chadpp [listOfFunctions=" + functions + ", main=" + main + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ArrayList<Instruction> code) {
+        // TODO Auto-generated method stub
 
     }
 
