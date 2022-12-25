@@ -1,7 +1,6 @@
 package core;
 
-import intermediate_code.Instruction;
-import java.util.ArrayList;
+import intermediate_code.ThreeAddressCode;
 
 public class A_Tuple extends BaseNode {
 
@@ -36,7 +35,7 @@ public class A_Tuple extends BaseNode {
   }
 
   @Override
-  public void generate3dc(ArrayList<Instruction> code) {
+  public void generate3dc(ThreeAddressCode codigoTresDir) {
     // TODO Auto-generated method stub
 
   }

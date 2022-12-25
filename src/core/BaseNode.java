@@ -3,6 +3,7 @@ package core;
 import java.util.ArrayList;
 
 import intermediate_code.Instruction;
+import intermediate_code.ThreeAddressCode;
 
 abstract class BaseNode {
 
@@ -30,5 +31,5 @@ abstract class BaseNode {
     this.column = column;
   }
 
-  public abstract void generate3dc(ArrayList<Instruction> code);
+  public abstract void generate3dc(ThreeAddressCode codigoTresDir);
 }

@@ -1,8 +1,6 @@
 package core;
 
-import java.util.ArrayList;
-
-import intermediate_code.Instruction;
+import intermediate_code.ThreeAddressCode;
 import symbol_table.SymbolTable;
 
 public class Function extends BaseNode {
@@ -76,7 +74,7 @@ public class Function extends BaseNode {
     }
 
     @Override
-    public void generate3dc(ArrayList<Instruction> code) {
+    public void generate3dc(ThreeAddressCode codigoTresDir) {
         // TODO Auto-generated method stub
 
     }

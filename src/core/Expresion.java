@@ -1,7 +1,6 @@
 package core;
 
-import intermediate_code.Instruction;
-import java.util.ArrayList;
+import intermediate_code.ThreeAddressCode;
 
 public class Expresion extends BaseNode {
     private Value value;
@@ -54,7 +53,7 @@ public class Expresion extends BaseNode {
     }
 
     @Override
-    public void generate3dc(ArrayList<Instruction> code) {
+    public void generate3dc(ThreeAddressCode codigoTresDir) {
         // TODO Auto-generated method stub
 
     }

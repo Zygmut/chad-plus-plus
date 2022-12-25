@@ -1,8 +1,6 @@
 package core;
 
-import java.util.ArrayList;
-
-import intermediate_code.Instruction;
+import intermediate_code.ThreeAddressCode;
 
 public class Input extends BaseNode {
     private int type; // 0 int, 1 bool
@@ -27,7 +25,7 @@ public class Input extends BaseNode {
     }
 
     @Override
-    public void generate3dc(ArrayList<Instruction> code) {
+    public void generate3dc(ThreeAddressCode codigoTresDir) {
         // TODO Auto-generated method stub
 
     }
