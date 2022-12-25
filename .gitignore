@@ -31,3 +31,7 @@ grammar/ParserSym.java
 grammar/Scanner.java
 grammar/Scanner.java~
 grammar/Parser.java
+
+.idea/
+*.iml
+out/
