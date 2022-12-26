@@ -68,13 +68,14 @@ public class MainChpp {
             parser.getSemanticAnalyzer().run();
             System.out.println(parser.getSemanticAnalyzer().printSymbolTables());
 
-            SymbolTable symbolTable = parser.getSemanticAnalyzer().getSymbolTable();
-            System.out.println(symbolTable.printSymbolTable());
+            //SymbolTable symbolTable = parser.getSemanticAnalyzer().getSymbolTable();
+            //System.out.println(symbolTable.printSymbolTable());
 
             // c3@
             ThreeAddressCode c3d = new ThreeAddressCode(parser.getTree());
-            // Chadpp tree = parser.getTree();
-            // System.out.println(tree);
+            c3d.generate();
+            //Chadpp tree = parser.getTree();
+            //System.out.println(tree);
 
         } catch (Exception e) {
             ErrorHandler.printErrors();

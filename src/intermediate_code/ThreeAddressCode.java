@@ -25,7 +25,7 @@ public class ThreeAddressCode {
    * Genera el código 3 direcciones del código fuente
    */
   public void generate() {
-    tree.generate3dc(this, codigo3Dir);
+    tree.generate3dc(this);
   }
 
   /**

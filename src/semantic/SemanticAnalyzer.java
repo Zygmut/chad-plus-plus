@@ -1,21 +1,20 @@
 package semantic;
 
-import symbol_table.SymbolTable;
-import symbol_table.Symbol;
-import symbol_table.Symbol.Type;
-import symbol_table.Symbol.SubType;
-import utils.Phase;
-import errors.ErrorHandler;
-
-import java.util.ArrayList;
-
 import core.*;
 import errors.ErrorCode;
+import errors.ErrorHandler;
+import symbol_table.Symbol;
+import symbol_table.Symbol.SubType;
+import symbol_table.Symbol.Type;
+import symbol_table.SymbolTable;
+import utils.Phase;
+
+import java.util.ArrayList;
 
 public class SemanticAnalyzer {
 
     private SymbolTable actualSymbolTable;
-    private Chadpp chadpp;
+    private final Chadpp chadpp;
 
     public SemanticAnalyzer(Chadpp chadpp) {
         this.chadpp = chadpp;
@@ -42,7 +41,7 @@ public class SemanticAnalyzer {
 
         // Checkeamos las declaraciones
         for (L_Decls l_Decls = main.getListaDecl(); l_Decls != null; l_Decls = l_Decls.nextDecl()) {
-            exVariableDeclaration(l_Decls.getDecl());
+            exVariableDeclaration(l_Decls.getDecl(), null);
         }
 
         // Checkeamos instrucciones
@@ -65,7 +64,7 @@ public class SemanticAnalyzer {
 
         // Comprobar declaraciones de la función
         for (L_Decls l_Decls = function.getDecls(); l_Decls != null; l_Decls = l_Decls.nextDecl()) {
-            exVariableDeclaration(l_Decls.getDecl());
+            exVariableDeclaration(l_Decls.getDecl(), function);
         }
 
         // Comprobar instrucciones de la función
@@ -81,11 +80,10 @@ public class SemanticAnalyzer {
     }
 
     /**
-     *
      * @param decl
      * @return boolean
      */
-    public boolean exVariableDeclaration(Decl decl) {
+    public boolean exVariableDeclaration(Decl decl, Function function) {
         boolean isConstant = decl.isConstant();
         TypeVar typevar = decl.getType();
         Asignation asignation = decl.getAsignation();
@@ -108,10 +106,10 @@ public class SemanticAnalyzer {
 
         for (L_Ids l_ids = asignation.getL_Ids(); l_ids != null; l_ids = l_ids.nextId()) {
             String id = l_ids.getId();
-
             if (this.actualSymbolTable.addSymbol(id, Type.VARIABLE, typevar, depth, isConstant, isInitialized,
                     l_ids.getLine(), getPossibleValues(asignation.getExpresion()))) {
                 // TODO: Create the pertinent Error
+                System.out.println("Error");
                 // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
                 return false;
             }
@@ -124,18 +122,32 @@ public class SemanticAnalyzer {
         // int a = (1 + 3)
         // tup b = [a, fn(), 1];
         //
-
         if (expresion.getNextExpresion() != null) {
             return null;
         }
+        ArrayList<Object> values = new ArrayList<>();
+        Value v = expresion.getValue();
+        while (true) {
+            if (v.getBol() != null) {
+                values.add(v.getBol().isValue());
+            }
+            if (v.getNumber() != null) {
+                values.add(v.getNumber().getValue());
+            }
+
+            if (v.getExpresion() == null) {
+                break;
+            }
+            v = v.getExpresion().getValue();
+        }
+
         /*
          * Possible values of value: - callfn - input - int - bol - tup - variable ->
          * make a copy of the value -> check its value -> recursive - expresion
          */
+        //Value v = expresion.getValue();
 
-        Value v = expresion.getValue();
-
-        return null;
+        return values;
     }
 
     /**
@@ -148,59 +160,59 @@ public class SemanticAnalyzer {
         // Expression: value Op Expresion
         // value
         switch (value.getCurrentInstance()) {
-        case "Expresion":
-            Expresion ex = value.getExpresion();
-            if (!checkExpresion(ex, typeVar)) {
-                // TODO: Create the pertinent Error
+            case "Expresion":
+                Expresion ex = value.getExpresion();
+                if (!checkExpresion(ex, typeVar)) {
+                    // TODO: Create the pertinent Error
+                    return false;
+                }
+                break;
+            case "Number":
+                if (typeVar != TypeVar.INT) {
+                    // TODO: Create the pertinent Error
+                    // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
+                    return false;
+                }
+                break;
+            // Unico caso => [1,2] == [1,2]
+            case "Tuple":
+                value.getTuple();
+                // TODO: implement this
                 return false;
-            }
-            break;
-        case "Number":
-            if (typeVar != TypeVar.INT) {
-                // TODO: Create the pertinent Error
-                // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
+            // break;
+            case "Bol":
+                if (typeVar != TypeVar.BOOL) {
+                    // TODO: Create the pertinent Error
+                    // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
+                    return false;
+                }
+                break;
+            case "Id":
+                String id = value.getId().getValue();
+                if (!checkVariableDeclaration(id, 0, typeVar)) {
+                    // TODO: Create the pertinent Error
+                    // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
+                    return false;
+                }
+                break;
+            case "CallFn":
+                value.getCallFn();
+                // TODO: implement this
                 return false;
-            }
-            break;
-        // Unico caso => [1,2] == [1,2]
-        case "Tuple":
-            value.getTuple();
-            // TODO: implement this
-            return false;
-        // break;
-        case "Bol":
-            if (typeVar != TypeVar.BOOL) {
-                // TODO: Create the pertinent Error
-                // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
+            // break;
+            case "A_Tuple":
+                value.getaTuple();
+                // TODO: implement this
                 return false;
-            }
-            break;
-        case "Id":
-            String id = value.getId().getValue();
-            if (!checkVariableDeclaration(id, 0, typeVar)) {
-                // TODO: Create the pertinent Error
-                // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
+            // break;
+            case "Input":
+                value.getInput();
+                // TODO: implement this
                 return false;
-            }
-            break;
-        case "CallFn":
-            value.getCallFn();
-            // TODO: implement this
-            return false;
-        // break;
-        case "A_Tuple":
-            value.getaTuple();
-            // TODO: implement this
-            return false;
-        // break;
-        case "Input":
-            value.getInput();
-            // TODO: implement this
-            return false;
-        // break;
-        default:
-            // ERROR DEL COMPILADOR
-            return false;
+            // break;
+            default:
+                // ERROR DEL COMPILADOR
+                return false;
         }
 
         // OP
@@ -246,10 +258,9 @@ public class SemanticAnalyzer {
 
     /**
      * Checks the use of a variable
-     * 
+     *
      * @param id
      * @param line
-     * 
      * @return true if the variable is valid, false otherwise
      */
 
@@ -285,11 +296,10 @@ public class SemanticAnalyzer {
 
     /**
      * Checks the use of a function
-     * 
+     *
      * @param id
      * @param args
      * @param line
-     * 
      * @return true if the function is valid, false otherwise
      */
     public boolean checkFunctionDeclaration(String id, L_Args args, int line) {
@@ -360,12 +370,11 @@ public class SemanticAnalyzer {
 
     /**
      * Checks if the return type of a function is compatible with the return type.
-     * 
+     *
      * @param id        - The name of the function.
      * @param subType   - The return type of the function.
      * @param returnExp - The return expression of the function.
      * @param line      - The line number of the return statement.
-     * 
      * @return true if the return type is compatible, false otherwise
      */
     public boolean checkReturn(String id, SubType subType, ReturnNode returnExp, int line) {
@@ -397,10 +406,9 @@ public class SemanticAnalyzer {
 
     /**
      * This method checks if the ID is declared in the current scope.
-     * 
+     *
      * @param id   - The ID to check
      * @param line - The line where the ID is declared
-     * 
      * @return true if the ID is declared in the current scope, false otherwise.
      */
     public boolean checkIdentifier(String id, int line) {

@@ -56,7 +56,7 @@ public class SymbolTable {
         // Get subType from TypeVar
         SubType subTypeSymbol = (subType == null) ? SubType.VOID : getSubType(subType);
         Symbol symbol = new Symbol(name, type, subTypeSymbol, depth, isConstant, isInitialized, line);
-        symbol.setValue(null);
+        symbol.setValue(values);
         this.SymbolTable.put(name, symbol);
         return false;
     }
