@@ -1,8 +1,5 @@
 package core;
 
-import java.util.ArrayList;
-
-import intermediate_code.Instruction;
 import intermediate_code.ThreeAddressCode;
 
 abstract class BaseNode {
