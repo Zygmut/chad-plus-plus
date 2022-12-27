@@ -2,6 +2,14 @@ package core;
 
 import intermediate_code.ThreeAddressCode;
 
+/*
+*   loop(1,5)
+*   for i = 1 to 5 do ++
+*   loop(5,1)
+*   for i = 5 downto 1 do --
+*   loop(1,1)
+*   for i = 1 to 1 do ++
+*/
 public class LoopNode extends BaseNode {
     private Expresion expresion1;
     private Expresion expresion2;

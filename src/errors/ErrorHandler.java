@@ -1,5 +1,8 @@
 package errors;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import utils.Env;
@@ -74,8 +77,15 @@ public class ErrorHandler {
      * Print all errors
      */
     public static void printErrors() {
-        for (Error error : errors) {
-            System.out.println(error);
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(Env.GENERATED_FILES + "/" + "errores.txt"));
+            for (Error error : errors) {
+                System.out.println(error);
+                writer.write(error.toString() + "\n");
+            }
+            writer.close();
+        } catch (IOException err) {
+            System.out.println(err);
         }
     }
 

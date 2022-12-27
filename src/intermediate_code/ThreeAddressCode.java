@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import core.Chadpp;
+import utils.Env;
 
 /**
  * CodigoTresDrirecciones
@@ -33,7 +34,7 @@ public class ThreeAddressCode {
    */
   public void saveThreeAddressCode() {
     try {
-      BufferedWriter writer = new BufferedWriter(new FileWriter("Codigo3Dir.txt"));
+      BufferedWriter writer = new BufferedWriter(new FileWriter(Env.GENERATED_FILES + "/" + "Codigo3Dir.txt"));
       for (int i = 0; i < codigo3Dir.size(); i++) {
         writer.write(codigo3Dir.get(i).toString());
       }

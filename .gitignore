@@ -35,3 +35,5 @@ grammar/Parser.java
 .idea/
 *.iml
 out/
+
+ficherosGenerados/

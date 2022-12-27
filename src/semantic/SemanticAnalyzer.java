@@ -1,20 +1,25 @@
 package semantic;
 
+import symbol_table.SymbolTable;
+import symbol_table.Symbol;
+import symbol_table.Symbol.Type;
+import symbol_table.Symbol.SubType;
+import utils.Phase;
+import errors.ErrorHandler;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 import core.*;
 import errors.ErrorCode;
-import errors.ErrorHandler;
-import symbol_table.Symbol;
-import symbol_table.Symbol.SubType;
-import symbol_table.Symbol.Type;
-import symbol_table.SymbolTable;
-import utils.Phase;
-
-import java.util.ArrayList;
 
 public class SemanticAnalyzer {
 
     private SymbolTable actualSymbolTable;
-    private final Chadpp chadpp;
+    private Function actualFunction;
+    private Chadpp chadpp;
+    // private ArrayList<Object> tv;
+    // private ArrayList<Object> ta;
 
     public SemanticAnalyzer(Chadpp chadpp) {
         this.chadpp = chadpp;
@@ -41,7 +46,7 @@ public class SemanticAnalyzer {
 
         // Checkeamos las declaraciones
         for (L_Decls l_Decls = main.getListaDecl(); l_Decls != null; l_Decls = l_Decls.nextDecl()) {
-            exVariableDeclaration(l_Decls.getDecl(), null);
+            exVariableDeclaration(l_Decls.getDecl());
         }
 
         // Checkeamos instrucciones
@@ -62,9 +67,15 @@ public class SemanticAnalyzer {
         function.getSymbolTable().setParent(actualSymbolTable);
         this.actualSymbolTable = function.getSymbolTable();
 
+        this.actualFunction = function;
+
+        for (L_FArgs l_FArgs = function.getArguments(); l_FArgs != null, l_FArgs = l_FArgs.getNextArg()){
+            //TODO: IMPLEMENT THIS
+        }
+
         // Comprobar declaraciones de la función
         for (L_Decls l_Decls = function.getDecls(); l_Decls != null; l_Decls = l_Decls.nextDecl()) {
-            exVariableDeclaration(l_Decls.getDecl(), function);
+            exVariableDeclaration(l_Decls.getDecl());
         }
 
         // Comprobar instrucciones de la función
@@ -80,24 +91,22 @@ public class SemanticAnalyzer {
     }
 
     /**
+     *
      * @param decl
      * @return boolean
      */
-    public boolean exVariableDeclaration(Decl decl, Function function) {
+    public boolean exVariableDeclaration(Decl decl) {
         boolean isConstant = decl.isConstant();
         TypeVar typevar = decl.getType();
         Asignation asignation = decl.getAsignation();
 
         // Solo puede ocurrir cuando estamos mirando las declaraciones de la funcion
         // main
-        // ! Depth esta mal, ya que podemos tener más de 1 de profundidad
-        // ? Podriamos poner un atributo en la tabla de simbolos que sea "depth" y aqui
-        // ? coger el depth del padre y sumarle 1
         int depth = (this.actualSymbolTable.getParent() == null) ? 0 : 1;
 
-        // Boolean isCorrect = checkExpresion(asignation.getExpresion(), typevar);
         if (!checkExpresion(asignation.getExpresion(), typevar)) {
-            // Añadir error
+            // TODO: Create the pertinent Error
+            // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
             System.out.println("Error evaluando declaración: " + decl);
             return false;
         }
@@ -106,48 +115,9 @@ public class SemanticAnalyzer {
 
         for (L_Ids l_ids = asignation.getL_Ids(); l_ids != null; l_ids = l_ids.nextId()) {
             String id = l_ids.getId();
-            if (this.actualSymbolTable.addSymbol(id, Type.VARIABLE, typevar, depth, isConstant, isInitialized,
-                    l_ids.getLine(), getPossibleValues(asignation.getExpresion()))) {
-                // TODO: Create the pertinent Error
-                System.out.println("Error");
-                // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
-                return false;
-            }
-        }
 
+        }
         return true;
-    }
-
-    private ArrayList<Object> getPossibleValues(Expresion expresion) {
-        // int a = (1 + 3)
-        // tup b = [a, fn(), 1];
-        //
-        if (expresion.getNextExpresion() != null) {
-            return null;
-        }
-        ArrayList<Object> values = new ArrayList<>();
-        Value v = expresion.getValue();
-        while (true) {
-            if (v.getBol() != null) {
-                values.add(v.getBol().isValue());
-            }
-            if (v.getNumber() != null) {
-                values.add(v.getNumber().getValue());
-            }
-
-            if (v.getExpresion() == null) {
-                break;
-            }
-            v = v.getExpresion().getValue();
-        }
-
-        /*
-         * Possible values of value: - callfn - input - int - bol - tup - variable ->
-         * make a copy of the value -> check its value -> recursive - expresion
-         */
-        //Value v = expresion.getValue();
-
-        return values;
     }
 
     /**
@@ -174,8 +144,30 @@ public class SemanticAnalyzer {
                     return false;
                 }
                 break;
-            // Unico caso => [1,2] == [1,2]
+            // Unico caso => [1,2]
+            // tup a = [1,2];
+            // valor = [1,2]
+            // op = null
+            // nextExp = null
+
             case "Tuple":
+                if (typeVar != TypeVar.TUP) {
+                    // TODO: Create the pertinent Error
+                    // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
+                    // error int a = [1, 2]
+                    return false;
+                }
+                if (expresion.getOp() != null) {
+                    // TODO: Create the pertinent Error
+                    // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
+                    // error tup a = [1,2] '+' [3,4]
+                }
+                if (expresion.getNextExpresion() != null) {
+                    // TODO: Create the pertinent Error
+                    // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
+                    // error tup a = [1,2] '+' [3,4] => No puede tener ninguna expresion a la
+                    // derecha
+                }
                 value.getTuple();
                 // TODO: implement this
                 return false;
@@ -233,13 +225,11 @@ public class SemanticAnalyzer {
                 // BOOL)
                 return false;
             }
-            // todo ok
         } else if (typeVar == TypeVar.INT) {
             if (op.ordinal() >= 4) {
                 // operación Incompatible (operaciones lógicas cuando la variable es tipo INT)
                 return false;
             }
-            // todo ok
         } else { // typeVar == TypeVar.TUP
             // TODO: Implement this
         }
@@ -252,15 +242,117 @@ public class SemanticAnalyzer {
      * @return boolean
      */
     public boolean checkInstruction(Instr instr) {
-        // addSymbol
+        switch (instr.getCurrentInstance()) {
+            case "IfNode":
+                if (!checkExpresion(instr.getIfNode().getExpresion(), TypeVar.BOOL)) {
+                    // error Expresión no valida (no es condicional)
+                    return false;
+                }
+                break;
+            case "WhileNode":
+                if (!checkExpresion(instr.getWhileNode().getExpresion(), TypeVar.BOOL)) {
+                    // error Expresión no valida (no es condicional)
+                    return false;
+                }
+                break;
+            case "LoopNode":
+                if (!checkExpresion(instr.getLoopNode().getExpresion1(), TypeVar.INT)) {
+                    // error Expresión no valida (no es condicional)
+                    return false;
+                }
+                if (!checkExpresion(instr.getLoopNode().getExpresion2(), TypeVar.INT)) {
+                    // error Expresión no valida (no es condicional)
+                    return false;
+                }
+                break;
+            case "ReturnNode":
+                TypeVar returnType = this.actualFunction.getReturnType();
+                if (!checkExpresion(instr.getReturnNode().getExpresion(), returnType)) {
+                    // error Expresión no valida
+                    // TypeVar del retorno diferente al TypeVar de la Función
+                    return false;
+                }
+                break;
+            case "Output":
+                // TODO: Implementar esto
+                break;
+            case "Input":
+                // TODO: IMPLEMENT THIS
+                break;
+            case "Asignation":
+                Asignation asignation = instr.getAsignation();
+                L_Ids l_Ids = asignation.getL_Ids();
+                Symbol symbol = actualSymbolTable.lookup(l_Ids.getId());
+                if (symbol == null) {
+                    SymbolTable parent = this.actualSymbolTable.getParent();
+                    if (parent == null) {
+                        // TODO: Implement this error
+                        // error, variable no declarada
+                        return false;
+                    }
+                    symbol = parent.lookup(l_Ids.getId());
+                    if (symbol == null) {
+                        // TODO: Implement this error
+                        // error, variable no declarada
+                        return false;
+                    }
+                }
+                if (symbol.getType() != Type.FUNCTION) {
+                    // TODO: error, variable es una función
+                    return false;
+                }
+                TypeVar targetType = symbol.subTypeToTypeVar(symbol.getSubType());
+
+                for (l_Ids = l_Ids.nextId(); l_Ids == null; l_Ids = l_Ids.nextId()) {
+                    Symbol symbol2 = actualSymbolTable.lookup(l_Ids.getId());
+
+                    // CODIGO REPETIDO, SI SE AÑADE EL LOOK UP AL PADRE SERÍA UNA BUENA
+                    // OPTIMIZACIÓN DE CÓDIGO
+                    if (symbol2 == null) {
+                        SymbolTable parent = this.actualSymbolTable.getParent();
+                        if (parent == null) {
+                            // error, variable no declarada
+                            return false;
+                        }
+                        symbol2 = parent.lookup(l_Ids.getId());
+                        if (symbol2 == null) {
+                            // error, variable no declarada
+                            return false;
+                        }
+                    }
+                    // END OF LOOK UP
+
+                    if (targetType != symbol2.subTypeToTypeVar(symbol2.getSubType())) {
+                        // TODO: Implement this error
+                        // error, id's de distinto tipo
+                        return false;
+                    }
+                }
+                // UNA VEZ COMPROBADO QUE TODOS LOS IDS SON DEL MISMO TIPO:
+                if (checkExpresion(asignation.getExpresion(), targetType)) {
+                    // TODO: Implement this error
+                    // error, expresión.typevar != L_Ids type var
+                    return false;
+                }
+                break;
+            case "CallFn":
+                // TODO: IMPLEMENT THIS
+                break;
+            default:
+                // TODO: Cambiar formato del error
+                System.out.println("ERROR DEL COMPILADOR (SEMANTICO), currentInstance no reconocida");
+                System.out.println("Instr: " + instr);
+                return false;
+        }
         return true;
     }
 
     /**
      * Checks the use of a variable
-     *
+     * 
      * @param id
      * @param line
+     * 
      * @return true if the variable is valid, false otherwise
      */
 
@@ -286,6 +378,10 @@ public class SemanticAnalyzer {
             return false;
         }
 
+        if (typeVar == null) {
+            return true;
+        }
+
         if (symbol.getSubType().ordinal() != typeVar.ordinal()) {
             // No es una variable
             ErrorHandler.addError(ErrorCode.INCOMPATIBLE_TYPES, line, Phase.SEMANTIC);
@@ -296,10 +392,11 @@ public class SemanticAnalyzer {
 
     /**
      * Checks the use of a function
-     *
+     * 
      * @param id
      * @param args
      * @param line
+     * 
      * @return true if the function is valid, false otherwise
      */
     public boolean checkFunctionDeclaration(String id, L_Args args, int line) {
@@ -370,11 +467,12 @@ public class SemanticAnalyzer {
 
     /**
      * Checks if the return type of a function is compatible with the return type.
-     *
+     * 
      * @param id        - The name of the function.
      * @param subType   - The return type of the function.
      * @param returnExp - The return expression of the function.
      * @param line      - The line number of the return statement.
+     * 
      * @return true if the return type is compatible, false otherwise
      */
     public boolean checkReturn(String id, SubType subType, ReturnNode returnExp, int line) {
@@ -406,9 +504,10 @@ public class SemanticAnalyzer {
 
     /**
      * This method checks if the ID is declared in the current scope.
-     *
+     * 
      * @param id   - The ID to check
      * @param line - The line where the ID is declared
+     * 
      * @return true if the ID is declared in the current scope, false otherwise.
      */
     public boolean checkIdentifier(String id, int line) {
@@ -450,6 +549,14 @@ public class SemanticAnalyzer {
 
         return r;
 
+    }
+
+    public String printVariableTables() {
+        return "Work in progress";
+    }
+
+    public String printFunctionTables() {
+        return "Work in progress";
     }
 
 }

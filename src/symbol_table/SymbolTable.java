@@ -39,6 +39,7 @@ public class SymbolTable {
     }
 
     // Se emplea para el CUP
+    // !TODO: Refractor code in cup to just pass a null parameter
     public boolean addSymbol(String name, Type type, TypeVar subType,
             int depth, boolean isConstant, boolean isInitialized, int line) {
         return internalCheckAndAddSymbol(name, type, subType, depth, isConstant, isInitialized, line, null);
@@ -46,12 +47,12 @@ public class SymbolTable {
 
     // Se emplea en el semantico
     public boolean addSymbol(String name, Type type, TypeVar subType,
-            int depth, boolean isConstant, boolean isInitialized, int line, ArrayList<Object> values) {
+            int depth, boolean isConstant, boolean isInitialized, int line, ArrayList<Symbol> values) {
         return internalCheckAndAddSymbol(name, type, subType, depth, isConstant, isInitialized, line, values);
     }
 
     private boolean internalCheckAndAddSymbol(String name, Type type, TypeVar subType,
-            int depth, boolean isConstant, boolean isInitialized, int line, ArrayList<Object> values) {
+            int depth, boolean isConstant, boolean isInitialized, int line, ArrayList<Symbol> values) {
         // !TODO: Implement this method
         // Get subType from TypeVar
         SubType subTypeSymbol = (subType == null) ? SubType.VOID : getSubType(subType);
@@ -59,6 +60,17 @@ public class SymbolTable {
         symbol.setValue(values);
         this.SymbolTable.put(name, symbol);
         return false;
+    }
+
+    /**
+     * Search for a name and return a copy of the symbol found. If not found, return
+     * null
+     * 
+     * @param name
+     * @return Symbol
+     */
+    public Symbol lookup(String name) {
+        return SymbolTable.get(name);
     }
 
     private SubType getSubType(TypeVar subType) {

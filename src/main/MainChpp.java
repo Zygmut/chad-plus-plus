@@ -8,10 +8,16 @@ import utils.Phase;
 import utils.Sanity;
 import warnings.WarningHandler;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.SymbolFactory;
+import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import symbol_table.SymbolTable;
 import grammar.Scanner;
 import intermediate_code.ThreeAddressCode;
@@ -41,8 +47,12 @@ public class MainChpp {
             System.exit(0);
         }
 
-        // Scanner
+        File rutaFicherosGenerados = new File(Env.GENERATED_FILES);
+        if (!rutaFicherosGenerados.exists()) {
+            rutaFicherosGenerados.mkdir();
+        }
 
+        // Scanner
         FileReader input = null;
         try {
             input = new FileReader(Env.FILE_DATA.getFilePath());
@@ -64,18 +74,26 @@ public class MainChpp {
             Parser parser = new Parser(scanner, sf);
             parser.parse();
 
+            // System.out.println(scanner.lines);
+            saveTokens(scanner.lines);
+
             // semantic
             parser.getSemanticAnalyzer().run();
             System.out.println(parser.getSemanticAnalyzer().printSymbolTables());
+            saveTable(parser.getSemanticAnalyzer().printSymbolTables(), "TablaSimbolos.txt");
+            saveTable(parser.getSemanticAnalyzer().printVariableTables(), "TablaVariables.txt");
+            saveTable(parser.getSemanticAnalyzer().printFunctionTables(), "TablaFunciones.txt");
 
-            //SymbolTable symbolTable = parser.getSemanticAnalyzer().getSymbolTable();
-            //System.out.println(symbolTable.printSymbolTable());
+            // SymbolTable symbolTable = parser.getSemanticAnalyzer().getSymbolTable();
+            // System.out.println(symbolTable.printSymbolTable());
 
             // c3@
             ThreeAddressCode c3d = new ThreeAddressCode(parser.getTree());
             c3d.generate();
-            //Chadpp tree = parser.getTree();
-            //System.out.println(tree);
+            c3d.saveThreeAddressCode();
+
+            // Chadpp tree = parser.getTree();
+            // System.out.println(tree);
 
         } catch (Exception e) {
             ErrorHandler.printErrors();
@@ -90,6 +108,28 @@ public class MainChpp {
         ErrorHandler.printErrors();
         WarningHandler.printWarnings();
 
+    }
+
+    private static void saveTokens(ArrayList<ComplexSymbol> tokens) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(Env.GENERATED_FILES + "/" + "Tokens.txt"));
+            for (int i = 0; i < tokens.size(); i++) {
+                writer.write(tokens.get(i).getName() + "\n");
+            }
+            writer.close();
+        } catch (IOException err) {
+            System.out.println(err);
+        }
+    }
+
+    private static void saveTable(String table, String fileName) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(Env.GENERATED_FILES + "/" + fileName));
+            writer.write(table);
+            writer.close();
+        } catch (IOException err) {
+            System.out.println(err);
+        }
     }
 
 }

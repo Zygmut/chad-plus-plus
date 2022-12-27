@@ -61,27 +61,63 @@ public class Instr extends BaseNode {
         this.callFn = callFn;
     }
 
+    public String getCurrentInstance() {
+        return this.currentInstance;
+    }
+
+    public IfNode getIfNode() {
+        return this.ifNode;
+    }
+
+    public WhileNode getWhileNode() {
+        return this.whileNode;
+    }
+
+    public LoopNode getLoopNode() {
+        return this.loopNode;
+    }
+
+    public ReturnNode getReturnNode() {
+        return this.returnNode;
+    }
+
+    public Output getOutput() {
+        return this.output;
+    }
+
+    public Input getInput() {
+        return this.input;
+    }
+
+    public Asignation getAsignation() {
+        return this.asignation;
+    }
+
+    public CallFn getCallFn() {
+        return this.callFn;
+    }
+
     @Override
     public String toString() {
         switch (currentInstance) {
-        case "IfNode":
-            return "Instr [ifnode=" + ifNode + ", line=" + line + ", column=" + column + "]";
-        case "WhileNode":
-            return "Instr [whileNode=" + whileNode + ", line=" + line + ", column=" + column + "]";
-        case "LoopNode":
-            return "Instr [loopNode=" + loopNode + ", line=" + line + ", column=" + column + "]";
-        case "ReturnNode":
-            return "Instr [returnNode=" + returnNode + ", line=" + line + ", column=" + column + "]";
-        case "Output":
-            return "Instr [output=" + output + ", line=" + line + ", column=" + column + "]";
-        case "Input":
-            return "Instr [input=" + input + ", line=" + line + ", column=" + column + "]";
-        case "Asignation":
-            return "Instr [asignation=" + asignation + ", line=" + line + ", column=" + column + "]";
-        case "CallFn":
-            return "Instr [callFn=" + callFn + ", line=" + line + ", column=" + column + "]";
-        default:
-            return "Not valid";
+            case "IfNode":
+                return "Instr [ifnode=" + ifNode + ", line=" + line + ", column=" + column + "]";
+            case "WhileNode":
+                return "Instr [whileNode=" + whileNode + ", line=" + line + ", column=" + column + "]";
+            case "LoopNode":
+                return "Instr [loopNode=" + loopNode + ", line=" + line + ", column=" + column + "]";
+            case "ReturnNode":
+                return "Instr [returnNode=" + returnNode + ", line=" + line + ", column=" + column + "]";
+            case "Output":
+                return "Instr [output=" + output + ", line=" + line + ", column=" + column + "]";
+            case "Input":
+                return "Instr [input=" + input + ", line=" + line + ", column=" + column + "]";
+            case "Asignation":
+                return "Instr [asignation=" + asignation + ", line=" + line + ", column=" + column + "]";
+            case "CallFn":
+                return "Instr [callFn=" + callFn + ", line=" + line + ", column=" + column + "]";
+            default:
+                return "Not valid";
         }
     }
 

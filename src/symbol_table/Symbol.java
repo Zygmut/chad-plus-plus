@@ -2,16 +2,28 @@ package symbol_table;
 
 import java.util.ArrayList;
 
-import errors.ErrorCode;
-import errors.ErrorHandler;
-import utils.Phase;
+import core.TypeVar;
 
 public class Symbol {
-
+    /*
+     * main(){
+     * int a = 0;
+     * BEGIN
+     * print(fn(a)); // 1
+     * print(a) #print (0)
+     * }
+     *
+     * int alpha fn(int b){
+     * int a = a; // Error variable ya declarada
+     * BEGIN
+     * a = a + 1 // [a] = 1
+     * return a; return 1
+     * }
+     */
     private final String name;
     private final Type type;
     private final SubType subType;
-    private ArrayList<Object> value;
+    private ArrayList<Symbol> value;
     private int depth;
     private final boolean isConstant;
     private final boolean isInitialized;
@@ -42,6 +54,20 @@ public class Symbol {
         this.line = line;
     }
 
+    public TypeVar subTypeToTypeVar(SubType subType) {
+        switch (subType.name()) {
+            case "INT":
+                return TypeVar.INT;
+            case "BOOL":
+                return TypeVar.BOOL;
+            case "TUP":
+                return TypeVar.TUP;
+            default:
+                System.out.println("Error converting SubType to TypeVar");
+                return null;
+        }
+    }
+
     public String getName() {
         return this.name;
     }
@@ -54,7 +80,7 @@ public class Symbol {
         return this.subType;
     }
 
-    public ArrayList<Object> getValue() {
+    public ArrayList<Symbol> getValue() {
         return this.value;
     }
 
@@ -78,11 +104,11 @@ public class Symbol {
         this.depth = depth;
     }
 
-    public void setValue(Object value) {
+    public void setValue(Symbol value) {
         this.value.add(value);
     }
 
-    public void setValue(ArrayList<Object> values) {
+    public void setValue(ArrayList<Symbol> values) {
         this.value = values;
     }
 
@@ -92,6 +118,11 @@ public class Symbol {
 
     public int getLine() {
         return this.line;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.name.equals(((Symbol) obj).getName()) && this.depth == ((Symbol) obj).getDepth();
     }
 
     @Override
