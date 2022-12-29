@@ -2,140 +2,72 @@ package symbol_table;
 
 import java.util.ArrayList;
 
-import core.TypeVar;
-
 public class Symbol {
-    /*
-     * main(){
-     * int a = 0;
-     * BEGIN
-     * print(fn(a)); // 1
-     * print(a) #print (0)
-     * }
-     *
-     * int alpha fn(int b){
-     * int a = a; // Error variable ya declarada
-     * BEGIN
-     * a = a + 1 // [a] = 1
-     * return a; return 1
-     * }
-     */
+
     private final String name;
-    private final Type type;
-    private final SubType subType;
-    private ArrayList<Symbol> value;
-    private int depth;
+    private final StructureType structureType;
+    private final StructureReturnType structureReturnType;
+    private ArrayList<Symbol> content; // content (ArrayList<Symbol>) o next (?LinkedList<Symbol>)
+    private final boolean isGlobal;
     private final boolean isConstant;
-    private final boolean isInitialized;
     private int line;
 
-    public enum Type {
-        FUNCTION,
-        VARIABLE,
-        PARAMETER,
-    }
-
-    public enum SubType {
-        INT,
-        BOOL,
-        TUP,
-        VOID,
-    }
-
-    public Symbol(String name, Type type, SubType subType,
-            int depth, boolean isConstant, boolean isInitialized, int line) {
+    public Symbol(String name, StructureType structureType, StructureReturnType structureReturnType,
+            ArrayList<Symbol> content, boolean isGlobal, boolean isConstant, int line) {
         this.name = name;
-        this.type = type;
-        this.subType = subType;
-        this.value = new ArrayList<>();
-        this.depth = depth;
+        this.structureType = structureType;
+        this.structureReturnType = structureReturnType;
+        this.content = content;
+        this.isGlobal = isGlobal;
         this.isConstant = isConstant;
-        this.isInitialized = isInitialized;
         this.line = line;
     }
 
-    public TypeVar subTypeToTypeVar(SubType subType) {
-        switch (subType.name()) {
-            case "INT":
-                return TypeVar.INT;
-            case "BOOL":
-                return TypeVar.BOOL;
-            case "TUP":
-                return TypeVar.TUP;
-            default:
-                System.out.println("Error converting SubType to TypeVar");
-                return null;
-        }
-    }
-
     public String getName() {
-        return this.name;
+        return name;
     }
 
-    public Type getType() {
-        return this.type;
+    public StructureType getStructureType() {
+        return structureType;
     }
 
-    public SubType getSubType() {
-        return this.subType;
+    public StructureReturnType getStructureReturnType() {
+        return structureReturnType;
     }
 
-    public ArrayList<Symbol> getValue() {
-        return this.value;
+    public ArrayList<Symbol> getContent() {
+        return content;
     }
 
-    public int getDepth() {
-        return this.depth;
+    public void setContent(ArrayList<Symbol> content) {
+        this.content = content;
     }
 
-    public boolean getIsConstant() {
-        return this.isConstant;
+    public boolean isGlobal() {
+        return isGlobal;
     }
 
-    public boolean isIsConstant() {
-        return this.isConstant;
+    public boolean isConstant() {
+        return isConstant;
     }
 
-    public boolean getIsInitialized() {
-        return this.isInitialized;
-    }
-
-    public void setDepth(int depth) {
-        this.depth = depth;
-    }
-
-    public void setValue(Symbol value) {
-        this.value.add(value);
-    }
-
-    public void setValue(ArrayList<Symbol> values) {
-        this.value = values;
+    public int getLine() {
+        return line;
     }
 
     public void setLine(int line) {
         this.line = line;
     }
 
-    public int getLine() {
-        return this.line;
-    }
-
     @Override
     public boolean equals(Object obj) {
-        return this.name.equals(((Symbol) obj).getName()) && this.depth == ((Symbol) obj).getDepth();
+        return this.getName().equals(((Symbol) obj).getName());
     }
 
     @Override
     public String toString() {
-        return "Symbol{" +
-                "name='" + name + '\'' +
-                ", type=" + type +
-                ", subType=" + subType +
-                ", value=" + value +
-                ", depth=" + depth +
-                ", isConstant=" + isConstant +
-                ", isInitialized=" + isInitialized +
-                ", line=" + line +
-                '}';
+        return "Symbol [name=" + name + ", structureType=" + structureType + ", structureReturnType="
+                + structureReturnType + ", content=" + content + ", isGlobal=" + isGlobal + ", isConstant=" + isConstant
+                + ", line=" + line + "]";
     }
 }

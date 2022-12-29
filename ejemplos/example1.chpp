@@ -1,3 +1,29 @@
+# Hola que tal
+$
+ hola
+$
+int a = 1;
+bol b = true;
+
+alpha bol mayor5 (int n){
+    if (n > 5){
+        return true;
+    }
+    return false;
+}
+
+alpha bol mayor5_v2 (int n){
+    return n > 5;
+}
+
+alpha bol mayor5_v3 (int n){
+    return ((n < 5) && (n == 5));
+}
+
+alpha int test_global (){
+    return a;
+}
+
 main {
     bol a = true;
     int b = 0;
@@ -6,28 +32,4 @@ main {
     BEGIN
     a = 1;
     test_global();
-}
-
-# Hola que tal
-$
- hola
-$
-
-bol alpha mayor5 (int n){
-    if (n > 5){
-        return true;
-    }
-    return false;
-}
-
-bol alpha mayor5_v2 (int n){
-    return n > 5;
-}
-
-bol alpha mayor5_v3 (int n){
-    return ((n < 5) && (n == 5));
-}
-
-int alpha test_global (){
-    return a;
 }
