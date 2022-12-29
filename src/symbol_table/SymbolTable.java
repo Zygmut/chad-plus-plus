@@ -110,13 +110,13 @@ public class SymbolTable {
                 }
             }
         } else {
-            range = new Integer[] { this.ta.size(), this.ta.size() - 1 };
+            range = new Integer[] { this.ts.size(), this.ts.size() - 1 };
         }
 
         // Para asegurarnos que actualizamos por completo el rango de accesos,
         // eliminamos la instancia y creamos una nueva
         this.ta.remove(this.taIndex);
-        this.ta.add(this.taIndex, new Integer[] { range[0], range[1]++ });
+        this.ta.add(this.taIndex, new Integer[] { range[0], range[1] + 1 });
 
         this.ts.add(symbol);
         return true;
@@ -284,7 +284,16 @@ public class SymbolTable {
      */
     @Override
     public String toString() {
-        return "TS: " + this.ts.toString()
-                + " TA: " + this.ta.toString();
+        String returnstr = "TA: \n";
+
+        for (Integer[] range : ta) {
+            returnstr += range[0] + " " + range[1] + "\n";
+        }
+
+        returnstr += "TS: \n";
+        for (Symbol s : ts) {
+            returnstr += s.toString() + "\n";
+        }
+        return returnstr;
     }
 }
