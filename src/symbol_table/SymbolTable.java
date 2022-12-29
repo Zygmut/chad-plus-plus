@@ -1,6 +1,7 @@
 package symbol_table;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Tabla de simbolos. Contiene todos los simbolos del programa. Se divide en dos
@@ -193,9 +194,14 @@ public class SymbolTable {
 
         // Iterar en todas las funciones
         for (Integer[] access : functionAccess) {
-            // Sabemos por diseño que las funciones deben añadir como primer simbolo la
-            // propia funcion
-            Symbol functionSymbol = ts.get(access[0]);
+            // Saltamos todos los parametros
+            int index = access[0];
+            for (Symbol parameter = ts.get(index); parameter.getStructureType()
+                    .equals(StructureType.PARAMETER); parameter = ts.get(index++)) {
+            }
+
+            // Tenemos en el indice la posición de la funcion
+            Symbol functionSymbol = ts.get(index);
             if (functionSymbol.getName().equals(id)) {
                 return functionSymbol;
             }
@@ -229,21 +235,27 @@ public class SymbolTable {
 
         // Iterar en todas las funciones
         for (Integer[] access : functionAccess) {
-            // Sabemos por diseño que las funciones deben añadir como primer simbolo la
-            // propia funcion
-            Symbol functionSymbol = ts.get(access[0]);
-            if (functionSymbol.getName().equals(functionId)) {
-                // Se ha encontrado la funcion y mediante indices accedemos al parametro en
-                // cuestion
-                Symbol parameter = null;
+            ArrayList<Symbol> params = new ArrayList<>();
+            // Saltamos todos los parametros
+            int index = access[0];
+            for (Symbol parameter = ts.get(index); parameter.getStructureType()
+                    .equals(StructureType.PARAMETER); parameter = ts.get(index++)) {
+                params.add(parameter);
+            }
+
+            if (ts.get(index).getName().equals(functionId)) {
+
+                // Los parametros se guardan en orden inverso, por lo que invertimos el
+                // arrayList de parametros
+                Collections.reverse(params);
+
+                // Tenemos todos los parametros guardados en params, miramos de acceder y si no
+                // se puede retornamos null
                 try {
-                    parameter = ts.get(access[0] + 1 + nParam);
+                    return params.get(nParam);
                 } catch (IndexOutOfBoundsException e) {
                     return null;
                 }
-                return parameter.getStructureType().equals(StructureType.PARAMETER)
-                        ? parameter
-                        : null;
             }
         }
 
