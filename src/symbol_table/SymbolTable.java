@@ -2,6 +2,7 @@ package symbol_table;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Stack;
 
 /**
  * Tabla de simbolos. Contiene todos los simbolos del programa. Se divide en dos
@@ -194,17 +195,12 @@ public class SymbolTable {
 
         // Iterar en todas las funciones
         for (Integer[] access : functionAccess) {
-            // Saltamos todos los parametros
-            int index = access[0];
-            for (Symbol parameter = ts.get(index); parameter.getStructureType()
-                    .equals(StructureType.PARAMETER); parameter = ts.get(index++)) {
-            }
 
-            // Tenemos en el indice la posición de la funcion
-            Symbol functionSymbol = ts.get(index);
-            if (functionSymbol.getName().equals(id)) {
-                return functionSymbol;
+            // Obtenemos el symbolo Type=FUNCTION
+            if (!ts.get(access[1]).getName().equals(id)) {
+                continue;
             }
+            return ts.get(access[1]);
         }
 
         return null;
@@ -235,31 +231,104 @@ public class SymbolTable {
 
         // Iterar en todas las funciones
         for (Integer[] access : functionAccess) {
+
+            // Buscamos la función correspondiente
+            if (!ts.get(access[1]).getName().equals(functionId)) {
+                continue;
+            }
+
+            // Cogemos todos los parametros
             ArrayList<Symbol> params = new ArrayList<>();
-            // Saltamos todos los parametros
             int index = access[0];
             for (Symbol parameter = ts.get(index); parameter.getStructureType()
                     .equals(StructureType.PARAMETER); parameter = ts.get(index++)) {
                 params.add(parameter);
             }
 
-            if (ts.get(index).getName().equals(functionId)) {
+            // Los parametros se guardan en orden inverso, por lo que invertimos el
+            // arrayList de parametros
+            Collections.reverse(params);
 
-                // Los parametros se guardan en orden inverso, por lo que invertimos el
-                // arrayList de parametros
-                Collections.reverse(params);
-
-                // Tenemos todos los parametros guardados en params, miramos de acceder y si no
-                // se puede retornamos null
-                try {
-                    return params.get(nParam);
-                } catch (IndexOutOfBoundsException e) {
-                    return null;
-                }
+            // Tenemos todos los parametros guardados en params, miramos de acceder y si no
+            // se puede retornamos null
+            try {
+                return params.get(nParam);
+            } catch (IndexOutOfBoundsException e) {
+                return null;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Busca los parametros de la funcion pasada por parametro. Devuelve un stack
+     * con los parametros si se ha encontrado y null en caso contrario.
+     *
+     * @param functionId nombre de la funcion
+     * @return Stack<Symbol> | null
+     */
+    @SuppressWarnings("unchecked")
+    public Stack<Symbol> getParameters(String functionId) {
+        ArrayList<Integer[]> functionAccess = (ArrayList<Integer[]>) ta.clone();
+        functionAccess.remove(0);
+        functionAccess.remove(functionAccess.size() - 1);
+
+        // Mirar si hay funciones
+        if (functionAccess.isEmpty()) {
+            return null;
+        }
+
+        // Iterar en todas las funciones
+        for (Integer[] access : functionAccess) {
+
+            // Buscamos la función correspondiente
+            if (!ts.get(access[1]).getName().equals(functionId)) {
+                continue;
+            }
+
+            // Cogemos todos los parametros
+            Stack<Symbol> params = new Stack<>();
+            int index = access[0];
+            for (Symbol parameter = ts.get(index); parameter.getStructureType()
+                    .equals(StructureType.PARAMETER); parameter = ts.get(index++)) {
+                params.add(parameter);
+            }
+
+            return params;
+
+        }
+        return null;
+    }
+
+    /**
+     * Devuelve el n-esimo argumento de la tupla pasada por parametro. En caso que
+     * no exista el simbolo o el n-ésimo argumento devolvera null. En caso contrario
+     * devolvera el simbolo.
+     *
+     * @param id   nombre de la tupla
+     * @param nArg numero de argumento
+     * @return Symbol | null
+     * @see getSymbol(String id)
+     */
+    public Symbol getNTupleArgument(String id, int nArg) {
+        // Buscamos el simbolo del id pasado por parametro
+        Symbol nTuple = this.getSymbol(id);
+        if (nTuple == null) {
+            return null;
+        }
+
+        // Devolvemos el contenido del simbolo del nArg
+        ArrayList<Symbol> content = nTuple.getContent();
+        if (content == null) { // Si no tiene contenido devolvemos null
+            return null;
+        }
+
+        try {
+            return content.get(nArg);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
     }
 
     /**

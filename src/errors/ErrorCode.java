@@ -32,7 +32,20 @@ public enum ErrorCode {
     UNDECLARED_FUNCTION("Undeclared function."),
     UNDECLARED_VARIABLE("Undeclared variable."),
     NOT_A_FUNCTION("A function was expected but a variable was found."),
-    NOT_A_VARIABLE("A variable was expected but a function was found.");
+    NOT_A_VARIABLE("A variable was expected but a function was found."),
+    TUPLE_CAN_NOT_CONTAIN_TUPLE("Tuple can not contain tuple."),
+    SET_TUPLES_ONLY_ALONE("Set tuples only alone."),
+    TUPLE_INDEX_OUT_OF_BOUNDS("Index out of bounds."),
+    UNSUPPORTED_OPERATION("Unsupported operation."),
+    UNSUPPORTED_ELEMENT("Unsupported element."),
+    RETURN_TYPE_TUPLE_IN_TUPLE("Return type tuple in tuple it's not allowed."),
+    INVALID_NUMBER_OF_ARGUMENTS("Invalid number of arguments."),
+    INVALID_ARGUMENT_TYPE("Invalid argument type."),
+    MALFORMED_EXPRESSION("Malformed expression."),
+    UNSUPPORTED_EXPRESSION_TYPE("Unsupported expression type."),
+    ID_NOT_DECLARED_OR_NOT_FOUND("Id not found."),
+    NO_RETURN_IN_A_FUNCTION_WITH_RETURN_VALUE("No return in a function with return value."),
+    RETURN_VALUE_DOES_NOT_MATCH("Return value does not match the function return");
 
     public String message;
 

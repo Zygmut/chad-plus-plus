@@ -1,7 +1,6 @@
 package core;
 
 import intermediate_code.ThreeAddressCode;
-import symbol_table.SymbolTable;
 
 public class Function extends BaseNode {
     private TypeVar returnType;
@@ -9,21 +8,15 @@ public class Function extends BaseNode {
     private L_FArgs arguments;
     private L_Decls decls;
     private L_Instrs instrs;
-    private SymbolTable symbolTable;
 
     public Function(TypeVar returnType, Id id, L_FArgs arguments, L_Decls decls, L_Instrs instrs,
-            SymbolTable symbolTableParent, int line, int column) {
+            int line, int column) {
         super(line, column);
         this.returnType = returnType;
         this.id = id;
         this.arguments = arguments;
         this.decls = decls;
         this.instrs = instrs;
-        this.symbolTable = new SymbolTable(symbolTableParent);
-    }
-
-    public SymbolTable getSymbolTable() {
-        return this.symbolTable;
     }
 
     public TypeVar getReturnType() {
@@ -69,7 +62,7 @@ public class Function extends BaseNode {
     @Override
     public String toString() {
         return "Function [returnType=" + returnType + ", id=" + id + ", arguments=" + arguments + ", decls=" + decls
-                + ", instrs=" + instrs + ", symbolTable=" + symbolTable + " line=" + line + " column=" + column + "]";
+                + ", instrs=" + instrs + " line=" + line + " column=" + column + "]";
 
     }
 

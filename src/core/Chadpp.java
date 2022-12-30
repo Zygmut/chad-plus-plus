@@ -6,37 +6,51 @@ public class Chadpp extends BaseNode {
 
     private L_Fn functions;
     private Main main;
+    private L_Decls l_decls;
 
     public Chadpp() {
         super(0, 0);
         this.main = new Main();
         this.functions = null;
+        this.l_decls = null;
     }
 
-    public Chadpp(Main main, int line, int column) {
+    public Chadpp(L_Decls l_decls, Main main, int line, int column) {
         super(line, column);
         this.main = main;
         this.functions = null;
+        this.l_decls = null;
     }
 
-    public Chadpp(Main main, L_Fn functions, int line, int column) {
+    public Chadpp(L_Decls l_decls, Main main, L_Fn functions, int line, int column) {
         super(line, column);
         this.main = main;
+        this.functions = functions;
+        this.l_decls = l_decls;
+    }
+
+    public L_Fn getFunctions() {
+        return functions;
+    }
+
+    public void setFunctions(L_Fn functions) {
         this.functions = functions;
     }
 
     public Main getMain() {
-        return this.main;
+        return main;
     }
 
-    public L_Fn getL_Fn() {
-        return this.functions;
+    public void setMain(Main main) {
+        this.main = main;
     }
 
-    @Override
-    public String toString() {
-        return "Chadpp [listOfFunctions=" + functions + ", main=" + main + " line=" + line + " column=" + column + "]";
+    public L_Decls getL_decls() {
+        return l_decls;
+    }
 
+    public void setL_decls(L_Decls l_decls) {
+        this.l_decls = l_decls;
     }
 
     @Override
@@ -45,4 +59,8 @@ public class Chadpp extends BaseNode {
 
     }
 
+    @Override
+    public String toString() {
+        return "Chadpp [functions=" + functions + ", main=" + main + ", l_decls=" + l_decls + "]";
+    }
 }

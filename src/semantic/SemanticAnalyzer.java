@@ -1,562 +1,258 @@
 package semantic;
 
-import symbol_table.SymbolTable;
+import core.*;
+import java.util.Stack;
+import java.util.ArrayList;
 import symbol_table.Symbol;
-import symbol_table.Symbol.Type;
-import symbol_table.Symbol.SubType;
+import symbol_table.SymbolTable;
 import utils.Phase;
+import symbol_table.StructureReturnType;
+import symbol_table.StructureType;
+import errors.ErrorCode;
 import errors.ErrorHandler;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-
-import core.*;
-import errors.ErrorCode;
-
+/**
+ * Analizador semántico. Verifica que el código sea correcto semánticamente, y
+ * en caso contrario lanza un error.
+ * 
+ * @see SymbolTable
+ * @see ErrorHandler
+ * @see ErrorCode
+ * @see core
+ */
 public class SemanticAnalyzer {
 
-    private SymbolTable actualSymbolTable;
-    private Function actualFunction;
-    private Chadpp chadpp;
-    // private ArrayList<Object> tv;
-    // private ArrayList<Object> ta;
-
-    public SemanticAnalyzer(Chadpp chadpp) {
-        this.chadpp = chadpp;
-    }
-
-    public void run() {
-
-        // Checkeamos el main
-        Main main = chadpp.getMain();
-        this.actualSymbolTable = main.getSymbolTable();
-        checkMain(main);
-
-        // Checkeamos todas las funciones
-        for (L_Fn l_fn = chadpp.getL_Fn(); l_fn != null; l_fn = l_fn.getNextFn()) {
-            checkFunction(l_fn.getFn());
-        }
-    }
-
     /**
-     * @param main
-     * @return boolean
+     * Tabla de simbolos
      */
-    public boolean checkMain(Main main) {
-
-        // Checkeamos las declaraciones
-        for (L_Decls l_Decls = main.getListaDecl(); l_Decls != null; l_Decls = l_Decls.nextDecl()) {
-            exVariableDeclaration(l_Decls.getDecl());
-        }
-
-        // Checkeamos instrucciones
-        for (L_Instrs l_Instrs = main.getListaInstr(); l_Instrs != null; l_Instrs = l_Instrs.nextInstr()) {
-            checkInstruction(l_Instrs.getInstr());
-        }
-
-        return true;
-    }
+    private SymbolTable st;
 
     /**
-     * @param function
-     * @return boolean
+     * Constructor, recibe la tabla de simbolos por parámetro
+     * 
+     * @param st Tabla de simbolos
      */
-    public boolean checkFunction(Function function) {
-        // Enlazamos la tabla de simbolos de la funcion a la de su padre y la ponemos
-        // como la actual para que los nodos interiores puedan acceder a ella.
-        function.getSymbolTable().setParent(actualSymbolTable);
-        this.actualSymbolTable = function.getSymbolTable();
-
-        this.actualFunction = function;
-
-        for (L_FArgs l_FArgs = function.getArguments(); l_FArgs != null, l_FArgs = l_FArgs.getNextArg()){
-            //TODO: IMPLEMENT THIS
-        }
-
-        // Comprobar declaraciones de la función
-        for (L_Decls l_Decls = function.getDecls(); l_Decls != null; l_Decls = l_Decls.nextDecl()) {
-            exVariableDeclaration(l_Decls.getDecl());
-        }
-
-        // Comprobar instrucciones de la función
-        for (L_Instrs l_Instrs = function.getInstrs(); l_Instrs != null; l_Instrs = l_Instrs.nextInstr()) {
-            checkInstruction(l_Instrs.getInstr());
-        }
-
-        // Finalmente, cuando acabamos con los elementos de la funcion, dejamos la tabla
-        // actual a la de su padre
-        this.actualSymbolTable = this.actualSymbolTable.getParent();
-
-        return true;
+    public SemanticAnalyzer(SymbolTable st) {
+        this.st = st;
     }
 
     /**
+     * Verifica que la llamada a una función sea correcta.
      *
-     * @param decl
-     * @return boolean
+     * @param callFn Nodo CallFn
+     * @return boolean[2] -> [0] = true si el número de argumentos es correcto,
+     *         false en caso contrario [1] = tipo de error (false = error de tipos
+     *         no validos, true = error de número de argumentos)
+     * @see CallFn
      */
-    public boolean exVariableDeclaration(Decl decl) {
-        boolean isConstant = decl.isConstant();
-        TypeVar typevar = decl.getType();
-        Asignation asignation = decl.getAsignation();
+    public boolean[] checkCallFArgs(CallFn callFn) {
+        Stack<Symbol> pila = st.getParameters(callFn.getId().getValue());
 
-        // Solo puede ocurrir cuando estamos mirando las declaraciones de la funcion
-        // main
-        int depth = (this.actualSymbolTable.getParent() == null) ? 0 : 1;
+        L_Args l_Args = callFn.getArgs();
 
-        if (!checkExpresion(asignation.getExpresion(), typevar)) {
-            // TODO: Create the pertinent Error
-            // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
-            System.out.println("Error evaluando declaración: " + decl);
-            return false;
+        for (Expresion param = l_Args.getArg(); pila.empty() && param != null;) {
+            Symbol arg = (Symbol) pila.pop();
+
+            StructureReturnType argType = arg.getStructureReturnType();
+            StructureReturnType type = checkExpresion(param);
+
+            if (type == null || type != argType) {
+                // Error tipos no coinciden
+                // [0] = false -> Error semantico, [1] = Error de tipos
+                return new boolean[] { false, false };
+            }
+
+            l_Args = l_Args.getNextArg();
+            param = l_Args.getArg();
         }
 
-        boolean isInitialized = asignation.getExpresion().getValue() != null;
-
-        for (L_Ids l_ids = asignation.getL_Ids(); l_ids != null; l_ids = l_ids.nextId()) {
-            String id = l_ids.getId();
-
+        // si la pila NO está vacia o quedan parametros por evaluar -> error
+        if (!pila.empty() || l_Args.getArg() != null) {
+            // [0] = false -> Error semantico, [1] = Error de número de argumentos
+            return new boolean[] { false, true };
         }
-        return true;
+
+        return new boolean[] { true, false };
     }
 
     /**
-     * @param expresion
-     * @param typeVar
-     * @return boolean
+     * Verifica que la expresión sea correcta, a partir de una expresión. Y devuelve
+     * el tipo de la expresión si es correcta y en caso contrario devuelve null.
+     *
+     * @param exp Expresión
+     * @return StructureReturnType | null
+     * @see Expresion
      */
-    public boolean checkExpresion(Expresion expresion, TypeVar typeVar) {
-        Value value = expresion.getValue();
-        // Expression: value Op Expresion
-        // value
+    public StructureReturnType checkExpresion(Expresion exp) {
+        Value value = exp.getValue();
+        StructureReturnType type;
         switch (value.getCurrentInstance()) {
-            case "Expresion":
-                Expresion ex = value.getExpresion();
-                if (!checkExpresion(ex, typeVar)) {
-                    // TODO: Create the pertinent Error
-                    return false;
-                }
-                break;
             case "Number":
-                if (typeVar != TypeVar.INT) {
-                    // TODO: Create the pertinent Error
-                    // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
-                    return false;
-                }
+                type = StructureReturnType.INT;
                 break;
-            // Unico caso => [1,2]
-            // tup a = [1,2];
-            // valor = [1,2]
-            // op = null
-            // nextExp = null
-
-            case "Tuple":
-                if (typeVar != TypeVar.TUP) {
-                    // TODO: Create the pertinent Error
-                    // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
-                    // error int a = [1, 2]
-                    return false;
-                }
-                if (expresion.getOp() != null) {
-                    // TODO: Create the pertinent Error
-                    // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
-                    // error tup a = [1,2] '+' [3,4]
-                }
-                if (expresion.getNextExpresion() != null) {
-                    // TODO: Create the pertinent Error
-                    // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
-                    // error tup a = [1,2] '+' [3,4] => No puede tener ninguna expresion a la
-                    // derecha
-                }
-                value.getTuple();
-                // TODO: implement this
-                return false;
-            // break;
             case "Bol":
-                if (typeVar != TypeVar.BOOL) {
-                    // TODO: Create the pertinent Error
-                    // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
-                    return false;
-                }
+                type = StructureReturnType.BOOL;
                 break;
             case "Id":
-                String id = value.getId().getValue();
-                if (!checkVariableDeclaration(id, 0, typeVar)) {
-                    // TODO: Create the pertinent Error
-                    // ErrorHandler.addError(ErrorCode.??, 0, Phase.SEMANTIC);
-                    return false;
-                }
+                type = st.getSymbol(value.getId().getValue()).getStructureReturnType();
                 break;
             case "CallFn":
-                value.getCallFn();
-                // TODO: implement this
-                return false;
-            // break;
-            case "A_Tuple":
-                value.getaTuple();
-                // TODO: implement this
-                return false;
-            // break;
+                type = st.getFunction(value.getCallFn().getId().getValue()).getStructureReturnType();
+                break;
             case "Input":
-                value.getInput();
-                // TODO: implement this
-                return false;
-            // break;
+                type = StructureReturnType.INT;
+                if (value.getInput().getType() == 1) {
+                    type = StructureReturnType.BOOL;
+                }
+                break;
+            case "A_Tuple":
+                type = st.getNTupleArgument(value.getaTuple().getId().getValue(),
+                        value.getaTuple().getAccess().getValue())
+                        .getStructureReturnType();
+                break;
+            case "Tuple":
+                type = StructureReturnType.TUP;
+                break;
+            case "Expresion":
+                type = checkExpresion(value.getExpresion());
+                if (type == null) {
+                    // TODO: ERROR en la expresion
+                    return null;
+                }
+                break;
             default:
-                // ERROR DEL COMPILADOR
-                return false;
+                // TODO: Error unsuported
+                type = null;
         }
 
-        // OP
-        /*
-         * 1. Descomponer la expresion --> (Token, valor) Token --> id y valor -->
-         * Operando 2. Comprobar tipos (operación tiene sentido) --> (1+2) < (1<3) -->
-         * Error de tipos 3. Orden operaciones --> A+B*C --> A + (B*C). Stack from =>
-         * BC*A+
-         */
-        Op op = expresion.getOp();
+        Op op = exp.getOp();
         if (op == null) {
-            return true;
+            return type;
         }
 
-        if (typeVar == TypeVar.BOOL) {
+        if (type == StructureReturnType.BOOL) {
             if (op.ordinal() < 4) {
                 // operación Incompatible (operaciones aritméticas cuando la variable es tipo
                 // BOOL)
-                return false;
+                return null;
             }
-        } else if (typeVar == TypeVar.INT) {
+
+        } else if (type == StructureReturnType.INT) {
             if (op.ordinal() >= 4) {
                 // operación Incompatible (operaciones lógicas cuando la variable es tipo INT)
-                return false;
+                return null;
             }
-        } else { // typeVar == TypeVar.TUP
-            // TODO: Implement this
+
+        } else if (type == StructureReturnType.TUP) {
+            if (op != null) {
+                // NO SE PERMITEN OPERACIONES CON TUPLAS
+                return null;
+            }
+
+        } else {
+            // StructureReturnType = VOID
+            return null;
         }
 
-        return (checkExpresion(expresion.getNextExpresion(), typeVar));
+        if (checkExpresion(exp.getNextExpresion()) != type) {
+            return null;
+        }
+
+        return type;
     }
 
     /**
-     * @param instr
-     * @return boolean
+     * Verifica el Id de una expresión. Y devuelve el tipo de la expresión si
+     * es correcta y en caso contrario devuelve null.
+     *
+     * @param Id idExp
+     * @return StructureReturnType | null
+     * @see Id
+     * @see StructureReturnType
      */
-    public boolean checkInstruction(Instr instr) {
-        switch (instr.getCurrentInstance()) {
-            case "IfNode":
-                if (!checkExpresion(instr.getIfNode().getExpresion(), TypeVar.BOOL)) {
-                    // error Expresión no valida (no es condicional)
-                    return false;
-                }
-                break;
-            case "WhileNode":
-                if (!checkExpresion(instr.getWhileNode().getExpresion(), TypeVar.BOOL)) {
-                    // error Expresión no valida (no es condicional)
-                    return false;
-                }
-                break;
-            case "LoopNode":
-                if (!checkExpresion(instr.getLoopNode().getExpresion1(), TypeVar.INT)) {
-                    // error Expresión no valida (no es condicional)
-                    return false;
-                }
-                if (!checkExpresion(instr.getLoopNode().getExpresion2(), TypeVar.INT)) {
-                    // error Expresión no valida (no es condicional)
-                    return false;
-                }
-                break;
-            case "ReturnNode":
-                TypeVar returnType = this.actualFunction.getReturnType();
-                if (!checkExpresion(instr.getReturnNode().getExpresion(), returnType)) {
-                    // error Expresión no valida
-                    // TypeVar del retorno diferente al TypeVar de la Función
-                    return false;
-                }
-                break;
-            case "Output":
-                // TODO: Implementar esto
-                break;
-            case "Input":
-                // TODO: IMPLEMENT THIS
-                break;
-            case "Asignation":
-                Asignation asignation = instr.getAsignation();
-                L_Ids l_Ids = asignation.getL_Ids();
-                Symbol symbol = actualSymbolTable.lookup(l_Ids.getId());
-                if (symbol == null) {
-                    SymbolTable parent = this.actualSymbolTable.getParent();
-                    if (parent == null) {
-                        // TODO: Implement this error
-                        // error, variable no declarada
-                        return false;
-                    }
-                    symbol = parent.lookup(l_Ids.getId());
-                    if (symbol == null) {
-                        // TODO: Implement this error
-                        // error, variable no declarada
-                        return false;
-                    }
-                }
-                if (symbol.getType() != Type.FUNCTION) {
-                    // TODO: error, variable es una función
-                    return false;
-                }
-                TypeVar targetType = symbol.subTypeToTypeVar(symbol.getSubType());
-
-                for (l_Ids = l_Ids.nextId(); l_Ids == null; l_Ids = l_Ids.nextId()) {
-                    Symbol symbol2 = actualSymbolTable.lookup(l_Ids.getId());
-
-                    // CODIGO REPETIDO, SI SE AÑADE EL LOOK UP AL PADRE SERÍA UNA BUENA
-                    // OPTIMIZACIÓN DE CÓDIGO
-                    if (symbol2 == null) {
-                        SymbolTable parent = this.actualSymbolTable.getParent();
-                        if (parent == null) {
-                            // error, variable no declarada
-                            return false;
-                        }
-                        symbol2 = parent.lookup(l_Ids.getId());
-                        if (symbol2 == null) {
-                            // error, variable no declarada
-                            return false;
-                        }
-                    }
-                    // END OF LOOK UP
-
-                    if (targetType != symbol2.subTypeToTypeVar(symbol2.getSubType())) {
-                        // TODO: Implement this error
-                        // error, id's de distinto tipo
-                        return false;
-                    }
-                }
-                // UNA VEZ COMPROBADO QUE TODOS LOS IDS SON DEL MISMO TIPO:
-                if (checkExpresion(asignation.getExpresion(), targetType)) {
-                    // TODO: Implement this error
-                    // error, expresión.typevar != L_Ids type var
-                    return false;
-                }
-                break;
-            case "CallFn":
-                // TODO: IMPLEMENT THIS
-                break;
-            default:
-                // TODO: Cambiar formato del error
-                System.out.println("ERROR DEL COMPILADOR (SEMANTICO), currentInstance no reconocida");
-                System.out.println("Instr: " + instr);
-                return false;
-        }
-        return true;
-    }
-
-    /**
-     * Checks the use of a variable
-     * 
-     * @param id
-     * @param line
-     * 
-     * @return true if the variable is valid, false otherwise
-     */
-
-    public boolean checkVariableDeclaration(String id, int line, TypeVar typeVar) {
-        Symbol symbol = this.actualSymbolTable.getSymbol(id);
+    public StructureReturnType checkId(Id exp) {
+        Symbol symbol = st.getSymbol(exp.getValue());
         if (symbol == null) {
-            SymbolTable parentSymbolTable = this.actualSymbolTable.getParent();
-
-            if (parentSymbolTable != null) {
-                symbol = parentSymbolTable.getSymbol(id);
-
-                if (symbol == null) {
-                    // Variable no declarada
-                    ErrorHandler.addError(ErrorCode.UNDECLARED_VARIABLE, line, Phase.SEMANTIC);
-                    return false;
-                }
-            }
+            // Error semantico, no existe el id
+            return null;
         }
-
-        if (symbol.getType() != Type.VARIABLE) {
-            // No es una variable
-            ErrorHandler.addError(ErrorCode.NOT_A_VARIABLE, line, Phase.SEMANTIC);
-            return false;
-        }
-
-        if (typeVar == null) {
-            return true;
-        }
-
-        if (symbol.getSubType().ordinal() != typeVar.ordinal()) {
-            // No es una variable
-            ErrorHandler.addError(ErrorCode.INCOMPATIBLE_TYPES, line, Phase.SEMANTIC);
-            return false;
-        }
-        return true;
+        return symbol.getStructureReturnType();
     }
 
     /**
-     * Checks the use of a function
+     * Verifica que la asignación o declaración sea correcta. Y devuelve el tipo de
+     * la expresión si es correcta y en caso contrario devuelve null.
      * 
-     * @param id
-     * @param args
-     * @param line
-     * 
-     * @return true if the function is valid, false otherwise
+     * @param assig Asignación
+     * @return StructureReturnType | null
+     * @see Asignation
+     * @see StructureReturnType
      */
-    public boolean checkFunctionDeclaration(String id, L_Args args, int line) {
-        Symbol symbol = this.actualSymbolTable.getSymbol(id);
+    public StructureReturnType checkAsignation(Asignation assig) {
+        return null;
+    }
+
+    /**
+     * Verifica el tamaño de la tupla. Comprueba que el tamaño de la tupla sea el
+     * mismo que el de la declaración inicial. Y devuelve el tipo de la expresión si
+     * es correcta y en caso contrario devuelve null.
+     * 
+     * @param tup Tupla
+     * @return boolean true si el tamaño es correcto, false en caso contrario
+     * @see Tuple
+     */
+    public boolean checkTupleSize(Asignation ass) {
+        L_Args l_args = ass.getExpresion().getValue().getTuple().getTupleContent();
+        int size = 0;
+
+        while (l_args.getArg() != null) {
+            size++;
+            l_args = l_args.getNextArg();
+        }
+
+        Symbol symbol = st.getSymbol(ass.getL_Ids().getId());
         if (symbol == null) {
-            ErrorHandler.addError(ErrorCode.UNDECLARED_FUNCTION, line, Phase.SEMANTIC);
             return false;
         }
 
-        if (symbol.getType() != Type.FUNCTION) {
-            ErrorHandler.addError(ErrorCode.NOT_A_FUNCTION, line, Phase.SEMANTIC);
-            return false;
-        }
+        return (symbol.getContent().size() != size);
 
-        ArrayList<Object> values = symbol.getValue();
-        ArrayList<Expresion> argsList = new ArrayList<>();
-        int argsSize = 0;
+    }
 
-        while (args != null) {
-            argsSize++;
-            args = args.getNextArg();
-            argsList.add(args.getArg());
-        }
-
-        if (values.size() != argsSize) {
-            ErrorHandler.addError(ErrorCode.WRONG_NUMBER_OF_ARGUMENTS, line, Phase.SEMANTIC);
-            return false;
-        }
-
-        ArrayList<Value> valuesList = new ArrayList<>();
-        for (Expresion arg : argsList) {
-            Expresion exp = arg;
-            while (exp != null) {
-                valuesList.add(exp.getValue());
-                exp = exp.getNextExpresion();
+    /**
+     * Verifica que el tipo de retorno sea correcto. Comprueba que el tipo de
+     * retorno sea el mismo que el de la función.
+     *
+     * @param rtn
+     * @return void
+     * @see Symbol
+     */
+    public void checkReturns() {
+        // Coger el StructureReturnType de la funcion acutal access[1]
+        Integer[] range = st.getTa().get(st.getTaIndex());
+        StructureReturnType frt = st.getTs().get(range[1]).getStructureReturnType();
+        // Recorrer inversamente el conjunto de simbolos para obtener todos los
+        // nodos de retorno
+        int nReturns = 0;
+        int index = range[1] - 1;
+        for (Symbol symbol = st.getTs().get(index); symbol.getStructureType()
+                .equals(StructureType.RETURN); symbol = st.getTs().get(index--)) {
+            nReturns++;
+            if (!symbol.getStructureReturnType().equals(frt)) {
+                // ERROR RETURN TYPE DOES NOT MATCH
+                ErrorHandler.addError(ErrorCode.RETURN_VALUE_DOES_NOT_MATCH,
+                        symbol.getLine(),
+                        Phase.SEMANTIC);
             }
         }
 
-        // !TODO: Implement this part
-        // Hay que comprobar que los tipos de los argumentos de la llamada a la función
-        // son los mismos que los de la función
-        for (int i = 0; i < argsSize; i++) {
-            if (values.get(i) != argsList.get(i)) {
-                // ErrorHandler.addError(ErrorCode.WRONG_ARGUMENT_TYPE, line, Phase.SEMANTIC);
-                return false;
-            }
+        // Funcion con return value sin nodos de retorno
+        if (nReturns == 0) {
+            // ERROR NO RETURN IN A FUNCTION WITH RETURN VALUE
+            ErrorHandler.addError(ErrorCode.NO_RETURN_IN_A_FUNCTION_WITH_RETURN_VALUE,
+                    st.getTs().get(range[1]).getLine(), // Cogemos la funcion de la tabla de simbolos
+                    Phase.SEMANTIC);
         }
-        // Hasta aquí
-
-        return true;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean checkExpression() {
-
-        return false;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean checkAssignment() {
-        // !TODO: Implement this method
-        return false;
-    }
-
-    /**
-     * Checks if the return type of a function is compatible with the return type.
-     * 
-     * @param id        - The name of the function.
-     * @param subType   - The return type of the function.
-     * @param returnExp - The return expression of the function.
-     * @param line      - The line number of the return statement.
-     * 
-     * @return true if the return type is compatible, false otherwise
-     */
-    public boolean checkReturn(String id, SubType subType, ReturnNode returnExp, int line) {
-        // Check if the return type of the function is the same as the return type of
-        // the expression. If not, add an error to the error handler
-        SubType functionSubType = this.actualSymbolTable.getSymbol(id).getSubType();
-        if (functionSubType != subType) {
-            ErrorHandler.addError(ErrorCode.INCOMPATIBLE_TYPES, line, Phase.SEMANTIC);
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean checkFunctionCall() {
-
-        return false;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean checkInstruction() {
-        // !TODO: Implement this method
-        return false;
-    }
-
-    /**
-     * This method checks if the ID is declared in the current scope.
-     * 
-     * @param id   - The ID to check
-     * @param line - The line where the ID is declared
-     * 
-     * @return true if the ID is declared in the current scope, false otherwise.
-     */
-    public boolean checkIdentifier(String id, int line) {
-        Symbol symbol = this.actualSymbolTable.getSymbol(id);
-        if (symbol == null) {
-            ErrorHandler.addError(ErrorCode.UNDECLARED_IDENTIFIER, line, Phase.SEMANTIC);
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * @return SymbolTable
-     */
-    public SymbolTable getSymbolTable() {
-        return this.actualSymbolTable;
-    }
-
-    /**
-     * @return String
-     */
-    public String printSymbolTables() {
-        String r = "Main:\n" + this.chadpp.getMain().getSymbolTable().printSymbolTable() + "\n";
-
-        L_Fn l_fn = chadpp.getL_Fn();
-        Function function;
-        while (l_fn.getNextFn() != null) {
-            function = l_fn.getFn();
-
-            r += function.getId().getValue() + ":\n";
-            r += function.getSymbolTable().printSymbolTable() + "\n";
-
-            l_fn = l_fn.getNextFn();
-        }
-        function = l_fn.getFn();
-
-        r += function.getId().getValue() + ":\n";
-        r += function.getSymbolTable().printSymbolTable() + "\n";
-
-        return r;
 
     }
-
-    public String printVariableTables() {
-        return "Work in progress";
-    }
-
-    public String printFunctionTables() {
-        return "Work in progress";
-    }
-
 }

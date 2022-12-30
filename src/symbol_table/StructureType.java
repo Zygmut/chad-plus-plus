@@ -5,4 +5,5 @@ public enum StructureType {
     VARIABLE,
     PARAMETER,
     RETURN,
+    VALUE,
 }

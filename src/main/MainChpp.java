@@ -73,16 +73,20 @@ public class MainChpp {
             SymbolFactory sf = new ComplexSymbolFactory();
             Parser parser = new Parser(scanner, sf);
             parser.parse();
-
+            System.out.println(parser.getSymbolTable());
+            saveTable(parser.getSymbolTable().toString(), "TablaSimbolos.txt");
             // System.out.println(scanner.lines);
-            saveTokens(scanner.lines);
+            // saveTokens(scanner.lines);
 
             // semantic
-            parser.getSemanticAnalyzer().run();
-            System.out.println(parser.getSemanticAnalyzer().printSymbolTables());
-            saveTable(parser.getSemanticAnalyzer().printSymbolTables(), "TablaSimbolos.txt");
-            saveTable(parser.getSemanticAnalyzer().printVariableTables(), "TablaVariables.txt");
-            saveTable(parser.getSemanticAnalyzer().printFunctionTables(), "TablaFunciones.txt");
+            // parser.getSemanticAnalyzer().run();
+            // System.out.println(parser.getSemanticAnalyzer().printSymbolTables());
+            // saveTable(parser.getSemanticAnalyzer().printSymbolTables(),
+            // "TablaSimbolos.txt");
+            // saveTable(parser.getSemanticAnalyzer().printVariableTables(),
+            // "TablaVariables.txt");
+            // saveTable(parser.getSemanticAnalyzer().printFunctionTables(),
+            // "TablaFunciones.txt");
 
             // SymbolTable symbolTable = parser.getSemanticAnalyzer().getSymbolTable();
             // System.out.println(symbolTable.printSymbolTable());

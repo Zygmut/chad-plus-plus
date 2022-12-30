@@ -15,11 +15,10 @@ public class Main extends BaseNode {
         this.symbolTable = null;
     }
 
-    public Main(L_Decls listaDecl, L_Instrs listaInstr, SymbolTable symbolTable, int line, int column) {
+    public Main(L_Decls listaDecl, L_Instrs listaInstr, int line, int column) {
         super(line, column);
         this.listaDecl = listaDecl;
         this.listaInstr = listaInstr;
-        this.symbolTable = symbolTable;
     }
 
     public SymbolTable getSymbolTable() {

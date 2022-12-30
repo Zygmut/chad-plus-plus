@@ -2,18 +2,22 @@
 $
  hola
 $
-int a = 1;
-bol b = true;
+int a = 4 + 1;
+bol c = false;
+tup h = [1 ,2] ;
+const tup b = [1,2,3, true, [1,2]];
 
 alpha bol mayor5 (int n){
+    int test = true;
+    BEGIN
     if (n > 5){
         return true;
     }
     return false;
 }
 
-alpha bol mayor5_v2 (int n){
-    return n > 5;
+alpha bol mayor5_v2 (bol n, tup a){
+    return n ;
 }
 
 alpha bol mayor5_v3 (int n){
@@ -25,10 +29,9 @@ alpha int test_global (){
 }
 
 main {
-    bol a = true;
-    int b = 0;
+    const bol a = true;
     int c = 0;
-    tup d = [a, false , 1];
+    tup d = [1, false, a, c, test_global(), inputint(), b[0], (1 - 2)];
     BEGIN
     a = 1;
     test_global();
