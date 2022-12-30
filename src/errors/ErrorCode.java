@@ -45,7 +45,9 @@ public enum ErrorCode {
     UNSUPPORTED_EXPRESSION_TYPE("Unsupported expression type."),
     ID_NOT_DECLARED_OR_NOT_FOUND("Id not found."),
     NO_RETURN_IN_A_FUNCTION_WITH_RETURN_VALUE("No return in a function with return value."),
-    RETURN_VALUE_DOES_NOT_MATCH("Return value does not match the function return");
+    RETURN_VALUE_DOES_NOT_MATCH("Return value does not match the function return"),
+    FUNCTION_NO_ARGUMENTS_ARGUMENTS_PASSED("Function has no parameters but parameters were passed."),
+    FUNCTION_ARGUMENTS_PASSED_NO_ARGUMENTS("Function has parameters but no parameters were passed.");
 
     public String message;
 

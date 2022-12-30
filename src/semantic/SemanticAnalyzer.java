@@ -1,8 +1,9 @@
 package semantic;
 
 import core.*;
-import java.util.Stack;
+
 import java.util.ArrayList;
+import java.util.Stack;
 import symbol_table.Symbol;
 import symbol_table.SymbolTable;
 import utils.Phase;
@@ -37,42 +38,118 @@ public class SemanticAnalyzer {
     }
 
     /**
+     * Verfica si la función llamada es correcta. En caso de que no sea correcta
+     * devuelve false y en caso contrario devuelve true.
+     *
+     * @param callFn Nodo CallFn
+     * @return boolean
+     */
+    public boolean checkFunction(CallFn callFn) {
+        if (st.getFunction(callFn.getId().getValue()) == null) {
+            // ERROR -> function not defined
+            ErrorHandler.addError(ErrorCode.UNDECLARED_FUNCTION,
+                    callFn.getLine(),
+                    callFn.getColumn(),
+                    Phase.SEMANTIC);
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Verifica que la llamada a una función sea correcta.
      *
      * @param callFn Nodo CallFn
-     * @return boolean[2] -> [0] = true si el número de argumentos es correcto,
-     *         false en caso contrario [1] = tipo de error (false = error de tipos
-     *         no validos, true = error de número de argumentos)
+     * @return boolean
      * @see CallFn
      */
-    public boolean[] checkCallFArgs(CallFn callFn) {
-        Stack<Symbol> pila = st.getParameters(callFn.getId().getValue());
+    public boolean checkCallFArgs(CallFn callFn) {
+        // Mirar si la funcion esta definida
+        if (!checkFunction(callFn)) {
+            return false;
+        }
 
-        L_Args l_Args = callFn.getArgs();
+        // Sacar los parametros de la funcion
+        Stack<Symbol> fnParams = st.getParameters(callFn.getId().getValue());
 
-        for (Expresion param = l_Args.getArg(); pila.empty() && param != null;) {
-            Symbol arg = (Symbol) pila.pop();
+        // Cogemos los argumentos de la llamada
+        L_Args l_args = callFn.getArgs();
 
-            StructureReturnType argType = arg.getStructureReturnType();
-            StructureReturnType type = checkExpresion(param);
+        // Si no le hemos pasado argumentos pero si tiene => ERROR
+        if (l_args == null && !fnParams.empty()) {
+            // ERROR LA funcion definida no tiene argumentos y le hemos pasado argumentos
+            ErrorHandler.addError(ErrorCode.FUNCTION_ARGUMENTS_PASSED_NO_ARGUMENTS,
+                    callFn.getLine(),
+                    callFn.getColumn(),
+                    Phase.SEMANTIC);
+            return false;
+        }
 
-            if (type == null || type != argType) {
-                // Error tipos no coinciden
-                // [0] = false -> Error semantico, [1] = Error de tipos
-                return new boolean[] { false, false };
+        // Si le hemos pasado argumentos pero no tiene => ERROR
+        if (l_args != null && fnParams.empty()) {
+            // ERROR LA funcion definida no tiene argumentos y le hemos pasado argumentos
+            ErrorHandler.addError(ErrorCode.FUNCTION_NO_ARGUMENTS_ARGUMENTS_PASSED,
+                    callFn.getLine(),
+                    callFn.getColumn(),
+                    Phase.SEMANTIC);
+            return false;
+        }
+
+        // Pasamos todos los argumentos a un arraylist
+        ArrayList<StructureReturnType> args = new ArrayList<>();
+
+        boolean hasError = false;
+        StructureReturnType type = null;
+        for (L_Args arg = l_args; arg != null; arg = arg.getNextArg()) {
+            type = checkExpresion(arg.getArg());
+            if (type == null) {
+                // Error -> malformed expression
+                ErrorHandler.addError(ErrorCode.MALFORMED_EXPRESSION,
+                        arg.getArg().getLine(),
+                        arg.getArg().getColumn(),
+                        Phase.SEMANTIC);
+                hasError = true;
+            } else {
+                args.add(type);
             }
-
-            l_Args = l_Args.getNextArg();
-            param = l_Args.getArg();
+        }
+        // Si el tamaño de los argumentos y los params no coincide => ERROR
+        if (args.size() != fnParams.size()) {
+            ErrorHandler.addError(ErrorCode.INVALID_NUMBER_OF_ARGUMENTS,
+                    l_args.getLine(),
+                    l_args.getColumn(),
+                    Phase.SEMANTIC);
+            hasError = true;
         }
 
-        // si la pila NO está vacia o quedan parametros por evaluar -> error
-        if (!pila.empty() || l_Args.getArg() != null) {
-            // [0] = false -> Error semantico, [1] = Error de número de argumentos
-            return new boolean[] { false, true };
+        // Iteramos por los parametros y argumentos
+        while (!fnParams.empty()) {
+            Symbol param = fnParams.pop();
+            StructureReturnType arg = args.remove(0);
+            if (param.getStructureReturnType() != arg) {
+                // ERROR INCOMPATIBLE TYPES
+                ErrorHandler.addError(
+                        "Incompatible types, expected " + param.getStructureReturnType().name() + " but got " + arg,
+                        callFn.getLine(),
+                        -1,
+                        Phase.SEMANTIC);
+                hasError = true;
+            }
         }
 
-        return new boolean[] { true, false };
+        return !hasError;
+    }
+
+    /**
+     * Devuelve una lista de expresiones con la prioridad de las expresiones para
+     * que la expresión este bien formata.
+     *
+     * @param exp Expresión
+     * @return ArrayList<Expresion>
+     * 
+     */
+    private ArrayList<Expresion> getPriorityExpresion(Expresion exp) {
+        return null;
     }
 
     /**
@@ -94,10 +171,28 @@ public class SemanticAnalyzer {
                 type = StructureReturnType.BOOL;
                 break;
             case "Id":
-                type = st.getSymbol(value.getId().getValue()).getStructureReturnType();
+                // Revisar que existe el id
+                Symbol symbol = st.getSymbol(value.getId().getValue());
+                if (symbol == null) {
+                    ErrorHandler.addError(ErrorCode.UNDECLARED_VARIABLE,
+                            exp.getLine(),
+                            exp.getColumn(),
+                            Phase.SEMANTIC);
+                    return null;
+                }
+                type = symbol.getStructureReturnType();
                 break;
             case "CallFn":
-                type = st.getFunction(value.getCallFn().getId().getValue()).getStructureReturnType();
+                // Revisar que existe la funcion
+                Symbol symbolCallFn = st.getFunction(value.getCallFn().getId().getValue());
+                if (symbolCallFn == null) {
+                    ErrorHandler.addError(ErrorCode.UNDECLARED_FUNCTION,
+                            exp.getLine(),
+                            exp.getColumn(),
+                            Phase.SEMANTIC);
+                    return null;
+                }
+                type = symbolCallFn.getStructureReturnType();
                 break;
             case "Input":
                 type = StructureReturnType.INT;
@@ -106,9 +201,16 @@ public class SemanticAnalyzer {
                 }
                 break;
             case "A_Tuple":
-                type = st.getNTupleArgument(value.getaTuple().getId().getValue(),
-                        value.getaTuple().getAccess().getValue())
-                        .getStructureReturnType();
+                Symbol symbolNTupleArg = st.getNTupleArgument(value.getaTuple().getId().getValue(),
+                        value.getaTuple().getAccess().getValue());
+                if (symbolNTupleArg == null) {
+                    ErrorHandler.addError(ErrorCode.TUPLE_INDEX_OUT_OF_BOUNDS,
+                            exp.getLine(),
+                            exp.getColumn(),
+                            Phase.SEMANTIC);
+                    return null;
+                }
+                type = symbolNTupleArg.getStructureReturnType();
                 break;
             case "Tuple":
                 type = StructureReturnType.TUP;
@@ -236,7 +338,8 @@ public class SemanticAnalyzer {
         int nReturns = 0;
         int index = range[1] - 1;
         for (Symbol symbol = st.getTs().get(index); symbol.getStructureType()
-                .equals(StructureType.RETURN); symbol = st.getTs().get(index--)) {
+                .equals(StructureType.RETURN); symbol = st.getTs().get(--index)) {
+            System.out.println(symbol);
             nReturns++;
             if (!symbol.getStructureReturnType().equals(frt)) {
                 // ERROR RETURN TYPE DOES NOT MATCH

@@ -2,10 +2,11 @@
 $
  hola
 $
+int value = 5;
 int a = 4 + 1;
 bol c = false;
-tup h = [1 ,2] ;
-const tup b = [1,2,3, true, [1,2]];
+tup j, h = [1, false];
+const tup b = [1,2,3, true ];
 
 alpha bol mayor5 (int n){
     int test = true;
@@ -20,13 +21,14 @@ alpha bol mayor5_v2 (bol n, tup a){
     return n ;
 }
 
+alpha int test_global (int c){
+    return c;
+}
+
 alpha bol mayor5_v3 (int n){
     return ((n < 5) && (n == 5));
 }
 
-alpha int test_global (){
-    return a;
-}
 
 main {
     const bol a = true;

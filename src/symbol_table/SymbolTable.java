@@ -291,13 +291,13 @@ public class SymbolTable {
             Stack<Symbol> params = new Stack<>();
             int index = access[0];
             for (Symbol parameter = ts.get(index); parameter.getStructureType()
-                    .equals(StructureType.PARAMETER); parameter = ts.get(index++)) {
+                    .equals(StructureType.PARAMETER); parameter = ts.get(++index)) {
                 params.add(parameter);
             }
 
             return params;
-
         }
+
         return null;
     }
 

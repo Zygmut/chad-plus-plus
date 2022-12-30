@@ -54,7 +54,6 @@ parser code {:
             Phase.SEMANTIC);
         }
         L_Args tupCont = assig.getExpresion().getValue().getTuple().getTupleContent();
-        System.out.println("Tuple contents");
 
         ArrayList<Symbol> content = new ArrayList<>();
 
@@ -165,21 +164,7 @@ parser code {:
                         Phase.SEMANTIC);
                         return false;
                     }
-                    boolean[] callFArgs = sem.checkCallFArgs(value.getCallFn());
-                    if(!callFArgs[0]){
-                        if (callFArgs[1]){
-                            // ERROR -> invalid number of arguments
-                            ErrorHandler.addError(ErrorCode.INVALID_NUMBER_OF_ARGUMENTS,
-                            value.getCallFn().getLine(),
-                            value.getCallFn().getColumn(),
-                            Phase.SEMANTIC);
-                        } else {
-                            // ERROR -> invalid argument type
-                            ErrorHandler.addError(ErrorCode.INVALID_ARGUMENT_TYPE,
-                            value.getCallFn().getLine(),
-                            value.getCallFn().getColumn(),
-                            Phase.SEMANTIC);
-                        }
+                    if(!sem.checkCallFArgs(value.getCallFn())){
                         return false;
                     }
                     content.add(new Symbol("CallFn" + value.getCallFn().getId() + value.getCallFn().getLine() + "_" + value.getCallFn().getColumn(), StructureType.VALUE, fn.getStructureReturnType(), null, false, true, value.getCallFn().getLine()));
@@ -194,7 +179,6 @@ parser code {:
             }
 
 
-            System.out.println(arg.getArg().getValue());
         }
         // Coger todos los ids
         for(L_Ids l_ids = assig.getL_Ids(); l_ids != null;  l_ids = l_ids.nextId()){
@@ -207,12 +191,10 @@ parser code {:
                 Phase.SEMANTIC);
                 return false;
             }
-        // Una vez encontrado, usar setContent para poner el contenido respectico a la tupla
-        symbol.setContent(content);
-
+            // Una vez encontrado, usar setContent para poner el contenido respectico a la tupla
+            symbol.setContent(content);
         }
 
-        System.out.println("END Tuple contents");
         return true;
     }
 
@@ -315,25 +297,22 @@ GDECLS          ::= GDECL:d GDECLS:ld                               {: RESULT = 
 
 GDECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
-                                                                        StructureReturnType srt = typeVartoReturnType(type);
                                                                         st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, true, typeleft));
-
-                                                                        if (srt.equals(StructureReturnType.TUP)) {
-                                                                            // Vamos añadiendo los elementos al contenido del simbolo
-                                                                            addTupleContentstoST(assig);
-                                                                        };
+                                                                    };
+                                                                    if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
+                                                                        // Vamos añadiendo los elementos al contenido del simbolo
+                                                                        addTupleContentstoST(assig);
                                                                     };
                                                                     RESULT = new Decl(true, type, assig, cur_token.left, cur_token.right);
                                                                 :}
                 |   TYPEVAR:type ASIGNATION:assig               {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
-                                                                        StructureReturnType srt = typeVartoReturnType(type);
                                                                         st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, false, typeleft));
 
-                                                                        if (srt.equals(StructureReturnType.TUP)) {
-                                                                            // Vamos añadiendo los elementos al contenido del simbolo
-                                                                            addTupleContentstoST(assig);
-                                                                        };
+                                                                    };
+                                                                    if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
+                                                                        // Vamos añadiendo los elementos al contenido del simbolo
+                                                                        addTupleContentstoST(assig);
                                                                     };
                                                                     RESULT = new Decl(false, type, assig, cur_token.left, cur_token.right);
                                                                 :}
@@ -345,25 +324,21 @@ DECLS           ::= DECL:d DECLS:ld                             {: RESULT = new 
 
 DECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
-                                                                        StructureReturnType srt = typeVartoReturnType(type);
-                                                                        st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , srt, null, false, true, typeleft));
-
-                                                                        if (srt.equals(StructureReturnType.TUP)) {
-                                                                            // Vamos añadiendo los elementos al contenido del simbolo
-                                                                            addTupleContentstoST(assig);
-                                                                        };
+                                                                        st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, true, typeleft));
+                                                                    };
+                                                                    if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
+                                                                        // Vamos añadiendo los elementos al contenido del simbolo
+                                                                        addTupleContentstoST(assig);
                                                                     };
                                                                     RESULT = new Decl(true, type, assig, cur_token.left, cur_token.right);
                                                                 :}
                 |   TYPEVAR:type ASIGNATION:assig               {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
-                                                                        StructureReturnType srt = typeVartoReturnType(type);
                                                                         st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, false, typeleft));
-
-                                                                        if (srt.equals(StructureReturnType.TUP)) {
-                                                                            // Vamos añadiendo los elementos al contenido del simbolo
-                                                                            addTupleContentstoST(assig);
-                                                                        };
+                                                                    };
+                                                                    if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
+                                                                        // Vamos añadiendo los elementos al contenido del simbolo
+                                                                        addTupleContentstoST(assig);
                                                                     };
                                                                     RESULT = new Decl(false, type, assig, cur_token.left, cur_token.right);
                                                                 :}
@@ -410,7 +385,7 @@ VALUE           ::= LPAREN EXPRESION:e RPAREN                   {: RESULT = new 
 V_TUP           ::= LSKEY ARGS:a RSKEY                          {: RESULT = new Tuple(a, cur_token.left, cur_token.right); :}
                 ;
 
-A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: RESULT = new A_Tuple(new Id(id, cur_token.left, cur_token.right), new core.Number(num, cur_token.left, cur_token.right), cur_token.left, cur_token.right); :}
+A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: RESULT = new A_Tuple(new Id(id, cur_token.left, cur_token.right), new Number(num, cur_token.left, cur_token.right), cur_token.left, cur_token.right); :}
                 ;
 
 CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new CallFn(new Id(id, cur_token.left, cur_token.right), args, cur_token.left, cur_token.right); :}
@@ -439,7 +414,7 @@ R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY      
                 |   CALLF:fn SEMICOLON                                                              {: RESULT = new Instr(fn, cur_token.left , cur_token.right); :}
                 |   RETURN EXPRESION:e SEMICOLON
                     {:
-                        st.addSymbol(new Symbol("Return" + eleft + "_" + eright, StructureType.RETURN, StructureReturnType.TUP/*TODO sematically check expression*/, null, false, false, eleft));
+                        st.addSymbol(new Symbol("Return" + eleft + "_" + eright, StructureType.RETURN, sem.checkExpresion(e), null, false, false, eleft));
                         RESULT = new Instr(new ReturnNode(e, cur_token.left , cur_token.right), cur_token.left , cur_token.right); 
                     :}
                 ;
@@ -458,8 +433,8 @@ FUNCTIONS       ::= M FUNCTION:fn FUNCTIONS:fns                  {: RESULT = new
                 |                                               {: :}
                 ;
 
-FUNCTION        ::= ALPHA TYPEVAR:t ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY     {: st.addSymbol(new Symbol(id, StructureType.FUNCTION,typeVartoReturnType(t),   null, false, false, idleft )); RESULT = new Function(t, new Id(id, cur_token.left , cur_token.right), args, decls,instrs,     cur_token.left , cur_token.right); :}
-                |   ALPHA TYPEVAR:t ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: st.addSymbol(new Symbol(id, StructureType.FUNCTION,typeVartoReturnType(t),   null, false, false, idleft )); RESULT = new Function(t, new Id(id, cur_token.left , cur_token.right), args, null, instrs,     cur_token.left , cur_token.right); :}
+FUNCTION        ::= ALPHA TYPEVAR:t ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY     {: st.addSymbol(new Symbol(id, StructureType.FUNCTION,typeVartoReturnType(t),   null, false, false, idleft )); sem.checkReturns(); RESULT = new Function(t, new Id(id, cur_token.left , cur_token.right), args, decls,instrs, cur_token.left , cur_token.right); :}
+                |   ALPHA TYPEVAR:t ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: st.addSymbol(new Symbol(id, StructureType.FUNCTION,typeVartoReturnType(t),   null, false, false, idleft )); sem.checkReturns(); RESULT = new Function(t, new Id(id, cur_token.left , cur_token.right), args, null, instrs, cur_token.left , cur_token.right); :}
                 |   ALPHA VOID ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: st.addSymbol(new Symbol(id, StructureType.FUNCTION,StructureReturnType.VOID, null, false, false, idleft )); RESULT = new Function(null, new Id(id, cur_token.left , cur_token.right), args, decls, instrs, cur_token.left , cur_token.right); :}
                 |   ALPHA VOID ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                              {: st.addSymbol(new Symbol(id, StructureType.FUNCTION,StructureReturnType.VOID, null, false, false, idleft )); RESULT = new Function(null, new Id(id, cur_token.left , cur_token.right), args, null, instrs,  cur_token.left , cur_token.right); :}
                 ;
