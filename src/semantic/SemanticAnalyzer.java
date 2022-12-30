@@ -1,21 +1,21 @@
 package semantic;
 
 import core.*;
-
-import java.util.ArrayList;
-import java.util.Stack;
+import errors.ErrorCode;
+import errors.ErrorHandler;
+import symbol_table.StructureReturnType;
+import symbol_table.StructureType;
 import symbol_table.Symbol;
 import symbol_table.SymbolTable;
 import utils.Phase;
-import symbol_table.StructureReturnType;
-import symbol_table.StructureType;
-import errors.ErrorCode;
-import errors.ErrorHandler;
+
+import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * Analizador semántico. Verifica que el código sea correcto semánticamente, y
  * en caso contrario lanza un error.
- * 
+ *
  * @see SymbolTable
  * @see ErrorHandler
  * @see ErrorCode
@@ -26,11 +26,11 @@ public class SemanticAnalyzer {
     /**
      * Tabla de simbolos
      */
-    private SymbolTable st;
+    private final SymbolTable st;
 
     /**
      * Constructor, recibe la tabla de simbolos por parámetro
-     * 
+     *
      * @param st Tabla de simbolos
      */
     public SemanticAnalyzer(SymbolTable st) {
@@ -146,7 +146,6 @@ public class SemanticAnalyzer {
      *
      * @param exp Expresión
      * @return ArrayList<Expresion>
-     * 
      */
     private ArrayList<Expresion> getPriorityExpresion(Expresion exp) {
         return null;
@@ -267,7 +266,7 @@ public class SemanticAnalyzer {
      * Verifica el Id de una expresión. Y devuelve el tipo de la expresión si
      * es correcta y en caso contrario devuelve null.
      *
-     * @param Id idExp
+     * @param exp idExp
      * @return StructureReturnType | null
      * @see Id
      * @see StructureReturnType
@@ -284,7 +283,7 @@ public class SemanticAnalyzer {
     /**
      * Verifica que la asignación o declaración sea correcta. Y devuelve el tipo de
      * la expresión si es correcta y en caso contrario devuelve null.
-     * 
+     *
      * @param assig Asignación
      * @return StructureReturnType | null
      * @see Asignation
@@ -298,8 +297,8 @@ public class SemanticAnalyzer {
      * Verifica el tamaño de la tupla. Comprueba que el tamaño de la tupla sea el
      * mismo que el de la declaración inicial. Y devuelve el tipo de la expresión si
      * es correcta y en caso contrario devuelve null.
-     * 
-     * @param tup Tupla
+     *
+     * @param ass Assignation
      * @return boolean true si el tamaño es correcto, false en caso contrario
      * @see Tuple
      */
@@ -325,8 +324,6 @@ public class SemanticAnalyzer {
      * Verifica que el tipo de retorno sea correcto. Comprueba que el tipo de
      * retorno sea el mismo que el de la función.
      *
-     * @param rtn
-     * @return void
      * @see Symbol
      */
     public void checkReturns() {
