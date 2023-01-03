@@ -1,6 +1,23 @@
-main{
-    test(a, b);
+tup g_tup = [1, 2];
+
+# Sumar los dos numeros de g_tup si se le pasa true, restarlos si se le pasa false
+alpha int sum_gtup(bol type){
+    int dummy_value = 0;
+    bol type = false; # Esto deberia dar un error semantico de redefinicion de variable de scope local
+    BEGIN
+    dummy_value = false;
+    if(type == true){
+        return g_tup[0] + g_tup[1];
+    }
+    return g_tup[0] - g_tup[1];
 }
-int alpha test(int a, int b){
-    return a;
+
+main{
+    sum_gtup();
+    $
+    redefinimos el tipo de datos de la tupla global
+    lo que nos tendria que dar un warning de redefinicion
+    de tipo de una tupla global
+    $
+    sum_gtup();
 }

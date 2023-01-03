@@ -33,7 +33,7 @@ alpha bol mayor5_v3 (int n){
 main {
     const bol a = true;
     int c = 0;
-    tup d = [1, false, a, c, test_global(), inputint(), b[0], (1 - 2)];
+    # tup d = [1, false, a, c, test_global(), inputint(), b[0], (1 - 2)];
     BEGIN
     a = 1;
     test_global();

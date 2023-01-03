@@ -15,7 +15,9 @@ public enum WarningCode {
     CUSTOM(""),
     UNUSED_VARIABLE("Unused variable."),
     UNUSED_METHOD("Unused method."),
-    INACCESIBLE_LINE("Line cannot be accessed.");
+    INACCESIBLE_LINE("Line cannot be accessed."),
+    CHANGE_TYPE_OF_GLOBAL_TUPLE(
+            "Changed the type of a global defined tuple argument, program might return unexpected results");
 
     public String message;
 
