@@ -23,5 +23,9 @@ public enum Operator {
     CALL,
     RETURN,
     PMB,
-    PRINT_INT
+    IN_INT,
+    IN_BOL,
+    PRINT_INT,
+    PRINT_BOL,
+    EXIT
 }

@@ -37,8 +37,10 @@ public class L_FArgs extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
-
+        this.arg.generate3dc(codigoTresDir);
+        if (this.nextArg != null) {
+            this.nextArg.generate3dc(codigoTresDir);
+        }
     }
 
 }

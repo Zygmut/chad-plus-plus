@@ -1,4 +1,6 @@
 tup g_tup = [1, 2];
+int a,b,c = 0;
+bol d,e,f = false;
 
 # Sumar los dos numeros de g_tup si se le pasa true, restarlos si se le pasa false
 alpha int sum_gtup(bol type){
@@ -12,7 +14,14 @@ alpha int sum_gtup(bol type){
     return g_tup[0] - g_tup[1];
 }
 
+alpha void testVoid(int a, tup b, bol c){
+    inputint();
+    inputbol();
+}
+
 main{
+    int a = 0;
+    BEGIN
     sum_gtup();
     $
     redefinimos el tipo de datos de la tupla global

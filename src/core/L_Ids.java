@@ -49,7 +49,12 @@ public class L_Ids extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
+        // Crear la variable de id
+        codigoTresDir.putVar(id, codigoTresDir.getDeclType());
+
+        if (nextId != null) {
+            nextId.generate3dc(codigoTresDir);
+        }
 
     }
 }

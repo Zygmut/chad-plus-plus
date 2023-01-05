@@ -55,8 +55,15 @@ public class Chadpp extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
+        if (l_decls != null) {
+            l_decls.generate3dc(codigoTresDir);
+        }
 
+        main.generate3dc(codigoTresDir);
+
+        if (functions != null) {
+            functions.generate3dc(codigoTresDir);
+        }
     }
 
     @Override

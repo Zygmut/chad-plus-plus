@@ -1,6 +1,7 @@
 package core;
 
 import intermediate_code.ThreeAddressCode;
+import symbol_table.StructureReturnType;
 
 public class Function extends BaseNode {
     private TypeVar returnType;
@@ -59,6 +60,22 @@ public class Function extends BaseNode {
         this.instrs = instrs;
     }
 
+    private StructureReturnType returnTypetoStructureReturnType() {
+        if (returnType == null) {
+            return StructureReturnType.VOID;
+        }
+        switch (returnType.name()) {
+            case "INT":
+                return StructureReturnType.INT;
+            case "BOOL":
+                return StructureReturnType.BOOL;
+            case "TUP":
+                return StructureReturnType.TUP;
+            default:
+                return null;
+        }
+    }
+
     @Override
     public String toString() {
         return "Function [returnType=" + returnType + ", id=" + id + ", arguments=" + arguments + ", decls=" + decls
@@ -68,8 +85,19 @@ public class Function extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
+        codigoTresDir.newFn(id.getValue(), returnTypetoStructureReturnType());
 
+        if (this.arguments != null) {
+            codigoTresDir.toggleParams();
+            this.arguments.generate3dc(codigoTresDir);
+            codigoTresDir.toggleParams();
+        }
+        if (this.decls != null) {
+            this.decls.generate3dc(codigoTresDir);
+        }
+        if (this.instrs != null) {
+            this.instrs.generate3dc(codigoTresDir);
+        }
     }
 
 }

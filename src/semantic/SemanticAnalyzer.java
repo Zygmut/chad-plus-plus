@@ -336,7 +336,6 @@ public class SemanticAnalyzer {
         int index = range[1] - 1;
         for (Symbol symbol = st.getTs().get(index); symbol.getStructureType()
                 .equals(StructureType.RETURN); symbol = st.getTs().get(--index)) {
-            System.out.println(symbol);
             nReturns++;
             if (!symbol.getStructureReturnType().equals(frt)) {
                 // ERROR RETURN TYPE DOES NOT MATCH

@@ -48,8 +48,10 @@ public class L_Decls extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
-
+        decl.generate3dc(codigoTresDir);
+        if (nextDecl != null) {
+            nextDecl.generate3dc(codigoTresDir);
+        }
     }
 
 }

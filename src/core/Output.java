@@ -27,7 +27,6 @@ public class Output extends BaseNode {
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
         // TODO Auto-generated method stub
-
     }
 
 }

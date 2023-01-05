@@ -95,8 +95,18 @@ public class Procedimiento {
 
     @Override
     public String toString() {
-        return "Procedimiento [id=" + id + ", returnType=" + returnType + ", parameters=" + parameters
-                + ", declarations=" + declarations + "]";
+        String s = "id: " + id + "\n";
+        s += "returns: " + returnType + "\n";
+        s += "Parameters\n";
+        for (Variable var : parameters) {
+            s += "\t" + var + "\n";
+        }
+        s += "Declarations\n";
+        for (Variable var : declarations) {
+            s += "\t" + var + "\n";
+        }
+        return s;
+
     }
 
 }

@@ -37,8 +37,12 @@ public class Asignation extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
-
+        lid.generate3dc(codigoTresDir);
+        /*
+         * for (Variable var : codigoTresDir.listaIds()) {
+         * asignar a cada id la expresion
+         * }
+         */
     }
 
 }

@@ -58,12 +58,29 @@ public class Instruction {
 
     @Override
     public String toString() {
-        return "{" +
-                " dest='" + this.dest + "'" +
-                ", op1='" + this.op1 + "'" +
-                ", op2='" + this.op2 + "'" +
-                ", operation='" + this.operation + "'" +
-                "}";
+        switch (operation.name()) {
+            case "GOTO":
+            case "PMB":
+                return operation.name() + " " + dest;
+            case "SKIP":
+                return dest + ": " + operation.name();
+            case "EXIT":
+                return operation.name();
+            case "IN_INT":
+            case "IN_BOL":
+                return dest + " = " + operation.name();
+            case "ASIGN":
+                if (op2 != null) {
+                    return dest + " = " + op1 + "[" + op2 + "]";
+                }
+                return dest + " = " + op1;
+            default:
+                return "{" +
+                        " dest='" + this.dest + "'" +
+                        ", op1='" + this.op1 + "'" +
+                        ", op2='" + this.op2 + "'" +
+                        ", operation='" + this.operation + "'" +
+                        "}";
+        }
     }
-
 }

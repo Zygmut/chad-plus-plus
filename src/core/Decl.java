@@ -48,8 +48,9 @@ public class Decl extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
-
+        codigoTresDir.startDeclaration(type);
+        asignation.generate3dc(codigoTresDir);
+        codigoTresDir.endDeclaration();
     }
 
 }

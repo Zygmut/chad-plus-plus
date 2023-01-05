@@ -123,7 +123,32 @@ public class Instr extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
+        switch (currentInstance) {
+            case "IfNode":
+                this.ifNode.generate3dc(codigoTresDir);
+                break;
+            case "WhileNode":
+                this.whileNode.generate3dc(codigoTresDir);
+                break;
+            case "LoopNode":
+                this.loopNode.generate3dc(codigoTresDir);
+                break;
+            case "ReturnNode":
+                this.returnNode.generate3dc(codigoTresDir);
+                break;
+            case "Output":
+                this.output.generate3dc(codigoTresDir);
+                break;
+            case "Input":
+                this.input.generate3dc(codigoTresDir);
+                break;
+            case "Asignation":
+                this.asignation.generate3dc(codigoTresDir);
+                break;
+            case "CallFn":
+                this.callFn.generate3dc(codigoTresDir);
+                break;
+        }
 
     }
 }

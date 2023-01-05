@@ -41,7 +41,11 @@ public class L_Instrs extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
+        this.instr.generate3dc(codigoTresDir);
+
+        if (this.nextInstr != null) {
+            this.nextInstr.generate3dc(codigoTresDir);
+        }
 
     }
 

@@ -107,4 +107,12 @@ public class ErrorHandler {
         return errors;
     }
 
+    public static String getErrorsString() {
+        String s = "";
+        for (Error error : errors) {
+            s += error.toString() + "\n";
+        }
+        return s;
+    }
+
 }

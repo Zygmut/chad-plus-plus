@@ -47,7 +47,7 @@ parser code {:
     private boolean addTupleContentstoST(Asignation assig){
 
         if(assig.getExpresion().getOp() != null || assig.getExpresion().getNextExpresion() != null){
-            // SEMANTIC ERROR -> only allowed to set tuples alone
+            // ERROR -> only allowed to set tuples alone
             ErrorHandler.addError(ErrorCode.SET_TUPLES_ONLY_ALONE,
             assig.getExpresion().getLine(),
             assig.getExpresion().getColumn(),

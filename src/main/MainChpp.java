@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.SymbolFactory;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
-import symbol_table.SymbolTable;
 import grammar.Scanner;
 import intermediate_code.ThreeAddressCode;
 import grammar.Parser;
@@ -60,6 +59,7 @@ public class MainChpp {
             ErrorHandler.addError(ErrorCode.FILE_NOT_FOUND, -1, Phase.PRE_COMPILER);
         }
 
+        // Lexer
         Scanner scanner = new Scanner(input);
 
         if (ErrorHandler.hasErrors()) {
@@ -69,35 +69,23 @@ public class MainChpp {
 
         // Parser
         try {
-            // lexer + sintactic
+            // Sintactic + semantic
             SymbolFactory sf = new ComplexSymbolFactory();
             Parser parser = new Parser(scanner, sf);
             parser.parse();
-            System.out.println(parser.getSymbolTable());
+
+            // Guardar la tabla de simbolos
             saveTable(parser.getSymbolTable().toString(), "TablaSimbolos.txt");
-            // System.out.println(scanner.lines);
-            // saveTokens(scanner.lines);
 
-            // semantic
-            // parser.getSemanticAnalyzer().run();
-            // System.out.println(parser.getSemanticAnalyzer().printSymbolTables());
-            // saveTable(parser.getSemanticAnalyzer().printSymbolTables(),
-            // "TablaSimbolos.txt");
-            // saveTable(parser.getSemanticAnalyzer().printVariableTables(),
-            // "TablaVariables.txt");
-            // saveTable(parser.getSemanticAnalyzer().printFunctionTables(),
-            // "TablaFunciones.txt");
-
-            // SymbolTable symbolTable = parser.getSemanticAnalyzer().getSymbolTable();
-            // System.out.println(symbolTable.printSymbolTable());
+            // Guardar los tokens
+            saveTokens(scanner.tokens);
 
             // c3@
-            ThreeAddressCode c3d = new ThreeAddressCode(parser.getTree());
-            c3d.generate();
+            ThreeAddressCode c3d = new ThreeAddressCode();
+            parser.getTree().generate3dc(c3d);
             c3d.saveThreeAddressCode();
-
-            // Chadpp tree = parser.getTree();
-            // System.out.println(tree);
+            saveTable(c3d.getTpString(), "TablaProcedimientos.txt");
+            saveTable(c3d.getTvString(), "TablaVariables.txt");
 
         } catch (Exception e) {
             ErrorHandler.printErrors();
@@ -106,11 +94,9 @@ public class MainChpp {
 
         if (ErrorHandler.hasErrors()) {
             ErrorHandler.printErrors();
+            saveTable(ErrorHandler.getErrorsString(), "Errores.txt");
             System.exit(0);
         }
-
-        ErrorHandler.printErrors();
-        WarningHandler.printWarnings();
 
     }
 

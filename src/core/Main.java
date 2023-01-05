@@ -1,6 +1,9 @@
 package core;
 
+import intermediate_code.Instruction;
+import intermediate_code.Operator;
 import intermediate_code.ThreeAddressCode;
+import symbol_table.StructureReturnType;
 import symbol_table.SymbolTable;
 
 public class Main extends BaseNode {
@@ -42,8 +45,11 @@ public class Main extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
-
+        codigoTresDir.newFn("main", StructureReturnType.VOID);
+        if (this.listaDecl != null) {
+            this.listaDecl.generate3dc(codigoTresDir);
+        }
+        codigoTresDir.addInstr(new Instruction(null, null, Operator.EXIT, null));
     }
 
 }

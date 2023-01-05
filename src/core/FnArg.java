@@ -36,8 +36,7 @@ public class FnArg extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
-
+        codigoTresDir.putVar(id.getValue(), type);
     }
 
 }

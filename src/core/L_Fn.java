@@ -36,8 +36,10 @@ public class L_Fn extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
-
+        fn.generate3dc(codigoTresDir);
+        if (nextFn != null) {
+            nextFn.generate3dc(codigoTresDir);
+        }
     }
 
 }
