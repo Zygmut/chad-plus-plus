@@ -413,8 +413,8 @@ CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new 
                 |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id, idleft, idright), cur_token.left, cur_token.right); :}
                 ;
 
-ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: RESULT = new L_Args(e, args, eleft, eright); :}
-                |   EXPRESION:e                                 {: RESULT = new L_Args(e, eleft, eright); :}
+ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: checkExp(e); RESULT = new L_Args(e, args, eleft, eright); :}
+                |   EXPRESION:e                                 {: checkExp(e); RESULT = new L_Args(e, eleft, eright); :}
                 ;
 
 INSTRS          ::= INSTR:inst INSTRS:instrs                    {: RESULT = new L_Instrs(inst, instrs, instleft, instright); :}
