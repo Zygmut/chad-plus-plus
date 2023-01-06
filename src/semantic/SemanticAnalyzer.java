@@ -274,6 +274,10 @@ public class SemanticAnalyzer {
     public StructureReturnType checkId(Id exp) {
         Symbol symbol = st.getSymbol(exp.getValue());
         if (symbol == null) {
+            ErrorHandler.addError(ErrorCode.UNDECLARED_VARIABLE,
+                    exp.getLine(),
+                    exp.getColumn(),
+                    Phase.SEMANTIC);
             // Error semantico, no existe el id
             return null;
         }
@@ -289,8 +293,64 @@ public class SemanticAnalyzer {
      * @see Asignation
      * @see StructureReturnType
      */
-    public StructureReturnType checkAsignation(Asignation assig) {
-        return null;
+    public StructureReturnType checkAsignation(Asignation assig, boolean InDeclaration) {
+        // No se puede asignar valores a funciones o valores constantes
+        // Cogemos todos los ids y vamos revisando que ninguno sea funcion o constanste
+        ArrayList<String> lids = new ArrayList<>();
+        ArrayList<Integer> lines = new ArrayList<>();
+        ArrayList<Integer> cols = new ArrayList<>();
+        for (L_Ids id = assig.getL_Ids(); id != null; id = id.nextId()) {
+            lids.add(id.getId());
+            lines.add(id.getLine());
+            cols.add(id.getColumn());
+        }
+
+        ArrayList<Symbol> symbols = new ArrayList<>();
+        for (int i = 0; i < lids.size(); i++) {
+            symbols.add(st.getSymbol(lids.get(i)));
+            if (symbols.get(i) == null) {
+                // ERROR undefined variable
+                ErrorHandler.addError(ErrorCode.UNDECLARED_VARIABLE,
+                        lines.get(i),
+                        cols.get(i),
+                        Phase.SEMANTIC);
+                return null;
+            }
+            if (symbols.get(i).isConstant() && !InDeclaration) {
+                // ERROR cannot modify values of constants variables
+                ErrorHandler.addError(ErrorCode.CANNOT_MODIFY_CONSTANT_VARIABLES,
+                        lines.get(i),
+                        cols.get(i),
+                        Phase.SEMANTIC);
+                return null;
+            }
+        }
+
+        // Evaluamos la asignación y revisamos que los tipos de lids sean del mismo tipo
+        // de la expresión
+        StructureReturnType expEval = this.checkExpresion(assig.getExpresion());
+        for (int i = 0; i < symbols.size(); i++) {
+            if (!symbols.get(i).getStructureReturnType().equals(expEval)) {
+                if (expEval == StructureReturnType.TUP) {
+                    // ERROR tuple asignation to non tuple structure
+                    ErrorHandler.addError(ErrorCode.TUPLE_ASSIGNATION_TO_NON_TUPLE,
+                            lines.get(i),
+                            cols.get(i),
+                            Phase.SEMANTIC);
+                    return null;
+                }
+
+                // ERROR Expresion type does not match variable type
+                ErrorHandler.addError(ErrorCode.ASIGNATION_TYPE_DOES_NOT_MATCH,
+                        lines.get(i),
+                        cols.get(i),
+                        Phase.SEMANTIC);
+                return null;
+
+            }
+
+        }
+        return expEval;
     }
 
     /**

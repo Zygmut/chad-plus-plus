@@ -261,6 +261,7 @@ non terminal    L_Decls             GDECLS;
 non terminal    Decl                GDECL;
 non terminal    TypeVar             TYPEVAR;
 non terminal    Asignation          ASIGNATION;
+non terminal    Asignation          DASIGNATION;
 non terminal    Expresion           EXPRESION;
 non terminal    Op                  OP;
 non terminal    Value               VALUE;
@@ -295,7 +296,7 @@ GDECLS          ::= GDECL:d GDECLS:ld                               {: RESULT = 
                 | GDECL:d                                           {: RESULT = new L_Decls(d, cur_token.left, cur_token.right);            :}
                 ;
 
-GDECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {:
+GDECL            ::= CONST TYPEVAR:type DASIGNATION:assig         {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
                                                                         st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, true, typeleft));
                                                                     };
@@ -303,9 +304,10 @@ GDECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {:
                                                                         // Vamos añadiendo los elementos al contenido del simbolo
                                                                         addTupleContentstoST(assig);
                                                                     };
+                                                                    sem.checkAsignation(assig, true);
                                                                     RESULT = new Decl(true, type, assig, cur_token.left, cur_token.right);
                                                                 :}
-                |   TYPEVAR:type ASIGNATION:assig               {:
+                |   TYPEVAR:type DASIGNATION:assig               {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
                                                                         st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, false, typeleft));
 
@@ -314,6 +316,7 @@ GDECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {:
                                                                         // Vamos añadiendo los elementos al contenido del simbolo
                                                                         addTupleContentstoST(assig);
                                                                     };
+                                                                    sem.checkAsignation(assig, true);
                                                                     RESULT = new Decl(false, type, assig, cur_token.left, cur_token.right);
                                                                 :}
                 ;
@@ -322,7 +325,7 @@ DECLS           ::= DECL:d DECLS:ld                             {: RESULT = new 
                 | DECL:d                                        {: RESULT = new L_Decls(d, cur_token.left, cur_token.right);      :}
                 ;
 
-DECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {:
+DECL            ::= CONST TYPEVAR:type DASIGNATION:assig         {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
                                                                         st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, true, typeleft));
                                                                     };
@@ -330,9 +333,10 @@ DECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {:
                                                                         // Vamos añadiendo los elementos al contenido del simbolo
                                                                         addTupleContentstoST(assig);
                                                                     };
+                                                                    sem.checkAsignation(assig, true);
                                                                     RESULT = new Decl(true, type, assig, cur_token.left, cur_token.right);
                                                                 :}
-                |   TYPEVAR:type ASIGNATION:assig               {:
+                |   TYPEVAR:type DASIGNATION:assig               {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
                                                                         st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, false, typeleft));
                                                                     };
@@ -340,6 +344,7 @@ DECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {:
                                                                         // Vamos añadiendo los elementos al contenido del simbolo
                                                                         addTupleContentstoST(assig);
                                                                     };
+                                                                    sem.checkAsignation(assig, true);
                                                                     RESULT = new Decl(false, type, assig, cur_token.left, cur_token.right);
                                                                 :}
                 ;
@@ -349,7 +354,9 @@ TYPEVAR         ::= INT                                         {: RESULT = Type
                 |   TUP                                         {: RESULT = TypeVar.TUP;    :}
                 ;
 
-ASIGNATION      ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e, cur_token.left, cur_token.right); :};
+ASIGNATION      ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e, cur_token.left, cur_token.right); sem.checkAsignation(RESULT, false);:};
+
+DASIGNATION     ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e, cur_token.left, cur_token.right); :};
 
 LID             ::= ID:id COMMA LID:lid                         {: RESULT = new L_Ids(id, lid, cur_token.left, cur_token.right); :}
                 | ID:id                                         {: RESULT = new L_Ids(id, cur_token.left, cur_token.right); :}
