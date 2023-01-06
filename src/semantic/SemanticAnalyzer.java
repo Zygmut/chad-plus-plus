@@ -288,7 +288,8 @@ public class SemanticAnalyzer {
      * Verifica que la asignación o declaración sea correcta. Y devuelve el tipo de
      * la expresión si es correcta y en caso contrario devuelve null.
      *
-     * @param assig Asignación
+     * @param assig         Asignación
+     * @param inDeclaration Boolean
      * @return StructureReturnType | null
      * @see Asignation
      * @see StructureReturnType
@@ -346,9 +347,7 @@ public class SemanticAnalyzer {
                         cols.get(i),
                         Phase.SEMANTIC);
                 return null;
-
             }
-
         }
         return expEval;
     }
