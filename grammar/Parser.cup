@@ -310,7 +310,7 @@ GDECLS          ::= GDECL:d GDECLS:ld                               {: RESULT = 
                 | GDECL:d                                           {: RESULT = new L_Decls(d, dleft, dright);            :}
                 ;
 
-GDECL            ::= CONST TYPEVAR:type DASIGNATION:assig         {:
+GDECL            ::= CONST TYPEVAR:type DASIGNATION:assig       {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
                                                                         if (!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, true, typeleft))){
                                                                             // ERROR -> variable already declared
@@ -327,7 +327,7 @@ GDECL            ::= CONST TYPEVAR:type DASIGNATION:assig         {:
                                                                     sem.checkAsignation(assig, true);
                                                                     RESULT = new Decl(true, type, assig, typeleft, typeright);
                                                                 :}
-                |   TYPEVAR:type DASIGNATION:assig               {:
+                |   TYPEVAR:type DASIGNATION:assig              {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
                                                                         if(!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, false, typeleft))){
                                                                             // ERROR -> variable already declared
@@ -351,7 +351,7 @@ DECLS           ::= DECL:d DECLS:ld                             {: RESULT = new 
                 | DECL:d                                        {: RESULT = new L_Decls(d, dleft, dright);      :}
                 ;
 
-DECL            ::= CONST TYPEVAR:type DASIGNATION:assig         {:
+DECL            ::= CONST TYPEVAR:type DASIGNATION:assig        {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
                                                                         if(!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, true, typeleft))){
                                                                             ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
@@ -367,7 +367,7 @@ DECL            ::= CONST TYPEVAR:type DASIGNATION:assig         {:
                                                                     sem.checkAsignation(assig, true);
                                                                     RESULT = new Decl(true, type, assig, typeleft, typeright);
                                                                 :}
-                |   TYPEVAR:type DASIGNATION:assig               {:
+                |   TYPEVAR:type DASIGNATION:assig              {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
                                                                         if (!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, false, typeleft))){
                                                                             // ERROR -> variable already declared
@@ -403,15 +403,15 @@ EXPRESION       ::= VALUE:v OP:op EXPRESION:e                   {: RESULT = new 
                 |   VALUE:v                                     {: RESULT = new Expresion(v, vleft, vright);        ; :}
                 ;
 
-OP              ::= PLUS                                        {: RESULT = Op.PLUS; :}
-                |   MINUS                                       {: RESULT = Op.MINUS; :}
-                |   MULT                                        {: RESULT = Op.MULT; :}
-                |   DIV                                         {: RESULT = Op.DIV; :}
+OP              ::= PLUS                                        {: RESULT = Op.PLUS;   :}
+                |   MINUS                                       {: RESULT = Op.MINUS;  :}
+                |   MULT                                        {: RESULT = Op.MULT;   :}
+                |   DIV                                         {: RESULT = Op.DIV;    :}
                 |   REQUAL                                      {: RESULT = Op.REQUAL; :}
-                |   LT                                          {: RESULT = Op.LT; :}
-                |   GT                                          {: RESULT = Op.GT; :}
-                |   AND                                         {: RESULT = Op.AND; :}
-                |   OR                                          {: RESULT = Op.OR; :}
+                |   LT                                          {: RESULT = Op.LT;     :}
+                |   GT                                          {: RESULT = Op.GT;     :}
+                |   AND                                         {: RESULT = Op.AND;    :}
+                |   OR                                          {: RESULT = Op.OR;     :}
                 ;
 
 VALUE           ::= LPAREN EXPRESION:e RPAREN                   {: RESULT = new Value(e); :}                // (E)
@@ -525,6 +525,14 @@ F_ARGS          ::= F_ARGS2:args    {: RESULT = args;   :}
                 |                   {:                  :}
                 ;
 
-F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args    {: st.addSymbol(new Symbol(id, StructureType.PARAMETER, typeVartoReturnType(type), null, false, false, idleft)) ; RESULT = new L_FArgs( new FnArg(type, new Id(id, idleft , idright), cur_token.left , cur_token.right), args, cur_token.left , cur_token.right); :}
-                |  TYPEVAR:type ID:id                       {: st.addSymbol(new Symbol(id, StructureType.PARAMETER, typeVartoReturnType(type), null, false, false, idleft)) ; RESULT = new L_FArgs( new FnArg(type, new Id(id, idleft , idright), cur_token.left , cur_token.right), null, cur_token.left , cur_token.right); :}
+F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args
+                    {:
+                        st.addSymbol(new Symbol(id, StructureType.PARAMETER, typeVartoReturnType(type), null, false, false, idleft));
+                        RESULT = new L_FArgs( new FnArg(type, new Id(id, idleft , idright), cur_token.left , cur_token.right), args, cur_token.left , cur_token.right);
+                    :}
+                |  TYPEVAR:type ID:id
+                    {:
+                        st.addSymbol(new Symbol(id, StructureType.PARAMETER, typeVartoReturnType(type), null, false, false, idleft));
+                        RESULT = new L_FArgs( new FnArg(type, new Id(id, idleft , idright), cur_token.left , cur_token.right), null, cur_token.left , cur_token.right);
+                    :}
                 ;

@@ -1,32 +1,35 @@
-tup g_tup = [1, 2];
+tup g_tup = [0, 2];
 
 # Sumar los dos numeros de g_tup si se le pasa true, restarlos si se le pasa false
 alpha int sum_gtup(bol type){
-    bol type = false; # Esto deberia dar un error semantico de redefinicion de variable de scope local
+    # bol type = false; # Esto deberia dar un error semantico de redefinicion de variable de scope local
+    int a = 0;
     BEGIN
-    if(type == true){
+    if(g_tup[0] > a){
         return g_tup[0] + g_tup[1];
     }
     return g_tup[0] - g_tup[1];
+    return false;
+    return 0;
 }
 
-alpha void testVoid(int a, tup b, bol c){
+alpha void testVoid(int a, bol b, bol g){
     inputint();
     inputbol();
 }
 
 main{
-    const int a = 0;
-    int b,c,d = 0;
+    int b = 4;
+    const int a = 1 ;
+    bol z = false;
+    tup tuple = [1,2];
     BEGIN
-    # test sobre asignaciones semanticas
-    a = 1;
-
-    sum_gtup();
+    g_tup = [false, false];
+    sum_gtup(z);
     $
     redefinimos el tipo de datos de la tupla global
     lo que nos tendria que dar un warning de redefinicion
     de tipo de una tupla global
     $
-    sum_gtup();
+    sum_gtup(z);
 }

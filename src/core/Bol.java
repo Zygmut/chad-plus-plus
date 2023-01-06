@@ -1,7 +1,5 @@
 package core;
 
-import java.lang.ProcessBuilder.Redirect.Type;
-
 import intermediate_code.Instruction;
 import intermediate_code.Operator;
 import intermediate_code.ThreeAddressCode;
