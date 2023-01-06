@@ -50,7 +50,8 @@ public enum ErrorCode {
     FUNCTION_ARGUMENTS_PASSED_NO_ARGUMENTS("Function has parameters but no parameters were passed."),
     CANNOT_MODIFY_CONSTANT_VARIABLES("Cannot modify the value of a constant defined variable"),
     ASIGNATION_TYPE_DOES_NOT_MATCH("Expresion type does not match variable type"),
-    DUPLICATED_VARIABLE("This variabe has been declared previously.");
+    DUPLICATED_VARIABLE("This variable has been declared previously."),
+    DUPLICATED_FUNCTION("This function has been declared previously.");
 
     public String message;
 

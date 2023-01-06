@@ -103,6 +103,15 @@ public class SymbolTable {
      * @return boolean
      */
     public boolean addSymbol(Symbol symbol) {
+        // Si el simbolo a añadir es una funcion, hacemos un recorrido completo de la
+        // tabla de simbolos
+        if (symbol.getStructureType() == StructureType.FUNCTION) {
+            for (Symbol symb : ts) {
+                if (symb.equals(symbol)) {
+                    return false;
+                }
+            }
+        }
         // Mirar que el simbolo no este ya presente
         Integer[] range = this.ta.get(this.taIndex);
         if (range[0] != this.NOT_AVALIABLE) {

@@ -473,14 +473,52 @@ INSTR           ::= IF LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY        
                 |   CALLF:fn SEMICOLON                                                              {: RESULT = new Instr(fn, fnleft , fnright); :}
                 ;
 
-FUNCTIONS       ::= M FUNCTION:fn FUNCTIONS:fns                  {: RESULT = new L_Fn(fn, fns, fnleft, fnright); :}
-                |                                               {: :}
+FUNCTIONS       ::= M FUNCTION:fn FUNCTIONS:fns                                                     {: RESULT = new L_Fn(fn, fns, fnleft, fnright); :}
+                |                                                                                   {: :}
                 ;
 
-FUNCTION        ::= ALPHA TYPEVAR:t ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY     {: st.addSymbol(new Symbol(id, StructureType.FUNCTION,typeVartoReturnType(t),   null, false, false, idleft )); sem.checkReturns(); RESULT = new Function(t, new Id(id, idleft , idright), args, decls,instrs, idleft , idright); :}
-                |   ALPHA TYPEVAR:t ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: st.addSymbol(new Symbol(id, StructureType.FUNCTION,typeVartoReturnType(t),   null, false, false, idleft )); sem.checkReturns(); RESULT = new Function(t, new Id(id, idleft , idright), args, null, instrs, idleft , idright); :}
-                |   ALPHA VOID ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: st.addSymbol(new Symbol(id, StructureType.FUNCTION,StructureReturnType.VOID, null, false, false, idleft )); RESULT = new Function(null, new Id(id, idleft , idright), args, decls, instrs, idleft , idright); :}
-                |   ALPHA VOID ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                              {: st.addSymbol(new Symbol(id, StructureType.FUNCTION,StructureReturnType.VOID, null, false, false, idleft )); RESULT = new Function(null, new Id(id, idleft , idright), args, null, instrs,  idleft , idright); :}
+FUNCTION        ::= ALPHA TYPEVAR:t ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY
+                    {:
+                        if(!st.addSymbol(new Symbol(id, StructureType.FUNCTION,typeVartoReturnType(t), null, false, false, idleft))){
+                            ErrorHandler.addError(ErrorCode.DUPLICATED_FUNCTION,
+                            idleft,
+                            idright,
+                            Phase.SEMANTIC);
+                        };
+                        sem.checkReturns();
+                        RESULT = new Function(t, new Id(id, idleft , idright), args, decls,instrs, idleft , idright);
+                    :}
+                |   ALPHA TYPEVAR:t ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY
+                    {:
+                        if(!st.addSymbol(new Symbol(id, StructureType.FUNCTION,typeVartoReturnType(t), null, false, false, idleft ))){
+                            ErrorHandler.addError(ErrorCode.DUPLICATED_FUNCTION,
+                            idleft,
+                            idright,
+                            Phase.SEMANTIC);
+                        };
+                        sem.checkReturns();
+                        RESULT = new Function(t, new Id(id, idleft , idright), args, null, instrs, idleft , idright);
+                    :}
+                |   ALPHA VOID ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY
+                    {:
+                        if(!st.addSymbol(new Symbol(id, StructureType.FUNCTION,StructureReturnType.VOID, null, false, false, idleft ))){
+                            ErrorHandler.addError(ErrorCode.DUPLICATED_FUNCTION,
+                            idleft,
+                            idright,
+                            Phase.SEMANTIC);
+                        };
+                        RESULT = new Function(null, new Id(id, idleft , idright), args, decls, instrs, idleft , idright);
+                    :}
+                |   ALPHA VOID ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY
+                    {:
+                        if(!st.addSymbol(new Symbol(id, StructureType.FUNCTION,StructureReturnType.VOID, null, false, false, idleft ))){
+                            ErrorHandler.addError(ErrorCode.DUPLICATED_FUNCTION,
+                            idleft,
+                            idright,
+                            Phase.SEMANTIC);
+                        };
+                        RESULT = new Function(null, new Id(id, idleft , idright), args, null, instrs,  idleft , idright);
+                    :}
                 ;
 
 F_ARGS          ::= F_ARGS2:args    {: RESULT = args;   :}
