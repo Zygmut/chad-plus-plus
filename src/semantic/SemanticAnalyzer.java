@@ -243,7 +243,7 @@ public class SemanticAnalyzer {
             }
 
         } else if (type == StructureReturnType.INT) {
-            if (op.ordinal() >= 4) {
+            if (op.ordinal() >= 7) {
                 // operación Incompatible (operaciones lógicas cuando la variable es tipo INT)
                 return null;
             }
