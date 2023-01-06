@@ -217,12 +217,16 @@ public class SemanticAnalyzer {
             case "Expresion":
                 type = checkExpresion(value.getExpresion());
                 if (type == null) {
-                    // TODO: ERROR en la expresion
+                    // The error will be called in .cup or asignation
                     return null;
                 }
                 break;
             default:
-                // TODO: Error unsuported
+                // ERROR unsuported element
+                ErrorHandler.addError(ErrorCode.UNSUPPORTED_ELEMENT,
+                        exp.getLine(),
+                        exp.getColumn(),
+                        Phase.SEMANTIC);
                 type = null;
         }
 
