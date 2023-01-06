@@ -409,8 +409,8 @@ V_TUP           ::= LSKEY ARGS:a RSKEY                          {: RESULT = new 
 A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: RESULT = new A_Tuple(new Id(id, idleft, idright), new Number(num, numleft, numright), cur_token.left, cur_token.right); :}
                 ;
 
-CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new CallFn(new Id(id, idleft, idright), args, cur_token.left, cur_token.right); :}
-                |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id, idleft, idright), cur_token.left, cur_token.right); :}
+CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new CallFn(new Id(id, idleft, idright), args, cur_token.left, cur_token.right); sem.checkCallFArgs(RESULT);:}
+                |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id, idleft, idright), cur_token.left, cur_token.right);       sem.checkCallFArgs(RESULT);:}
                 ;
 
 ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: checkExp(e); RESULT = new L_Args(e, args, eleft, eright); :}
