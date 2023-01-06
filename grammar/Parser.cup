@@ -312,7 +312,13 @@ GDECLS          ::= GDECL:d GDECLS:ld                               {: RESULT = 
 
 GDECL            ::= CONST TYPEVAR:type DASIGNATION:assig         {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
-                                                                        st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, true, typeleft));
+                                                                        if (!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, true, typeleft))){
+                                                                            // ERROR -> variable already declared
+                                                                            ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
+                                                                            l_id.getLine(),
+                                                                            l_id.getColumn(),
+                                                                            Phase.SEMANTIC);
+                                                                        };
                                                                     };
                                                                     if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
                                                                         // Vamos añadiendo los elementos al contenido del simbolo
@@ -323,7 +329,13 @@ GDECL            ::= CONST TYPEVAR:type DASIGNATION:assig         {:
                                                                 :}
                 |   TYPEVAR:type DASIGNATION:assig               {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
-                                                                        st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, false, typeleft));
+                                                                        if(!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, false, typeleft))){
+                                                                            // ERROR -> variable already declared
+                                                                            ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
+                                                                            l_id.getLine(),
+                                                                            l_id.getColumn(),
+                                                                            Phase.SEMANTIC);
+                                                                        };
 
                                                                     };
                                                                     if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
@@ -341,7 +353,12 @@ DECLS           ::= DECL:d DECLS:ld                             {: RESULT = new 
 
 DECL            ::= CONST TYPEVAR:type DASIGNATION:assig         {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
-                                                                        st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, true, typeleft));
+                                                                        if(!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, true, typeleft))){
+                                                                            ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
+                                                                            l_id.getLine(),
+                                                                            l_id.getColumn(),
+                                                                            Phase.SEMANTIC);
+                                                                        };
                                                                     };
                                                                     if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
                                                                         // Vamos añadiendo los elementos al contenido del simbolo
@@ -352,7 +369,13 @@ DECL            ::= CONST TYPEVAR:type DASIGNATION:assig         {:
                                                                 :}
                 |   TYPEVAR:type DASIGNATION:assig               {:
                                                                     for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
-                                                                        st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, false, typeleft));
+                                                                        if (!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, false, typeleft))){
+                                                                            // ERROR -> variable already declared
+                                                                            ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
+                                                                            l_id.getLine(),
+                                                                            l_id.getColumn(),
+                                                                            Phase.SEMANTIC);
+                                                                        };
                                                                     };
                                                                     if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
                                                                         // Vamos añadiendo los elementos al contenido del simbolo
