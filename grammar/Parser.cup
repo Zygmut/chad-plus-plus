@@ -302,7 +302,7 @@ CHADPP          ::= M GDECLS:d  FUNCTIONS:fun MAINFN:main           {: tree = ne
                 |   M FUNCTIONS:fun MAINFN:main                     {: tree = new Chadpp(null, main, fun, 0, 0); :}
                 ;
 
-MAINFN          ::= M MAIN LKEY DECLS:decls BEGIN INSTRS:i RKEY     {: RESULT = new Main(decls, i, declsleft,declsright );        :}
+MAINFN          ::= M MAIN LKEY DECLS:decls BEGIN INSTRS:i RKEY     {: RESULT = new Main(decls, i, declsleft,declsright );:}
                 |   M MAIN LKEY INSTRS:i RKEY                       {: RESULT = new Main(null, i, ileft, iright);         :}
                 ;
 
@@ -395,12 +395,12 @@ ASIGNATION      ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new 
 
 DASIGNATION     ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e, lidleft, lidright); :};
 
-LID             ::= ID:id COMMA LID:lid                         {: RESULT = new L_Ids(id, lid, idleft, idright); :}
-                | ID:id                                         {: RESULT = new L_Ids(id, idleft, idright); :}
+LID             ::= ID:id COMMA LID:lid                         {: RESULT = new L_Ids(id, lid, idleft, idright);    :}
+                | ID:id                                         {: RESULT = new L_Ids(id, idleft, idright);         :}
                 ;
 
 EXPRESION       ::= VALUE:v OP:op EXPRESION:e                   {: RESULT = new Expresion(v, e, op, vleft, vright); ;:}
-                |   VALUE:v                                     {: RESULT = new Expresion(v, vleft, vright);        ; :}
+                |   VALUE:v                                     {: RESULT = new Expresion(v, vleft, vright);        ;:}
                 ;
 
 OP              ::= PLUS                                        {: RESULT = Op.PLUS;   :}
@@ -436,8 +436,8 @@ CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new 
                 |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id, idleft, idright), cur_token.left, cur_token.right);       sem.checkCallFArgs(RESULT);:}
                 ;
 
-ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: checkExp(e); RESULT = new L_Args(e, args, eleft, eright); :}
-                |   EXPRESION:e                                 {: checkExp(e); RESULT = new L_Args(e, eleft, eright); :}
+ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: checkExp(e); RESULT = new L_Args(e, args, eleft, eright);:}
+                |   EXPRESION:e                                 {: checkExp(e); RESULT = new L_Args(e, eleft, eright);      :}
                 ;
 
 INSTRS          ::= INSTR:inst INSTRS:instrs                    {: RESULT = new L_Instrs(inst, instrs, instleft, instright); :}

@@ -1,0 +1,76 @@
+$
+Programa de ejemplo para encontrar todos los posibles 
+bugs del compilador
+$
+
+int a = 1;
+const int b = 2;
+bol c = true;
+const bol d = false;
+tup tupla = [1, 2, 3, 4, 5];
+const tup tupla2 = [1, 2, true, false, 5];
+
+alpha void void_test() {
+    int a = 1;
+    const int b = 2;
+    bol c = true;
+    const bol d = false;
+    BEGIN
+    a = a + 1;
+    b = b + 1; # Error
+    a = c + 1; #Error
+    d = true; #Error
+    a = tupla[1];
+    # tupla2[1] = 1; #Error
+    # return a; #Error
+}
+
+alpha int return_int_test() {
+    if (true) {
+        return tupla2[2]; #Error
+    }
+    return tupla2[1];
+}
+
+alpha tup return_tup_test() {
+    if (true) {
+        return tupla2;
+    }
+    return tupla;
+}
+
+alpha bol return_bol_test() {
+    if (true) {
+        return tupla2[1]; #Error
+    }
+    return tupla2[2];
+}
+
+alpha void params_test(int a) {
+    output(a);
+}
+
+main {
+    int a = 3;
+    const int b = 4;
+    bol c = false;
+    const bol d = true;
+    BEGIN
+    # main(); # Error
+    main2(); # Error
+    void_test();
+    a = return_int_test();
+    tupla = return_tup_test();
+    c = return_bol_test();
+    a = return_bol_test(); #Error
+    $
+    inputint(a);#Error
+    inputint(b); #Error
+    inputbol(true);# Error
+    inputbol(1); # Error
+    $
+    #tupla[1] = 0;
+    output(1);
+   params_test(tupla[1]);
+    output(tupla[1]);
+}
