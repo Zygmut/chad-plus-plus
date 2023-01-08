@@ -185,6 +185,29 @@ public class ThreeAddressCode {
   }
 
   /**
+   * Busca en la tabla de variables por la variable con id pasado por
+   * parametro. Devuelve la variable si se ha encontrado y null en caso
+   * contrario
+   *
+   * @param id
+   * @return
+   */
+  // public Variable getVariable(String id) {
+  // Procedimiento prod = tp.get(tp.size() - 1);
+  // for (int i = 0; i < tv.size(); i++) {
+  // if (tv.get(i).getId().equals(id)) {
+  // return tv.get(i);
+  // }
+  // }
+  // for (int i = 0; i < tvg.size(); i++) {
+  // if (tvg.get(i).getId().equals(id)) {
+  // return tvg.get(i);
+  // }
+  // }
+  // return null;
+  // }
+
+  /**
    * Añade una instrucción al codigo de 3 direcciones
    *
    * @param instr

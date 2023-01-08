@@ -40,14 +40,10 @@ public class Asignation extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        System.out.println("[ASIGNATION] Generando ids");
         lid.generate3dc(codigoTresDir);
-        System.out.println("[ASIGNATION] Generando Expresion");
         this.expresion.generate3dc(codigoTresDir);
-        System.out.println("[ASIGNATION] He acabado la generación de la expresion");
         String expLoc = codigoTresDir.getTv().get(codigoTresDir.getTv().size() - 1).getId();
         for (Variable var : codigoTresDir.getLids()) {
-            System.out.println("[ASIGNATION] Asignando expresion");
             codigoTresDir.addInstr(new Instruction(var.getId(), expLoc, Operator.ASSIGN, null));
         }
 

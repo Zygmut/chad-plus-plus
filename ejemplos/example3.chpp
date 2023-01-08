@@ -1,5 +1,16 @@
+alpha int testint(){
+    return 1;
+}
+
+alpha bol testbol(){
+    return false;
+}
+
 main {
-    int a = 1 + 1 * 4 ;
-    bol b = false || true && true;
+    #int a = (1 * (5 + 1)) - 1 + 1 * 4 ;
+    int a = 1 - (testint() * 2);
     BEGIN
+
+    a = 1 + 2 * (a/testint());
+    
 }
