@@ -9,8 +9,6 @@ alpha int sum_gtup(bol type){
         return g_tup[0] + g_tup[1];
     }
     return g_tup[0] - g_tup[1];
-    return false;
-    return 0;
 }
 
 alpha void testVoid(int a, bol b, bol g){

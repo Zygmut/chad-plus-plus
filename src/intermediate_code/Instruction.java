@@ -69,11 +69,29 @@ public class Instruction {
             case "IN_INT":
             case "IN_BOL":
                 return dest + " = " + operation.name();
-            case "ASIGN":
+            case "ASSIGN":
                 if (op2 != null) {
                     return dest + " = " + op1 + "[" + op2 + "]";
                 }
                 return dest + " = " + op1;
+            case "ADD":
+                return dest + " = " + op1 + " + " + op2;
+            case "SUB":
+                return dest + " = " + op1 + " - " + op2;
+            case "MULT":
+                return dest + " = " + op1 + " * " + op2;
+            case "DIV":
+                return dest + " = " + op1 + " / " + op2;
+            case "OR":
+                return dest + " = " + op1 + " OR " + op2;
+            case "AND":
+                return dest + " = " + op1 + " AND " + op2;
+            case "GREATER":
+                return dest + " = " + op1 + " > " + op2;
+            case "LESS":
+                return dest + " = " + op1 + " < " + op2;
+            case "EQUAL":
+                return dest + " = " + op1 + " == " + op2;
             default:
                 return "{" +
                         " dest='" + this.dest + "'" +

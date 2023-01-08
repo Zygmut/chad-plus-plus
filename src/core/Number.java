@@ -1,6 +1,9 @@
 package core;
 
+import intermediate_code.Instruction;
+import intermediate_code.Operator;
 import intermediate_code.ThreeAddressCode;
+import intermediate_code.Variable;
 
 public class Number extends BaseNode {
 
@@ -32,7 +35,8 @@ public class Number extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
+        Variable var = codigoTresDir.putVar(null, TypeVar.INT);
+        codigoTresDir.addInstr(new Instruction(var.getId(), Integer.toString(value), Operator.ASSIGN, null));
 
     }
 

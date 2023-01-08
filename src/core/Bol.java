@@ -30,7 +30,7 @@ public class Bol extends BaseNode {
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
         Variable var = codigoTresDir.putVar(null, TypeVar.BOOL);
-        codigoTresDir.addInstr(new Instruction(var.getId(), null, Operator.ASSIGN, null));
+        codigoTresDir.addInstr(new Instruction(var.getId(), Boolean.toString(value), Operator.ASSIGN, null));
     }
 
 }

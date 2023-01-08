@@ -49,6 +49,7 @@ public class Decl extends BaseNode {
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
         codigoTresDir.startDeclaration(type);
+        System.out.println("[DECL] hola");
         asignation.generate3dc(codigoTresDir);
         codigoTresDir.endDeclaration();
     }

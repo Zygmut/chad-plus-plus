@@ -1,5 +1,7 @@
 package core;
 
+import intermediate_code.ThreeAddressCode;
+
 public class Value {
     private String currentInstance;
     private Expresion expresion;
@@ -101,6 +103,36 @@ public class Value {
 
     public Input getInput() {
         return input;
+    }
+
+    public void generate3dc(ThreeAddressCode codigoTresDir) {
+        switch (currentInstance) {
+            case "Expresion":
+                this.expresion.generate3dc(codigoTresDir);
+                break;
+            case "Number":
+                this.number.generate3dc(codigoTresDir);
+                break;
+            case "Tuple":
+                this.tuple.generate3dc(codigoTresDir);
+                break;
+            case "Bol":
+                this.bol.generate3dc(codigoTresDir);
+                break;
+            case "Id":
+                this.id.generate3dc(codigoTresDir);
+                break;
+            case "CallFn":
+                this.callFn.generate3dc(codigoTresDir);
+                break;
+            case "A_Tuple":
+                this.aTuple.generate3dc(codigoTresDir);
+                break;
+            case "Input":
+                this.input.generate3dc(codigoTresDir);
+                break;
+        }
+
     }
 
     @Override

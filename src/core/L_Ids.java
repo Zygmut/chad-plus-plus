@@ -50,7 +50,7 @@ public class L_Ids extends BaseNode {
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
         // Crear la variable de id
-        codigoTresDir.putVar(id, codigoTresDir.getDeclType());
+        codigoTresDir.addId(codigoTresDir.putVar(id, codigoTresDir.getDeclType()));
 
         if (nextId != null) {
             nextId.generate3dc(codigoTresDir);

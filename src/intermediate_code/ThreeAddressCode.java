@@ -64,6 +64,11 @@ public class ThreeAddressCode {
   private boolean declaringParams = false;
 
   /**
+   * Se usa para conocer la lista de ids en una asignación
+   */
+  private ArrayList<Variable> lids;
+
+  /**
    * Constructor de la clase, inicializa las variables de la clase.
    *
    * @param tree Árbol sintáctico del código fuente
@@ -73,6 +78,7 @@ public class ThreeAddressCode {
     this.tv = new ArrayList<>();
     this.tvg = new ArrayList<>();
     this.tp = new ArrayList<>();
+    this.lids = new ArrayList<>();
   }
 
   /**
@@ -197,6 +203,70 @@ public class ThreeAddressCode {
 
   public ArrayList<Procedimiento> getTp() {
     return this.tp;
+  }
+
+  public ArrayList<Instruction> getCodigo3Dir() {
+    return codigo3Dir;
+  }
+
+  public void setCodigo3Dir(ArrayList<Instruction> codigo3Dir) {
+    this.codigo3Dir = codigo3Dir;
+  }
+
+  public void setTv(ArrayList<Variable> tv) {
+    this.tv = tv;
+  }
+
+  public ArrayList<Variable> getTvg() {
+    return tvg;
+  }
+
+  public void setTvg(ArrayList<Variable> tvg) {
+    this.tvg = tvg;
+  }
+
+  public void setTp(ArrayList<Procedimiento> tp) {
+    this.tp = tp;
+  }
+
+  public int getLabelCounter() {
+    return labelCounter;
+  }
+
+  public void setLabelCounter(int labelCounter) {
+    this.labelCounter = labelCounter;
+  }
+
+  public int getVolatileCounter() {
+    return volatileCounter;
+  }
+
+  public void setVolatileCounter(int volatileCounter) {
+    this.volatileCounter = volatileCounter;
+  }
+
+  public void setDeclType(TypeVar declType) {
+    this.declType = declType;
+  }
+
+  public void setDeclaringParams(boolean declaringParams) {
+    this.declaringParams = declaringParams;
+  }
+
+  public ArrayList<Variable> getLids() {
+    return lids;
+  }
+
+  public void setLids(ArrayList<Variable> lids) {
+    this.lids = lids;
+  }
+
+  public void purgeIds() {
+    lids.clear();
+  }
+
+  public void addId(Variable id) {
+    lids.add(id);
   }
 
   public String getTvString() {

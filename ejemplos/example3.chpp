@@ -1,25 +1,5 @@
 main {
-    int a = 3;
-    int b = a + 1;
-    int c = -1;
-    #tup d = [1,2];
+    int a = 1 + 1 * 4 ;
+    bol b = false || true && true;
     BEGIN
-    fnc_test();
-}
-
-void alpha fnc_test(){
-    bol t = false;
-    BEGIN
-    if (t){
-        t = true;
-    }
-    fnc_test2();
-}
-void alpha fnc_test2(){
-    bol t = false;
-    BEGIN
-    if (t){
-        t = true;
-    }
-
 }

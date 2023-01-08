@@ -10,5 +10,4 @@ public enum Op {
     GT,
     AND,
     OR,
-    NOT
 }
