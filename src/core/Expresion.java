@@ -261,8 +261,13 @@ public class Expresion extends BaseNode {
         // Revisamos si tienen expresiones i.e parentesis, en tal caso, llamamos a su
         // codigo de tres direcciones
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) instanceof Expresion) {
-                ((Expresion) list.get(i)).generate3dc(codigoTresDir);
+            if (i % 2 == 1) {
+                continue;
+            }
+
+            Value v = (Value) list.get(i);
+            if (v.getCurrentInstance().equals("Expresion")) {
+                v.generate3dc(codigoTresDir);
                 // Sustituimos el valor de la expresión por la última variable de la tabla de
                 // variables generada, que es donde debería encontrarse el resultado de la
                 // expresión evaluada
