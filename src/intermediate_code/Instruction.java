@@ -92,6 +92,11 @@ public class Instruction {
                 return dest + " = " + op1 + " < " + op2;
             case "EQUAL":
                 return dest + " = " + op1 + " == " + op2;
+            case "RETURN":
+                return operation.name() + " " + dest;
+            case "CALL":
+                return dest + " = " + operation.name() + " " + op1;
+
             default:
                 return "{" +
                         " dest='" + this.dest + "'" +

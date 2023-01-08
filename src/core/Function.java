@@ -1,5 +1,7 @@
 package core;
 
+import intermediate_code.Instruction;
+import intermediate_code.Operator;
 import intermediate_code.ThreeAddressCode;
 import symbol_table.StructureReturnType;
 
@@ -86,6 +88,7 @@ public class Function extends BaseNode {
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
         codigoTresDir.newFn(id.getValue(), returnTypetoStructureReturnType());
+        codigoTresDir.addInstr(new Instruction("run_" + id.getValue(), null, Operator.SKIP, null));
 
         if (this.arguments != null) {
             codigoTresDir.toggleParams();
@@ -98,6 +101,7 @@ public class Function extends BaseNode {
         if (this.instrs != null) {
             this.instrs.generate3dc(codigoTresDir);
         }
+        codigoTresDir.addInstr(new Instruction(null, null, Operator.RETURN, null));
     }
 
 }

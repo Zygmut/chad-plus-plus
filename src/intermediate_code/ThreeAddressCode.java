@@ -159,6 +159,32 @@ public class ThreeAddressCode {
   }
 
   /**
+   * Devuelve la última variable de la tabla de variables
+   *
+   * @return Variable
+   */
+  public Variable getLastVariable() {
+    return tv.get(tv.size() - 1);
+  }
+
+  /**
+   * Busca en la tabla de procedimientos por el procedimiento con id pasado por
+   * parametro. Devuelve el procedimiento si se ha encontrado y null en caso
+   * contrario
+   *
+   * @param id String
+   * @return Procedmiento | null
+   */
+  public Procedimiento getProcedimiento(String id) {
+    for (int i = 0; i < tp.size(); i++) {
+      if (tp.get(i).getId().equals(id)) {
+        return tp.get(i);
+      }
+    }
+    return null;
+  }
+
+  /**
    * Añade una instrucción al codigo de 3 direcciones
    *
    * @param instr

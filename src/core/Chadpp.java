@@ -1,5 +1,7 @@
 package core;
 
+import intermediate_code.Instruction;
+import intermediate_code.Operator;
 import intermediate_code.ThreeAddressCode;
 
 public class Chadpp extends BaseNode {
@@ -59,11 +61,14 @@ public class Chadpp extends BaseNode {
             l_decls.generate3dc(codigoTresDir);
         }
 
+        if (functions != null) {
+            codigoTresDir.addInstr(new Instruction("run_main", null, Operator.GOTO, null));
+            functions.generate3dc(codigoTresDir);
+            codigoTresDir.addInstr(new Instruction("run_main", null, Operator.SKIP, null));
+        }
+
         main.generate3dc(codigoTresDir);
 
-        if (functions != null) {
-            functions.generate3dc(codigoTresDir);
-        }
     }
 
     @Override

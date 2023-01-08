@@ -396,16 +396,18 @@ public class SemanticAnalyzer {
         // Recorrer inversamente el conjunto de simbolos para obtener todos los
         // nodos de retorno
         int nReturns = 0;
-        int index = range[1] - 1;
-        for (Symbol symbol = st.getTs().get(index); symbol.getStructureType()
-                .equals(StructureType.RETURN); symbol = st.getTs().get(--index)) {
-            nReturns++;
-            if (!symbol.getStructureReturnType().equals(frt)) {
-                // ERROR RETURN TYPE DOES NOT MATCH
-                ErrorHandler.addError(ErrorCode.RETURN_VALUE_DOES_NOT_MATCH,
-                        symbol.getLine(),
-                        Phase.SEMANTIC);
+        Symbol symbol = st.getTs().get(range[0]);
+        for (int i = range[0]; i < range[1]; i++) {
+            if (symbol.getStructureType().equals(StructureType.RETURN)) {
+                nReturns++;
+                if (!symbol.getStructureReturnType().equals(frt)) {
+                    // ERROR RETURN TYPE DOES NOT MATCH
+                    ErrorHandler.addError(ErrorCode.RETURN_VALUE_DOES_NOT_MATCH,
+                            symbol.getLine(),
+                            Phase.SEMANTIC);
+                }
             }
+
         }
 
         // Funcion con return value sin nodos de retorno

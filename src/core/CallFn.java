@@ -1,6 +1,10 @@
 package core;
 
 import intermediate_code.ThreeAddressCode;
+import symbol_table.StructureReturnType;
+import intermediate_code.Instruction;
+import intermediate_code.Operator;
+import intermediate_code.Procedimiento;
 
 public class CallFn extends BaseNode {
     private Id id;
@@ -34,16 +38,30 @@ public class CallFn extends BaseNode {
         this.args = args;
     }
 
-    @Override
-    public String toString() {
-        return "CallFn [id=" + id + ", args=" + args + " line=" + line + " column=" + column + "]";
+    private TypeVar structureReturnTypeToTypeVar(StructureReturnType srt) {
+        switch (srt.name()) {
+            case "INT":
+                return TypeVar.INT;
+            case "BOOL":
+                return TypeVar.BOOL;
+            case "TUP":
+                return TypeVar.TUP;
+            default:
+                return null;
+        }
 
     }
 
     @Override
-    public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
+    public String toString() {
+        return "CallFn [id=" + id + ", args=" + args + " line=" + line + " column=" + column + "]";
+    }
 
+    @Override
+    public void generate3dc(ThreeAddressCode codigoTresDir) {
+        Procedimiento prod = codigoTresDir.getProcedimiento(this.id.getValue());
+        String varName = codigoTresDir.putVar(null, structureReturnTypeToTypeVar(prod.getReturnType())).getId();
+        codigoTresDir.addInstr(new Instruction(varName, id.getValue(), Operator.CALL, null));
     }
 
 }

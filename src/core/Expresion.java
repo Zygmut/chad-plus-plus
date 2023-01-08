@@ -94,7 +94,7 @@ public class Expresion extends BaseNode {
                     if (list.get(i - 1) instanceof Value) {
                         value1 = (Value) list.get(i - 1);
                         value1.generate3dc(codigoTresDir);
-                        var1 = codigoTresDir.getTv().get(codigoTresDir.getTv().size() - 1);
+                        var1 = codigoTresDir.getLastVariable();
                     } else {
                         var1 = (Variable) list.get(i - 1);
                     }
@@ -104,7 +104,7 @@ public class Expresion extends BaseNode {
                     if (list.get(i + 1) instanceof Value) {
                         value2 = (Value) list.get(i + 1);
                         value2.generate3dc(codigoTresDir);
-                        var2 = codigoTresDir.getTv().get(codigoTresDir.getTv().size() - 1);
+                        var2 = codigoTresDir.getLastVariable();
                     } else {
                         var2 = (Variable) list.get(i + 1);
                     }
@@ -140,7 +140,7 @@ public class Expresion extends BaseNode {
                 if (list.get(i - 1) instanceof Value) {
                     value1 = (Value) list.get(i - 1);
                     value1.generate3dc(codigoTresDir);
-                    var1 = codigoTresDir.getTv().get(codigoTresDir.getTv().size() - 1);
+                    var1 = codigoTresDir.getLastVariable();
                 } else {
                     var1 = (Variable) list.get(i - 1);
                 }
@@ -150,7 +150,7 @@ public class Expresion extends BaseNode {
                 if (list.get(i + 1) instanceof Value) {
                     value2 = (Value) list.get(i + 1);
                     value2.generate3dc(codigoTresDir);
-                    var2 = codigoTresDir.getTv().get(codigoTresDir.getTv().size() - 1);
+                    var2 = codigoTresDir.getLastVariable();
                 } else {
                     var2 = (Variable) list.get(i + 1);
                 }
@@ -194,7 +194,7 @@ public class Expresion extends BaseNode {
                 if (list.get(i - 1) instanceof Value) {
                     value1 = (Value) list.get(i - 1);
                     value1.generate3dc(codigoTresDir);
-                    var1 = codigoTresDir.getTv().get(codigoTresDir.getTv().size() - 1);
+                    var1 = codigoTresDir.getLastVariable();
                 } else {
                     var1 = (Variable) list.get(i - 1);
                 }
@@ -204,7 +204,7 @@ public class Expresion extends BaseNode {
                 if (list.get(i + 1) instanceof Value) {
                     value2 = (Value) list.get(i + 1);
                     value2.generate3dc(codigoTresDir);
-                    var2 = codigoTresDir.getTv().get(codigoTresDir.getTv().size() - 1);
+                    var2 = codigoTresDir.getLastVariable();
                 } else {
                     var2 = (Variable) list.get(i + 1);
                 }
@@ -272,7 +272,7 @@ public class Expresion extends BaseNode {
                 // variables generada, que es donde debería encontrarse el resultado de la
                 // expresión evaluada
                 list.remove(i);
-                list.add(i, codigoTresDir.getTv().get(codigoTresDir.getTv().size() - 1));
+                list.add(i, codigoTresDir.getLastVariable());
             }
         }
 
