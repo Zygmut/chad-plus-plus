@@ -4,7 +4,6 @@ import intermediate_code.Instruction;
 import intermediate_code.Operator;
 import intermediate_code.ThreeAddressCode;
 import symbol_table.StructureReturnType;
-import symbol_table.SymbolTable;
 
 public class Main extends BaseNode {
     private L_Decls listaDecl;
@@ -32,7 +31,7 @@ public class Main extends BaseNode {
 
     @Override
     public String toString() {
-        return "Main [nextDecl=" + listaDecl + ", nextInstr=" + listaInstr + ", symbolTable=" + symbolTable + " line="
+        return "Main [nextDecl=" + listaDecl + ", nextInstr=" + listaInstr + " line="
                 + line + " column=" + column + "]";
 
     }

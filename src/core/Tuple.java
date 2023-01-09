@@ -26,8 +26,7 @@ public class Tuple extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
-
+        this.tupleContent.generate3dc(codigoTresDir);
     }
 
 }

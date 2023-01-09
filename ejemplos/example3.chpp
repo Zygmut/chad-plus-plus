@@ -8,7 +8,8 @@ alpha bol testbol(){
 
 main {
     #int a = (1 * (5 + 1)) - 1 + 1 * 4 ;
-    int a = 1 - (testint() * 2);
+    tup tuple= [1,2];
+    int a = 1 - (tuple[1] * 2);
     BEGIN
 
     a = 1 + 2 * (a/testint());

@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import core.TypeVar;
 import symbol_table.StructureReturnType;
 import utils.Env;
@@ -69,6 +70,11 @@ public class ThreeAddressCode {
   private ArrayList<Variable> lids;
 
   /**
+   * Permite identificar la lista de argumentos de una asignación o llamada
+   */
+  private ArrayList<Variable> largs;
+
+  /**
    * Constructor de la clase, inicializa las variables de la clase.
    *
    * @param tree Árbol sintáctico del código fuente
@@ -79,6 +85,8 @@ public class ThreeAddressCode {
     this.tvg = new ArrayList<>();
     this.tp = new ArrayList<>();
     this.lids = new ArrayList<>();
+    this.largs = new ArrayList<>();
+
   }
 
   /**
@@ -185,29 +193,6 @@ public class ThreeAddressCode {
   }
 
   /**
-   * Busca en la tabla de variables por la variable con id pasado por
-   * parametro. Devuelve la variable si se ha encontrado y null en caso
-   * contrario
-   *
-   * @param id
-   * @return
-   */
-  // public Variable getVariable(String id) {
-  // Procedimiento prod = tp.get(tp.size() - 1);
-  // for (int i = 0; i < tv.size(); i++) {
-  // if (tv.get(i).getId().equals(id)) {
-  // return tv.get(i);
-  // }
-  // }
-  // for (int i = 0; i < tvg.size(); i++) {
-  // if (tvg.get(i).getId().equals(id)) {
-  // return tvg.get(i);
-  // }
-  // }
-  // return null;
-  // }
-
-  /**
    * Añade una instrucción al codigo de 3 direcciones
    *
    * @param instr
@@ -308,6 +293,22 @@ public class ThreeAddressCode {
 
   public void setLids(ArrayList<Variable> lids) {
     this.lids = lids;
+  }
+
+  public ArrayList<Variable> getLargs() {
+    return largs;
+  }
+
+  public void setLargs(ArrayList<Variable> largs) {
+    this.largs = largs;
+  }
+
+  public void purgeArgs() {
+    largs.clear();
+  }
+
+  public void addArg(Variable arg) {
+    this.largs.add(arg);
   }
 
   public void purgeIds() {

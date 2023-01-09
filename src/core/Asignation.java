@@ -42,9 +42,20 @@ public class Asignation extends BaseNode {
     public void generate3dc(ThreeAddressCode codigoTresDir) {
         lid.generate3dc(codigoTresDir);
         this.expresion.generate3dc(codigoTresDir);
-        String expLoc = codigoTresDir.getTv().get(codigoTresDir.getTv().size() - 1).getId();
-        for (Variable var : codigoTresDir.getLids()) {
-            codigoTresDir.addInstr(new Instruction(var.getId(), expLoc, Operator.ASSIGN, null));
+        // Si estamos asignado una tupla, no tenemos que hacer esto
+        if (!expresion.getValue().getCurrentInstance().equals("Tuple")) {
+            String expLoc = codigoTresDir.getLastVariable().getId();
+            for (Variable var : codigoTresDir.getLids()) {
+                codigoTresDir.addInstr(new Instruction(var.getId(), expLoc, Operator.ASSIGN, null));
+            }
+        } else {
+            for (Variable id : codigoTresDir.getLids()) {
+                for (int i = 0; i < codigoTresDir.getLargs().size(); i++) {
+                    codigoTresDir.addInstr(new Instruction(id.getId(), Integer.toString(i * 4), Operator.INDEXED_ASSIGN,
+                            codigoTresDir.getLargs().get(i).getId()));
+                }
+            }
+            codigoTresDir.purgeArgs();
         }
 
         codigoTresDir.purgeIds();

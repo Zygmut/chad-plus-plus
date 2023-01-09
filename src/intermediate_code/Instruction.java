@@ -96,6 +96,8 @@ public class Instruction {
                 return operation.name() + " " + dest;
             case "CALL":
                 return dest + " = " + operation.name() + " " + op1;
+            case "INDEXED_ASSIGN":
+                return dest + "[" + op1 + "] = " + op2;
 
             default:
                 return "{" +

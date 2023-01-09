@@ -42,6 +42,7 @@ public class L_Args extends BaseNode {
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
         this.arg.generate3dc(codigoTresDir);
+        codigoTresDir.addArg(codigoTresDir.getLastVariable());
 
         if (this.nextArg != null) {
             this.nextArg.generate3dc(codigoTresDir);
