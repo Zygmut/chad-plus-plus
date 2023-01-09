@@ -1,20 +1,9 @@
-alpha int testint(){
-    return 1;
-}
-
-alpha bol testbol(){
-    return false;
-}
-
 main {
-    #int a = (1 * (5 + 1)) - 1 + 1 * 4 ;
-    tup tuple= [1,2];
-    int a = 1 - (tuple[1] * 2);
+    tup tuple = [10, 5];
+    int a = 0;
     BEGIN
 
-    if (a == -3){
-        a = 3;
+    while( a < tuple[0] ){
+        a = a + 1;
     }
-    a = 1 + 2 * (a/testint());
-    
 }
