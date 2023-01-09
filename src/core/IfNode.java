@@ -1,5 +1,7 @@
 package core;
 
+import intermediate_code.Instruction;
+import intermediate_code.Operator;
 import intermediate_code.ThreeAddressCode;
 
 public class IfNode extends BaseNode {
@@ -36,8 +38,14 @@ public class IfNode extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
-        // TODO Auto-generated method stub
-
+        this.expresion.generate3dc(codigoTresDir);
+        String eTrue = codigoTresDir.newLabel();
+        String eFalse = codigoTresDir.newLabel();
+        codigoTresDir.addInstr(new Instruction(eTrue, codigoTresDir.getLastVariable().getId(), Operator.IF, null));
+        codigoTresDir.addInstr(new Instruction(eFalse, null, Operator.GOTO, null));
+        codigoTresDir.addInstr(new Instruction(eTrue, null, Operator.SKIP, null));
+        this.instrs.generate3dc(codigoTresDir);
+        codigoTresDir.addInstr(new Instruction(eFalse, null, Operator.SKIP, null));
     }
 
 }

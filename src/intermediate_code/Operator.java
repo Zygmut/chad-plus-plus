@@ -26,5 +26,6 @@ public enum Operator {
     PRINT_BOL,
     INDEXED_VALUE,
     INDEXED_ASSIGN,
+    IF,
     EXIT
 }

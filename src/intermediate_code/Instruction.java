@@ -98,7 +98,8 @@ public class Instruction {
                 return dest + " = " + operation.name() + " " + op1;
             case "INDEXED_ASSIGN":
                 return dest + "[" + op1 + "] = " + op2;
-
+            case "IF":
+                return "IF " + op1 + " GOTO " + dest;
             default:
                 return "{" +
                         " dest='" + this.dest + "'" +

@@ -12,6 +12,9 @@ main {
     int a = 1 - (tuple[1] * 2);
     BEGIN
 
+    if (a == -3){
+        a = 3;
+    }
     a = 1 + 2 * (a/testint());
     
 }
