@@ -27,5 +27,6 @@ public enum Operator {
     INDEXED_VALUE,
     INDEXED_ASSIGN,
     IF,
+    OUT,
     EXIT
 }

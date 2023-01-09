@@ -82,7 +82,7 @@ parser code {:
                     content.add(new Symbol("BOL" + value.getBol().getLine() + "_" + value.getBol().getColumn(), StructureType.VALUE, StructureReturnType.BOOL, null, false, true, value.getBol().getLine()));
                     break;
                 case "Id": // ts -> type
-                    // TODO SEMANTIC -> check id returns Structure type
+                    // SEMANTIC -> check id returns Structure type
                     StructureReturnType idReturnType = sem.checkId(value.getId());
                     if (idReturnType == null){
                         // ERROR -> ID NOT DECLARED

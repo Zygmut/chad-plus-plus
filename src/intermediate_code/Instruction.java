@@ -100,6 +100,8 @@ public class Instruction {
                 return dest + "[" + op1 + "] = " + op2;
             case "IF":
                 return "IF " + op1 + " GOTO " + dest;
+            case "OUT":
+                return "OUT " + op1;
             default:
                 return "{" +
                         " dest='" + this.dest + "'" +
