@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import core.TypeVar;
 import intermediate_code.Instruction;
 import intermediate_code.ThreeAddressCode;
 import utils.Env;
@@ -24,7 +26,7 @@ public class Assembly {
     public void generateAssemblyCode() {
         generateAssemblyCodePreamble();
         // 68k assembly code
-        // assemblyCode();
+        assemblyCode();
         generateAssemblyCodePostamble();
     }
 
@@ -272,6 +274,17 @@ public class Assembly {
     }
 
     private void out(Instruction instruction) {
+        // Dependiendo del tipo (INT o BOL) se llama a printInt o printBol
+        // String A1 | Int D1
+        System.out.println(instruction);
+        if (this.threeAddressCode.putVar(instruction.getOp1(), null).getType().equals(TypeVar.INT)) {
+            // assemblyCode.add("\tMOVE.L\t" + instruction.getOp1() + ",D1");
+            assemblyCode.add("\tJMP\tPRINT_INT");
+        } else {
+            // assemblyCode.add("\tMOVE.L\t" + instruction.getOp1() + ",D1");
+            assemblyCode.add("\tJMP\tBOOLEAN_TO_STRING");
+            assemblyCode.add("\tJMP\tPRINT_STRING");
+        }
     }
 
     private void indexedValue(Instruction instruction) {
