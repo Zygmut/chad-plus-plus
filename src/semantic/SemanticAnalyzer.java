@@ -224,34 +224,51 @@ public class SemanticAnalyzer {
             return type;
         }
 
-        if (type == StructureReturnType.BOOL) {
-            if (op.ordinal() < 4) {
-                // operación Incompatible (operaciones aritméticas cuando la variable es tipo
-                // BOOL)
+        switch (type.name()) {
+            case "BOOL":
+                switch (op.name()) {
+                    case "PLUS":
+                    case "MINUS":
+                    case "DIV":
+                    case "MULT":
+                        return null;
+                    default:
+                        break;
+                }
+                break;
+            case "INT":
+                switch (op.name()) {
+                    case "AND":
+                    case "OR":
+                        return null;
+                    default:
+                        break;
+                }
+                break;
+            case "TUP":
+                if (op != null) {
+                    return null;
+                }
+                break;
+            default:
                 return null;
-            }
 
-        } else if (type == StructureReturnType.INT) {
-            if (op.ordinal() >= 7) {
-                // operación Incompatible (operaciones lógicas cuando la variable es tipo INT)
-                return null;
-            }
-
-        } else if (type == StructureReturnType.TUP) {
-            if (op != null) {
-                // NO SE PERMITEN OPERACIONES CON TUPLAS
-                return null;
-            }
-
-        } else {
-            // StructureReturnType = VOID
+        }
+        StructureReturnType returnNextExpresion = checkExpresion(exp.getNextExpresion());
+        if (returnNextExpresion != type) {
             return null;
         }
 
-        if (checkExpresion(exp.getNextExpresion()) != type) {
-            return null;
+        if (type.equals(StructureReturnType.INT) && returnNextExpresion.equals(StructureReturnType.INT)) {
+            switch (op.name()) {
+                case "REQUAL":
+                case "LT":
+                case "GT":
+                    return StructureReturnType.BOOL;
+                default:
+                    break;
+            }
         }
-
         return type;
     }
 
