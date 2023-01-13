@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import assembly.Assembly;
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.SymbolFactory;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
@@ -104,8 +105,9 @@ public class MainChpp {
             saveTable(c3d.getTvString(), "TablaVariables.txt");
 
             // ASM
-            // Assembly asm = new Assembly(c3d.getCodigo3Dir());
-            // asm.generateAssemblyCode()
+            Assembly asm = new Assembly(c3d);
+            asm.generateAssemblyCode();
+            asm.saveAssemblyCode(Env.FILE_DATA.getFileName() + ".x68");
         } catch (Exception e) {
             if (!ErrorHandler.hasErrors()) {
                 e.printStackTrace();
@@ -113,17 +115,14 @@ public class MainChpp {
             }
         }
 
-        if (ErrorHandler.hasErrors()) {
-            ErrorHandler.printErrors();
-            saveTable(ErrorHandler.getErrorsString(), "Errores.txt");
-            System.exit(0);
-        }
+        ErrorHandler.printErrors();
+        saveTable(ErrorHandler.getErrorsString(), "Errores.txt");
 
     }
 
     private static void saveTokens(ArrayList<ComplexSymbol> tokens) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(Env.GENERATED_FILES + "/" + "Tokens.txt"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(Env.GENERATED_FILES + Env.SLASH + "Tokens.txt"));
             for (int i = 0; i < tokens.size(); i++) {
                 writer.write(tokens.get(i).getName() + "\n");
             }

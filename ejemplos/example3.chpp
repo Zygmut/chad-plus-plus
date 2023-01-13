@@ -1,13 +1,7 @@
 main {
-    tup tuple = [10, 5];
     int a = 0;
+    bol b = false;
     BEGIN
-
-    loop(1,5){
-       a = a - 1;
-    }
-    while( a < tuple[0] ){
-        a = a + 1;
-    }
-    output(false);
+    if(false || a == 2){}
+    if(b == false){}
 }

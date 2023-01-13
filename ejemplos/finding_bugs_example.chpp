@@ -21,7 +21,6 @@ alpha void void_test() {
     a = c + 1; #Error
     d = true; #Error
     a = tupla[1];
-    # tupla2[1] = 1; #Error
     # return a; #Error
 }
 
@@ -56,6 +55,14 @@ main {
     bol c = false;
     const bol d = true;
     BEGIN
+
+    if(1){} #error
+    while(1){} # error
+    if(true || a == 2){}
+    if(a == 3){}
+    loop(false, 5){} #error
+    loop(false, true){} #error
+    loop(0, -1){}
     # main(); # Error
     main2(); # Error
     void_test();
@@ -63,14 +70,11 @@ main {
     tupla = return_tup_test();
     c = return_bol_test();
     a = return_bol_test(); #Error
-    $
-    inputint(a);#Error
-    inputint(b); #Error
-    inputbol(true);# Error
-    inputbol(1); # Error
-    $
-    #tupla[1] = 0;
+    # inputint(a);#Error
+    # inputint(b); #Error
+    # inputbol(true);# Error
+    # inputbol(1); # Error
     output(1);
-   params_test(tupla[1]);
+    params_test(tupla[1]);
     output(tupla[1]);
 }

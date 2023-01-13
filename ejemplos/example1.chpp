@@ -9,7 +9,7 @@ tup j, h = [1, false];
 const tup b = [1,2,3, true ];
 
 alpha bol mayor5 (int n){
-    int test = true;
+    bol test = true;
     BEGIN
     if (n > 5){
         return true;
@@ -31,10 +31,9 @@ alpha bol mayor5_v3 (int n){
 
 
 main {
-    const bol a = true;
     int c = 0;
-    # tup d = [1, false, a, c, test_global(), inputint(), b[0], (1 - 2)];
+    tup d = [1, false, a, c, test_global(1), b[0], (1 - 2)];
+    tup a = [test_global()]; # DOBLE ERROR #44
     BEGIN
-    a = 1;
-    test_global();
+    test_global(1);
 }

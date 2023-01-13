@@ -1,50 +1,48 @@
 package assembly;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import intermediate_code.Instruction;
+import intermediate_code.ThreeAddressCode;
+import utils.Env;
 
 /**
  * Assembly
  */
 public class Assembly {
 
-    private ArrayList<Instruction> threeAddressCode;
+    private ThreeAddressCode threeAddressCode;
     private ArrayList<String> assemblyCode;
-    private ArrayList<Object> tv;
-    private ArrayList<Object> tp;
-    private ArrayList<Object> te;
 
-    public Assembly(ArrayList<Instruction> threeAddressCode) {
+    public Assembly(ThreeAddressCode threeAddressCode) {
         this.threeAddressCode = threeAddressCode;
         this.assemblyCode = new ArrayList<>();
-        this.tv = new ArrayList<>();
-        this.tp = new ArrayList<>();
-        this.te = new ArrayList<>();
     }
 
     public void generateAssemblyCode() {
         generateAssemblyCodePreamble();
         // 68k assembly code
-        assemblyCode();
+        // assemblyCode();
         generateAssemblyCodePostamble();
     }
 
     private void generateAssemblyCodePreamble() {
         // 68k assembly code preamble
         assemblyCode.add("\t\tORG\t$1000");
-        assemblyCode.add("START\t");
-
+        assemblyCode.add("START");
     }
 
     private void generateAssemblyCodePostamble() {
         // 68k assembly code postamble
         assemblyCode.add("\t\tSIMHALT");
         assemblyCode.add("\t\tEND\tSTART");
+        generateAssemblySubroutinesCode();
     }
 
     private void assemblyCode() {
-        generateAssemblySubroutinesCode();
-        for (Instruction instruction : threeAddressCode) {
+        for (Instruction instruction : threeAddressCode.getCodigo3Dir()) {
             generateAssemblyCodeForInstruction(instruction);
         }
     }
@@ -57,6 +55,8 @@ public class Assembly {
      * <li>PRINT_STRING</li>
      * <li>READ_INT</li>
      * <li>READ_STRING</li>
+     * <li>STRING_TO_BOOLEAN</li>
+     * <li>BOOLEAN_TO_STRING</li>
      * </ul>
      */
     private void generateAssemblySubroutinesCode() {
@@ -69,10 +69,11 @@ public class Assembly {
         assemblyCode.add("; OUTPUT: NONE");
         assemblyCode.add("; -----------------------------------------------------------------------------");
         assemblyCode.add("\tMOVE.L\tD0,-(A7)\t; SAVE D0");
+        assemblyCode.add("\tCLR.L\tD0\t; CLEAR D0");
         assemblyCode.add("\tMOVE.L\t#3,D0\t; PRINT_INT");
         assemblyCode.add("\tTRAP\t#15\t; PRINT_INT CALL TO OS");
         assemblyCode.add("\tMOVE.L\t(A7)+,D0\t; RESTORE D0");
-        assemblyCode.add("\tRTS\t; Return from subroutine");
+        assemblyCode.add("\tRTS\t; RETURN FROM SUBROUTINE");
         // PRINT_STRING
         assemblyCode.add("; -----------------------------------------------------------------------------");
         assemblyCode.add("PRINT_STRING");
@@ -81,12 +82,11 @@ public class Assembly {
         assemblyCode.add("; OUTPUT: NONE");
         assemblyCode.add("; -----------------------------------------------------------------------------");
         assemblyCode.add("\tMOVE.L\tD0,-(A7)\t; SAVE D0");
-        assemblyCode.add("\tMOVE.L\tA1,-(A7)\t; SAVE A1");
-        assemblyCode.add("\tMOVE.L\t#0,D0\t; PRINT_STRING");
+        assemblyCode.add("\tCLR.L\tD0\t; CLEAR D0");
+        assemblyCode.add("\tMOVE.L\t#14,D0\t; PRINT_STRING");
         assemblyCode.add("\tTRAP\t#15\t; PRINT_STRING CALL TO OS");
-        assemblyCode.add("\tMOVE.L\t(A7)+,A1\t; RESTORE A1");
         assemblyCode.add("\tMOVE.L\t(A7)+,D0\t; RESTORE D0");
-        assemblyCode.add("\tRTS\t; Return from subroutine");
+        assemblyCode.add("\tRTS\t; RETURN FROM SUBROUTINE");
         // READ_INT
         assemblyCode.add("; -----------------------------------------------------------------------------");
         assemblyCode.add("READ_INT");
@@ -95,11 +95,12 @@ public class Assembly {
         assemblyCode.add("; OUTPUT: D1 - INTEGER READ");
         assemblyCode.add("; -----------------------------------------------------------------------------");
         assemblyCode.add("\tMOVE.L\tD0,-(A7)\t; SAVE D0");
+        assemblyCode.add("\tCLR.L\tD0\t; CLEAR D0");
         assemblyCode.add("\tCLR.L\tD1\t; CLEAR D1");
         assemblyCode.add("\tMOVE.L\t#4,D0\t; READ_INT");
         assemblyCode.add("\tTRAP\t#15\t; READ_INT CALL TO OS");
         assemblyCode.add("\tMOVE.L\t(A7)+,D0\t; RESTORE D0");
-        assemblyCode.add("\tRTS\t; Return from subroutine");
+        assemblyCode.add("\tRTS\t; RETURN FROM SUBROUTINE");
         // READ_STRING
         assemblyCode.add("; -----------------------------------------------------------------------------");
         assemblyCode.add("READ_STRING");
@@ -108,11 +109,57 @@ public class Assembly {
         assemblyCode.add("; OUTPUT: A1 - STRING READ");
         assemblyCode.add("; -----------------------------------------------------------------------------");
         assemblyCode.add("\tMOVE.L\tD0,-(A7)\t; SAVE D0");
-        assemblyCode.add("\tCLR.L\tA1\t; CLEAR A1");
+        assemblyCode.add("\tCLR.L\tD0\t; CLEAR D0");
+        assemblyCode.add("\tMOVE.L\tD0, A1\t; CLEAR A1");
         assemblyCode.add("\tMOVE.L\t#2,D0\t; READ_STRING");
         assemblyCode.add("\tTRAP\t#15\t; READ_STRING CALL TO OS");
         assemblyCode.add("\tMOVE.L\t(A7)+,D0\t; RESTORE D0");
-        assemblyCode.add("\tRTS\t; Return from subroutine");
+        assemblyCode.add("\tRTS\t; RETURN FROM SUBROUTINE");
+        // STRING_TO_BOOLEAN
+        assemblyCode.add("; -----------------------------------------------------------------------------");
+        assemblyCode.add("STRING_TO_BOOLEAN");
+        assemblyCode.add("; CONVERTS A STRING TO A BOOLEAN");
+        assemblyCode.add("; ASSERT: INPUT STRING IS:");
+        assemblyCode.add("; TRUE/true OR FALSE/false");
+        assemblyCode.add("; INPUT: A1 - STRING TO CONVERT");
+        assemblyCode.add("; OUTPUT: D1 - BOOLEAN VALUE");
+        assemblyCode.add("; -----------------------------------------------------------------------------");
+        assemblyCode.add("\tMOVEM.L\tD0/A1,-(A7)\t; SAVE D0/A1");
+        assemblyCode.add("\tCLR.L\tD0\t; CLEAR D0");
+        assemblyCode.add("\tMOVE.B\t(A1),D0\t: FIRST CHARACTER");
+        assemblyCode.add("\tCMP.W\t#'F',D0\t; IS FALSE?");
+        assemblyCode.add("\tBEQ\t.STR_F\t; IS F");
+        assemblyCode.add("\tCMP.W\t#'f',D0\t; IS FALSE?");
+        assemblyCode.add("\tBEQ\t.STR_F\t; IS f");
+        assemblyCode.add("\tMOVE.L\t#1,D1"); // true
+        assemblyCode.add("\tJMP\t.STR_END\t; END");
+        assemblyCode.add(".STR_F"); // false
+        assemblyCode.add("\tMOVE.L\t#0,D1");
+        assemblyCode.add(".STR_END");
+        assemblyCode.add("\tMOVEM.L\t(A7)+,D0/D1\t; SAVE D0/A1");
+        assemblyCode.add("\tRTS\t; RETURN FROM SUBROUTINE");
+        // BOOLEAN_TO_STRING
+        assemblyCode.add("; -----------------------------------------------------------------------------");
+        assemblyCode.add("BOOLEAN_TO_STRING");
+        assemblyCode.add("; CONVERTS A BOOLEAN TO A STRING");
+        assemblyCode.add("; INPUT: D1 - BOOLEAN TO CONVERT");
+        assemblyCode.add("; OUTPUT: A1 - STRING VALUE");
+        assemblyCode.add("; -----------------------------------------------------------------------------");
+        assemblyCode.add("\tMOVE.L\tD0,-(A7)\t; SAVE D0");
+        assemblyCode.add("\tCLR.L\tD0\t; CLEAR D0");
+        assemblyCode.add("\tMOVE.L\tD0,A1\t: CLEAR A1");
+        assemblyCode.add("\tCMP\t#0,D1\t; CHECK IF D1 IS 0");
+        assemblyCode.add("\tBEQ\t.ISFALSE\t; IF D1 IS 0, GO TO ISFALSE");
+        assemblyCode.add("\tLEA\t.VALTRUE,A1\t; LOAD ADDRESS OF TRUE STRING");
+        assemblyCode.add("\tJMP\t.END\t; JUMP TO END");
+        assemblyCode.add(".ISFALSE");
+        assemblyCode.add("\tLEA\t.VALFALSE,A1\t; LOAD ADDRESS OF FALSE STRING");
+        assemblyCode.add(".END");
+        assemblyCode.add("\tMOVE.L\t(A7)+,D0\t; RESTORE D0");
+        assemblyCode.add("\tRTS\t; RETURN FROM SUBROUTINE");
+        assemblyCode.add(".VALFALSE\tDC.B\t'false',0");
+        assemblyCode.add(".VALTRUE\tDC.B\t'true',0");
+        assemblyCode.add("\tDS.W\t0");
     }
 
     /**
@@ -187,15 +234,59 @@ public class Assembly {
             case PRINT_INT:
                 printInt(instruction);
                 break;
+            case PRINT_BOL:
+                printBol(instruction);
+                break;
             case EQUAL:
-            case NOT_EQUAL:
+                // case NOT_EQUAL:
             case LESS:
-            case LESS_EQUAL:
+                // case LESS_EQUAL:
             case GREATER:
-            case GREATER_EQUAL:
+                // case GREATER_EQUAL:
                 compare(instruction);
                 break;
+            case IF:
+                ifInstruction(instruction);
+                break;
+            case INDEXED_ASSIGN:
+                indexedAssign(instruction);
+                break;
+            case INDEXED_VALUE:
+                indexedValue(instruction);
+                break;
+            case IN_BOL:
+                input(instruction);
+            case IN_INT:
+                input(instruction);
+                break;
+            case OUT:
+                out(instruction);
+                break;
+            case EXIT:
+                // simhalt
+                break;
         }
+    }
+
+    private void input(Instruction instruction) {
+    }
+
+    private void out(Instruction instruction) {
+    }
+
+    private void indexedValue(Instruction instruction) {
+    }
+
+    private void indexedAssign(Instruction instruction) {
+    }
+
+    private void ifInstruction(Instruction instruction) {
+    }
+
+    private void printBol(Instruction instruction) {
+    }
+
+    private void printInt(Instruction instruction) {
     }
 
     private void add(Instruction ins) {
@@ -267,32 +358,35 @@ public class Assembly {
     }
 
     private void compare(Instruction ins) {
-        Variable var1 = (Variable) ins.getOp1();
-        Variable var2 = (Variable) ins.getOp2();
+        String var1 = ins.getOp1();
+        String var2 = ins.getOp2();
 
-        assemblyCode.add("\tCMP.W\t" + var1.getName() + "," + var2.getName());
+        assemblyCode.add("\tCMP.W\t" + var1 + "," + var2);
 
         switch (ins.getOperation()) {
             case EQUAL:
                 assemblyCode.add("\tBEQ\t" + ins.getDest());
                 break;
-            case NOT_EQUAL:
-                assemblyCode.add("\tBNE\t" + ins.getDest());
-                break;
             case LESS:
                 assemblyCode.add("\tBLT\t" + ins.getDest());
-                break;
-            case LESS_EQUAL:
-                assemblyCode.add("\tBLE\t" + ins.getDest());
                 break;
             case GREATER:
                 assemblyCode.add("\tBGT\t" + ins.getDest());
                 break;
-            case GREATER_EQUAL:
-                assemblyCode.add("\tBGE\t" + ins.getDest());
-                break;
             default: // Nunca va llegar, pero es para evitar warnings
                 break;
+        }
+    }
+
+    public void saveAssemblyCode(String fileName) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(Env.GENERATED_FILES + Env.SLASH + fileName));
+            for (String line : assemblyCode) {
+                writer.write(line + "\n");
+            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
