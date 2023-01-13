@@ -39,20 +39,22 @@ public class Warning {
         setMessage();
         StringBuilder sb = new StringBuilder();
 
-        sb.append(ConsoleColor.printColored(color, this.getPhase().toUpperCase()));
-        sb.append(ConsoleColor.printColored(color, " "));
-        sb.append(ConsoleColor.printColored(color, "WARNING"));
+        sb.append(color);
+        sb.append(this.getPhase().toUpperCase());
+        sb.append(" ");
+        sb.append("WARNING");
         if (this.line != -1) {
-            sb.append(ConsoleColor.printColored(color, " at line "));
-            sb.append(ConsoleColor.printColored(color, Integer.toString(line)));
+            sb.append(" at line ");
+            sb.append(Integer.toString(line));
             if (this.charloc != -1) {
-                sb.append(ConsoleColor.printColored(color, ":"));
-                sb.append(ConsoleColor.printColored(color, Integer.toString(charloc)));
+                sb.append(":");
+                sb.append(Integer.toString(charloc));
 
             }
         }
-        sb.append(ConsoleColor.printColored(color, " - "));
-        sb.append(ConsoleColor.printColored(color, message));
+        sb.append(" - ");
+        sb.append(message);
+        sb.append(ConsoleColor.RESET);
 
         return sb.toString();
     }
