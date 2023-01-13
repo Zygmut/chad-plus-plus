@@ -67,11 +67,12 @@ public class MainChpp {
             System.exit(0);
         }
 
-        // Parser
+        // Front-end
+        SymbolFactory sf = null;
+        Parser parser = null;
         try {
-            // Sintactic + semantic
-            SymbolFactory sf = new ComplexSymbolFactory();
-            Parser parser = new Parser(scanner, sf);
+            sf = new ComplexSymbolFactory();
+            parser = new Parser(scanner, sf);
             parser.parse();
 
             // Guardar la tabla de simbolos
@@ -79,7 +80,21 @@ public class MainChpp {
 
             // Guardar los tokens
             saveTokens(scanner.tokens);
+        } catch (Exception e) {
+            if (!ErrorHandler.hasErrors()) {
+                e.printStackTrace();
+                System.exit(0);
+            }
+        }
 
+        if (ErrorHandler.hasErrors()) {
+            ErrorHandler.printErrors();
+            saveTable(ErrorHandler.getErrorsString(), "Errores.txt");
+            System.exit(0);
+        }
+
+        // Back-end
+        try {
             // c3@
             ThreeAddressCode c3d = new ThreeAddressCode();
             parser.getTree().generate3dc(c3d);
@@ -87,9 +102,14 @@ public class MainChpp {
             saveTable(c3d.getTpString(), "TablaProcedimientos.txt");
             saveTable(c3d.getTvString(), "TablaVariables.txt");
 
+            // ASM
+            // Assembly asm = new Assembly(c3d.getCodigo3Dir());
+            // asm.generateAssemblyCode()
         } catch (Exception e) {
-            ErrorHandler.printErrors();
-            System.exit(0);
+            if (!ErrorHandler.hasErrors()) {
+                e.printStackTrace();
+                System.exit(0);
+            }
         }
 
         if (ErrorHandler.hasErrors()) {
