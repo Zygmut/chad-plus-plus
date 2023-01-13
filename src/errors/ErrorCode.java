@@ -51,7 +51,9 @@ public enum ErrorCode {
     CANNOT_MODIFY_CONSTANT_VARIABLES("Cannot modify the value of a constant defined variable"),
     ASIGNATION_TYPE_DOES_NOT_MATCH("Expresion type does not match variable type"),
     DUPLICATED_VARIABLE("This variable has been declared previously."),
-    DUPLICATED_FUNCTION("This function has been declared previously.");
+    DUPLICATED_FUNCTION("This function has been declared previously."),
+    EXPRESION_MUST_BE_ARITHMETIC("Expresion must return an arithmetic value."),
+    EXPRESION_MUST_BE_LOGICAL("Expresion must return a logical value.");
 
     public String message;
 
