@@ -3,6 +3,7 @@ package core;
 import intermediate_code.Instruction;
 import intermediate_code.Operator;
 import intermediate_code.ThreeAddressCode;
+import intermediate_code.Variable;
 
 public class Output extends BaseNode {
     private Expresion expresion;
@@ -29,7 +30,10 @@ public class Output extends BaseNode {
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
         this.expresion.generate3dc(codigoTresDir);
-        codigoTresDir.addInstr(new Instruction(null, codigoTresDir.getLastVariable().getId(), Operator.OUT, null));
+
+        for (Variable var : codigoTresDir.getLargs()) {
+            codigoTresDir.addInstr(new Instruction(null, var.getId(), Operator.OUT, null));
+        }
     }
 
 }
