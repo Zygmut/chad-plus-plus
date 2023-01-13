@@ -48,8 +48,9 @@ public class WhileNode extends BaseNode {
         codigoTresDir.addInstr(new Instruction(evalFalse, null, Operator.GOTO, null));
 
         codigoTresDir.addInstr(new Instruction(evalTrue, null, Operator.SKIP, null));
-
-        this.instrs.generate3dc(codigoTresDir);
+        if (this.instrs != null) {
+            this.instrs.generate3dc(codigoTresDir);
+        }
 
         codigoTresDir.addInstr(new Instruction(evalLabel, null, Operator.GOTO, null));
         codigoTresDir.addInstr(new Instruction(evalFalse, null, Operator.SKIP, null));

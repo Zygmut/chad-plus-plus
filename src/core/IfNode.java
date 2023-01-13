@@ -44,7 +44,9 @@ public class IfNode extends BaseNode {
         codigoTresDir.addInstr(new Instruction(eTrue, codigoTresDir.getLastVariable().getId(), Operator.IF, null));
         codigoTresDir.addInstr(new Instruction(eFalse, null, Operator.GOTO, null));
         codigoTresDir.addInstr(new Instruction(eTrue, null, Operator.SKIP, null));
-        this.instrs.generate3dc(codigoTresDir);
+        if (this.instrs != null) {
+            this.instrs.generate3dc(codigoTresDir);
+        }
         codigoTresDir.addInstr(new Instruction(eFalse, null, Operator.SKIP, null));
     }
 
