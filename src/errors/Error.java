@@ -98,7 +98,8 @@ public class Error {
         }
     }
 
-    public void toggleColors() {
+    public boolean toggleColors() {
         this.withColor = !this.withColor;
+        return this.withColor;
     }
 }
