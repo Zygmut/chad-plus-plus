@@ -99,7 +99,7 @@ public class Instruction {
             case "INDEXED_ASSIGN":
                 return dest + "[" + op1 + "] = " + op2;
             case "IF":
-                return "IF " + op1 + " GOTO " + dest;
+                return "IF " + op1 + " == true GOTO " + dest;
             case "OUT":
                 return "OUT " + op1;
             case "PARAM":
