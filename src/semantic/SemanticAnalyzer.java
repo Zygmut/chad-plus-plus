@@ -141,17 +141,6 @@ public class SemanticAnalyzer {
     }
 
     /**
-     * Devuelve una lista de expresiones con la prioridad de las expresiones para
-     * que la expresión este bien formata.
-     *
-     * @param exp Expresión
-     * @return ArrayList<Expresion>
-     */
-    private ArrayList<Expresion> getPriorityExpresion(Expresion exp) {
-        return null;
-    }
-
-    /**
      * Verifica que la expresión sea correcta, a partir de una expresión. Y devuelve
      * el tipo de la expresión si es correcta y en caso contrario devuelve null.
      *
@@ -396,8 +385,9 @@ public class SemanticAnalyzer {
         // Recorrer inversamente el conjunto de simbolos para obtener todos los
         // nodos de retorno
         int nReturns = 0;
-        Symbol symbol = st.getTs().get(range[0]);
+        Symbol symbol;
         for (int i = range[0]; i < range[1]; i++) {
+            symbol = st.getTs().get(i);
             if (symbol.getStructureType().equals(StructureType.RETURN)) {
                 nReturns++;
                 if (!symbol.getStructureReturnType().equals(frt)) {
@@ -418,5 +408,23 @@ public class SemanticAnalyzer {
                     Phase.SEMANTIC);
         }
 
+    }
+
+    /**
+     * Verifica que las dos expresiones sean de caracter aritmetico. Devuelve true
+     * si ambas son aritmenticas y false en caso contrario
+     *
+     * @param e1
+     * @param e2
+     * @return true | false
+     */
+    public boolean checkLoop(Expresion e1, Expresion e2) {
+        if (checkExpresion(e1) == StructureReturnType.INT) {
+            if (checkExpresion(e2) == StructureReturnType.INT) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
