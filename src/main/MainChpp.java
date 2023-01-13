@@ -64,6 +64,7 @@ public class MainChpp {
 
         if (ErrorHandler.hasErrors()) {
             ErrorHandler.printErrors();
+            saveTable(ErrorHandler.getErrorsString(), "Errores.txt");
             System.exit(0);
         }
 
