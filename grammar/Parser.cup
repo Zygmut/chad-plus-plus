@@ -450,7 +450,7 @@ R_INSTRS        ::= R_INSTR:inst R_INSTRS:instrs                {: RESULT = new 
 
 R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                          {: checkExp(e);RESULT = new Instr(new IfNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
                 |   WHILE LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                       {: checkExp(e);RESULT = new Instr(new WhileNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
-                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY R_INSTRS:instrs RKEY    {: checkExp(e1); checkExp(e2); RESULT = new Instr(new LoopNode(e1, e2, instrs, e1left, e1right), cur_token.left, cur_token.right); :}
+                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY R_INSTRS:instrs RKEY    {: sem.checkLoop(e1,e2); RESULT = new Instr(new LoopNode(e1, e2, instrs, e1left, e1right), cur_token.left, cur_token.right); :}
                 |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                         {: checkExp(e);RESULT = new Instr(new Output(e, eleft , eright), cur_token.left , cur_token.right); :}
                 |   ININT LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(0, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
                 |   INBOL LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(1, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
@@ -465,7 +465,7 @@ R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY      
 
 INSTR           ::= IF LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                            {: checkExp(e);RESULT = new Instr(new IfNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
                 |   WHILE LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                       {: checkExp(e);RESULT = new Instr(new WhileNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
-                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY R_INSTRS:instrs RKEY    {: checkExp(e1); checkExp(e2); RESULT = new Instr(new LoopNode(e1, e2, instrs, e1left, e1right), cur_token.left, cur_token.right); :}
+                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY R_INSTRS:instrs RKEY    {: sem.checkLoop(e1,e2); RESULT = new Instr(new LoopNode(e1, e2, instrs, e1left, e1right), cur_token.left, cur_token.right); :}
                 |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                         {: checkExp(e);RESULT = new Instr(new Output(e, eleft , eright), cur_token.left , cur_token.right); :}
                 |   ININT LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(0, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
                 |   INBOL LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(1, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
