@@ -397,7 +397,6 @@ public class SemanticAnalyzer {
                             Phase.SEMANTIC);
                 }
             }
-
         }
 
         // Funcion con return value sin nodos de retorno
@@ -419,12 +418,24 @@ public class SemanticAnalyzer {
      * @return true | false
      */
     public boolean checkLoop(Expresion e1, Expresion e2) {
-        if (checkExpresion(e1) == StructureReturnType.INT) {
-            if (checkExpresion(e2) == StructureReturnType.INT) {
-                return true;
-            }
+        if (checkExpresion(e1) != StructureReturnType.INT) {
+            // ERROR: Expresion must return an arithmetic value
+            ErrorHandler.addError(ErrorCode.EXPRESION_MUST_BE_ARITHMETIC,
+                    e1.getLine(),
+                    e1.getColumn(),
+                    Phase.SEMANTIC);
+            return false;
+        }
+        if (checkExpresion(e2) != StructureReturnType.INT) {
+            // ERROR: Expresion must return an arithmetic value
+            ErrorHandler.addError(ErrorCode.EXPRESION_MUST_BE_ARITHMETIC,
+                    e2.getLine(),
+                    e2.getColumn(),
+                    Phase.SEMANTIC);
+            return false;
         }
 
-        return false;
+        return true;
     }
+
 }
