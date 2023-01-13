@@ -11,6 +11,7 @@ public class Warning {
     private int line;
     private int charloc;
     private Phase phase;
+    private boolean withColor = true;
 
     public Warning(WarningCode code, int line, Phase phase) {
         this.code = code;
@@ -38,8 +39,9 @@ public class Warning {
     public String toString() {
         setMessage();
         StringBuilder sb = new StringBuilder();
-
-        sb.append(color);
+        if (withColor) {
+            sb.append(color);
+        }
         sb.append(this.getPhase().toUpperCase());
         sb.append(" ");
         sb.append("WARNING");
@@ -54,7 +56,9 @@ public class Warning {
         }
         sb.append(" - ");
         sb.append(message);
-        sb.append(ConsoleColor.RESET);
+        if (withColor) {
+            sb.append(ConsoleColor.RESET);
+        }
 
         return sb.toString();
     }

@@ -24,6 +24,7 @@ public class Error {
     private int charloc;
     // Phase of the compiler
     private Phase phase;
+    private boolean withColor = true;
 
     public Error(ErrorCode code, int line, Phase phase) {
         this.code = code;
@@ -51,7 +52,9 @@ public class Error {
     public String toString() {
         setMessage(); // Set the message based on the code
         StringBuilder sb = new StringBuilder();
-        sb.append(color);
+        if (withColor) {
+            sb.append(color);
+        }
 
         sb.append(this.getPhase().toUpperCase());
         sb.append(" ");
@@ -70,7 +73,9 @@ public class Error {
 
         sb.append(" - ");
         sb.append(message);
-        sb.append(ConsoleColor.RESET);
+        if (withColor) {
+            sb.append(ConsoleColor.RESET);
+        }
 
         return sb.toString();
     }
@@ -93,4 +98,7 @@ public class Error {
         }
     }
 
+    public void toggleColors() {
+        this.withColor = !this.withColor;
+    }
 }

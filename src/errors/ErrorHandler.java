@@ -110,7 +110,9 @@ public class ErrorHandler {
     public static String getErrorsString() {
         String s = "";
         for (Error error : errors) {
+            error.toggleColors();
             s += error.toString() + "\n";
+            error.toggleColors();
         }
         return s;
     }
