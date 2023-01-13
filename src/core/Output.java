@@ -30,10 +30,15 @@ public class Output extends BaseNode {
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
         this.expresion.generate3dc(codigoTresDir);
-
-        for (Variable var : codigoTresDir.getLargs()) {
-            codigoTresDir.addInstr(new Instruction(null, var.getId(), Operator.OUT, null));
+        if (!codigoTresDir.getLargs().isEmpty()) {
+            for (Variable var : codigoTresDir.getLargs()) {
+                codigoTresDir.addInstr(new Instruction(null, var.getId(), Operator.OUT, null));
+            }
+        } else {
+            codigoTresDir.addInstr(new Instruction(null, codigoTresDir.getLastVariable().getId(), Operator.OUT, null));
         }
+        codigoTresDir.purgeArgs();
+
     }
 
 }

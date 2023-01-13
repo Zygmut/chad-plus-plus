@@ -22,8 +22,6 @@ public enum Operator {
     PMB,
     IN_INT,
     IN_BOL,
-    PRINT_INT,
-    PRINT_BOL,
     // a = b[c]
     INDEXED_VALUE,
     // a[b] = c

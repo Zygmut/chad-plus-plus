@@ -36,4 +36,5 @@ main {
     tup a = [test_global()]; # DOBLE ERROR #44
     BEGIN
     test_global(1);
+    
 }

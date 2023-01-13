@@ -1,7 +1,3 @@
 main {
-    int a = 0;
-    bol b = false;
-    BEGIN
-    if(false || a == 2){}
-    if(b == false){}
+   output(1);
 }

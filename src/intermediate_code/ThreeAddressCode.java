@@ -173,6 +173,23 @@ public class ThreeAddressCode {
   }
 
   /**
+   * Busca por toda la tabla de variables la primera instancia del nombre de la
+   * variable pasada por parametro. Devuelve dicha variable si se encuentra y null
+   * en caso contrario
+   *
+   * @param id
+   * @return
+   */
+  public Variable findVarById(String id) {
+    for (Variable var : this.tv) {
+      if (var.getId().equals(id)) {
+        return var;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Devuelve la última variable de la tabla de variables
    *
    * @return Variable
