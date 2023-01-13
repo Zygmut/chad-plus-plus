@@ -75,6 +75,12 @@ public class ThreeAddressCode {
   private ArrayList<Variable> largs;
 
   /**
+   * Permite identificar si largs es apra una llamada a una función o para una
+   * asignación
+   */
+  private boolean callingFunction = false;
+
+  /**
    * Constructor de la clase, inicializa las variables de la clase.
    *
    * @param tree Árbol sintáctico del código fuente
@@ -317,6 +323,14 @@ public class ThreeAddressCode {
 
   public void addId(Variable id) {
     lids.add(id);
+  }
+
+  public void toggleCallFn() {
+    this.callingFunction = !callingFunction;
+  }
+
+  public boolean isCallingFn() {
+    return this.callingFunction;
   }
 
   public String getTvString() {

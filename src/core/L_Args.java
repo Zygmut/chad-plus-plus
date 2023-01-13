@@ -1,6 +1,9 @@
 package core;
 
+import intermediate_code.Instruction;
+import intermediate_code.Operator;
 import intermediate_code.ThreeAddressCode;
+import intermediate_code.Variable;
 
 public class L_Args extends BaseNode {
     private Expresion arg;
@@ -41,8 +44,15 @@ public class L_Args extends BaseNode {
 
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
+        // En caso que se este llamando a una funcion tenemos que añadir los argumentos
+        // como params
         this.arg.generate3dc(codigoTresDir);
-        codigoTresDir.addArg(codigoTresDir.getLastVariable());
+        Variable expresionVar = codigoTresDir.getLastVariable();
+        if (codigoTresDir.isCallingFn()) {
+            codigoTresDir.addInstr(new Instruction(null, expresionVar.getId(), Operator.PARAM, null));
+        } else {
+            codigoTresDir.addArg(expresionVar);
+        }
 
         if (this.nextArg != null) {
             this.nextArg.generate3dc(codigoTresDir);

@@ -89,6 +89,7 @@ public class Function extends BaseNode {
     public void generate3dc(ThreeAddressCode codigoTresDir) {
         codigoTresDir.newFn(id.getValue(), returnTypetoStructureReturnType());
         codigoTresDir.addInstr(new Instruction("run_" + id.getValue(), null, Operator.SKIP, null));
+        codigoTresDir.addInstr(new Instruction("run_" + id.getValue(), null, Operator.PMB, null));
 
         if (this.arguments != null) {
             codigoTresDir.toggleParams();

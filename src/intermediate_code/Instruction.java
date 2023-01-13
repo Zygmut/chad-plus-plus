@@ -102,6 +102,8 @@ public class Instruction {
                 return "IF " + op1 + " GOTO " + dest;
             case "OUT":
                 return "OUT " + op1;
+            case "PARAM":
+                return operation.name() + " " + op1;
             default:
                 return "{" +
                         " dest='" + this.dest + "'" +

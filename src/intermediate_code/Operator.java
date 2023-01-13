@@ -24,7 +24,9 @@ public enum Operator {
     IN_BOL,
     PRINT_INT,
     PRINT_BOL,
+    // a = b[c]
     INDEXED_VALUE,
+    // a[b] = c
     INDEXED_ASSIGN,
     IF,
     OUT,
