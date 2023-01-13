@@ -45,18 +45,6 @@ parser code {:
         }
     }
 
-    /**
-    * Wrapper para checkear una expresion
-    */
-    private void checkExp(Expresion e){
-        if(sem.checkExpresion(e) == null){
-            ErrorHandler.addError(
-                ErrorCode.MALFORMED_EXPRESSION,
-                e.getLine(),
-                e.getColumn(),
-                Phase.SEMANTIC);
-        }
-    }
 
     private boolean addTupleContentstoST(Asignation assig){
 
@@ -436,8 +424,8 @@ CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new 
                 |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id, idleft, idright), cur_token.left, cur_token.right);       sem.checkCallFArgs(RESULT);:}
                 ;
 
-ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: checkExp(e); RESULT = new L_Args(e, args, eleft, eright);:}
-                |   EXPRESION:e                                 {: checkExp(e); RESULT = new L_Args(e, eleft, eright);      :}
+ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: sem.checkExp(e); RESULT = new L_Args(e, args, eleft, eright);:}
+                |   EXPRESION:e                                 {: sem.checkExp(e); RESULT = new L_Args(e, eleft, eright);      :}
                 ;
 
 INSTRS          ::= INSTR:inst INSTRS:instrs                    {: RESULT = new L_Instrs(inst, instrs, instleft, instright); :}
@@ -448,10 +436,10 @@ R_INSTRS        ::= R_INSTR:inst R_INSTRS:instrs                {: RESULT = new 
                 |                                               {: :}
                 ;
 
-R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                          {: checkExp(e);RESULT = new Instr(new IfNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
-                |   WHILE LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                       {: checkExp(e);RESULT = new Instr(new WhileNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
+R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                          {: sem.checkLogicalExpresion(e);RESULT = new Instr(new IfNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
+                |   WHILE LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                       {: sem.checkLogicalExpresion(e);RESULT = new Instr(new WhileNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
                 |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY R_INSTRS:instrs RKEY    {: sem.checkLoop(e1,e2); RESULT = new Instr(new LoopNode(e1, e2, instrs, e1left, e1right), cur_token.left, cur_token.right); :}
-                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                         {: checkExp(e);RESULT = new Instr(new Output(e, eleft , eright), cur_token.left , cur_token.right); :}
+                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                         {: sem.checkExp(e);RESULT = new Instr(new Output(e, eleft , eright), cur_token.left , cur_token.right); :}
                 |   ININT LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(0, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
                 |   INBOL LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(1, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
                 |   ASIGNATION:a                                                                    {: RESULT = new Instr(a, aleft , aright); :}
@@ -463,10 +451,10 @@ R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY      
                     :}
                 ;
 
-INSTR           ::= IF LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                            {: checkExp(e);RESULT = new Instr(new IfNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
-                |   WHILE LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                       {: checkExp(e);RESULT = new Instr(new WhileNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
+INSTR           ::= IF LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                            {: sem.checkLogicalExpresion(e);RESULT = new Instr(new IfNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
+                |   WHILE LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                       {: sem.checkLogicalExpresion(e);RESULT = new Instr(new WhileNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
                 |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY R_INSTRS:instrs RKEY    {: sem.checkLoop(e1,e2); RESULT = new Instr(new LoopNode(e1, e2, instrs, e1left, e1right), cur_token.left, cur_token.right); :}
-                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                         {: checkExp(e);RESULT = new Instr(new Output(e, eleft , eright), cur_token.left , cur_token.right); :}
+                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                         {: sem.checkExp(e);RESULT = new Instr(new Output(e, eleft , eright), cur_token.left , cur_token.right); :}
                 |   ININT LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(0, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
                 |   INBOL LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(1, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
                 |   ASIGNATION:a                                                                    {: RESULT = new Instr(a, aleft , aright); :}

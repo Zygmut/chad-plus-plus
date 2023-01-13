@@ -256,6 +256,25 @@ public class SemanticAnalyzer {
     }
 
     /**
+     * Wrapper de checkExpresion para generar los errores pertinentes. Devuelve true
+     * si la expresion esta bien formada y false en caso contrario
+     *
+     * @param e
+     * @returns false | true
+     */
+    public boolean checkExp(Expresion e) {
+        if (checkExpresion(e) == null) {
+            ErrorHandler.addError(
+                    ErrorCode.MALFORMED_EXPRESSION,
+                    e.getLine(),
+                    e.getColumn(),
+                    Phase.SEMANTIC);
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Verifica el Id de una expresión. Y devuelve el tipo de la expresión si
      * es correcta y en caso contrario devuelve null.
      *
@@ -411,14 +430,24 @@ public class SemanticAnalyzer {
 
     /**
      * Verifica que las dos expresiones sean de caracter aritmetico. Devuelve true
-     * si ambas son aritmenticas y false en caso contrario
+     * si ambas son aritmenticas y false en caso contrario y genera los errores
+     * pertinentes
      *
      * @param e1
      * @param e2
      * @return true | false
      */
     public boolean checkLoop(Expresion e1, Expresion e2) {
-        if (checkExpresion(e1) != StructureReturnType.INT) {
+        StructureReturnType returnE1 = checkExpresion(e1);
+        if (returnE1 == null) {
+            ErrorHandler.addError(
+                    ErrorCode.MALFORMED_EXPRESSION,
+                    e1.getLine(),
+                    e1.getColumn(),
+                    Phase.SEMANTIC);
+            return false;
+        }
+        if (returnE1 != StructureReturnType.INT) {
             // ERROR: Expresion must return an arithmetic value
             ErrorHandler.addError(ErrorCode.EXPRESION_MUST_BE_ARITHMETIC,
                     e1.getLine(),
@@ -426,7 +455,17 @@ public class SemanticAnalyzer {
                     Phase.SEMANTIC);
             return false;
         }
-        if (checkExpresion(e2) != StructureReturnType.INT) {
+        StructureReturnType returnE2 = checkExpresion(e2);
+
+        if (returnE2 == null) {
+            ErrorHandler.addError(
+                    ErrorCode.MALFORMED_EXPRESSION,
+                    e2.getLine(),
+                    e2.getColumn(),
+                    Phase.SEMANTIC);
+            return false;
+        }
+        if (returnE2 != StructureReturnType.INT) {
             // ERROR: Expresion must return an arithmetic value
             ErrorHandler.addError(ErrorCode.EXPRESION_MUST_BE_ARITHMETIC,
                     e2.getLine(),
@@ -436,6 +475,37 @@ public class SemanticAnalyzer {
         }
 
         return true;
+    }
+
+    /**
+     * Verifica que la expresión pasada por parametro sea de caracter lógico.
+     * Devuelve true si la expresion es logica y false en caso contrario y genera
+     * los errores pertinentes
+     *
+     * @param e
+     * @return true | false
+     */
+    public boolean checkLogicalExpresion(Expresion e) {
+        StructureReturnType returnE = checkExpresion(e);
+
+        if (returnE == null) {
+            ErrorHandler.addError(
+                    ErrorCode.MALFORMED_EXPRESSION,
+                    e.getLine(),
+                    e.getColumn(),
+                    Phase.SEMANTIC);
+            return false;
+        }
+        if (returnE != StructureReturnType.BOOL) {
+            // ERROR: Expresion must return a logical value
+            ErrorHandler.addError(ErrorCode.EXPRESION_MUST_BE_LOGICAL,
+                    e.getLine(),
+                    e.getColumn(),
+                    Phase.SEMANTIC);
+            return false;
+        }
+        return true;
+
     }
 
 }
