@@ -315,8 +315,7 @@ public class Assembly {
     }
 
     private void indexedAssign(Instruction ins) {
-        // TODO: Implment indexedAssign
-        assert false : "TODO: Implment indexedAssign";
+        assemblyCode.add("\tMOVE.W\t" + ins.getOp2() +",(" + ins.getDest() +"+"+ ins.getOp1() + ")");
     }
 
     private void ifInstruction(Instruction ins) {

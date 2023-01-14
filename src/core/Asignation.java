@@ -51,7 +51,7 @@ public class Asignation extends BaseNode {
         } else {
             for (Variable id : codigoTresDir.getLids()) {
                 for (int i = 0; i < codigoTresDir.getLargs().size(); i++) {
-                    codigoTresDir.addInstr(new Instruction(id.getId(), Integer.toString(i * 4), Operator.INDEXED_ASSIGN,
+                    codigoTresDir.addInstr(new Instruction(id.getId(), Integer.toString(i * 2), Operator.INDEXED_ASSIGN,
                             codigoTresDir.getLargs().get(i).getId()));
                 }
             }
