@@ -335,7 +335,7 @@ public class Assembly {
         assemblyCode.add("\tEXT.L\tD0");
         assemblyCode.add("\tMOVE.W\t" + ins.getOp2() + ",D1");
         assemblyCode.add("\tEXT.L\tD1");
-        assemblyCode.add("\tMULS.L\tD1,D0");
+        assemblyCode.add("\tMULS.W\tD1,D0");
         assemblyCode.add("\tMOVE.W\tD0," + ins.getDest());
     }
 
@@ -420,7 +420,7 @@ public class Assembly {
         assemblyCode.add("\tMOVE.W\t" + var1 + ",D0");
         assemblyCode.add("\tMOVE.W\t" + var2 + ",D1");
 
-        assemblyCode.add("\tCMP.W\tD0,D1");
+        assemblyCode.add("\tCMP.W\tD1,D0");
         switch (ins.getOperation()) {
             case EQUAL:
                 assemblyCode.add("\tSEQ\tD0");

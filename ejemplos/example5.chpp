@@ -1,0 +1,10 @@
+main {
+    int f = 1;
+    int iter = 5;
+    BEGIN
+    while(iter > 0){
+        f = f * iter;
+        iter = iter - 1;
+    }
+    output(f);
+}
