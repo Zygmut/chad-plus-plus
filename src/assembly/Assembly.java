@@ -1,15 +1,17 @@
 package assembly;
 
+import core.TypeVar;
+import intermediate_code.Instruction;
+import intermediate_code.Procedimiento;
+import intermediate_code.ThreeAddressCode;
+import intermediate_code.Variable;
+import symbol_table.StructureReturnType;
+import utils.Env;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import core.TypeVar;
-import intermediate_code.Instruction;
-import intermediate_code.ThreeAddressCode;
-import intermediate_code.Variable;
-import utils.Env;
 
 /**
  * Assembly
@@ -206,7 +208,7 @@ public class Assembly {
      * <li>GREATER</li>
      * <li>GREATER_EQUAL</li>
      * </ul>
-     * 
+     *
      * @param instruction Instrucción a traducir.
      * @see Instruction
      */
@@ -241,7 +243,7 @@ public class Assembly {
                 assign(instruction);
                 break;
             case PARAM:
-                params(instruction);
+                param(instruction);
                 break;
             case CALL:
                 call(instruction);
@@ -253,10 +255,10 @@ public class Assembly {
                 pmb(instruction);
                 break;
             case EQUAL:
-                // case NOT_EQUAL:
             case LESS:
-                // case LESS_EQUAL:
             case GREATER:
+                // case NOT_EQUAL:
+                // case LESS_EQUAL:
                 // case GREATER_EQUAL:
                 compare(instruction);
                 break;
@@ -380,32 +382,59 @@ public class Assembly {
         assemblyCode.add("\tMOVE.W\t" + var1 + "," + ins.getDest());
     }
 
-    private void params(Instruction ins) {
-        assert false : "TODO: Implementar params";
-        // assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",-(A7)");
+    private void param(Instruction ins) {
+        // int and bool = .W
+        assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",-(A7)");
     }
 
     private void call(Instruction ins) {
-        // TODO: Implementar call
-        assert false : "TODO: Implementar call";
-        // assemblyCode.add("\tJSR\t" + ins.getDest());
-        // Calcular el tamaño de los parámetros para la pila
-        int size = 0;
-        // ...
-        // assemblyCode.add("\tADDA.L\t#" + size + ",A7");
+        // Si tiene valores de retorno guardar espacio
+        Procedimiento prod = this.threeAddressCode.getProcedimiento(ins.getOp1());
+        assert prod == null : "FUNCIÓN NO ENCONTRADA";
+        assert prod.getReturnType() == null : "FUNCION SIN NINGUN TIPO DE RETORNO";
+        if (prod.getReturnType() != StructureReturnType.VOID){
+            assemblyCode.add("\tSUBA.L\t#2,A7");
+        }
+        // Llamar subrutina
+        assemblyCode.add("\tJSR\trun_" + ins.getOp1());
+        // Si tiene valores de retorno recuperarlo y guardarlo donde toca
+        if (prod.getReturnType() != StructureReturnType.VOID){
+            assemblyCode.add("\tMOVE.W\t(A7)+," + ins.getDest());
+        }
+        // Vaciar pila dependiendo del núm de params
+        int paramsSize = prod.getParameters().size();
+        if (paramsSize > 0){
+          assemblyCode.add("\tADDA.L\t#" + paramsSize*2 + ",A7") ;
+        }
     }
 
     private void returnSubroutine(Instruction ins) {
-        // TODO: implementar returnSubroutine
-        assert false : "TODO: implementar returnSubroutine";
-        // Vaciar la pila dependiendo del tamaño de los parámetros
-        // ...
-        // assemblyCode.add("\tRTS");
+        String dest = ins.getDest();
+        if (dest != null){
+            assemblyCode.add("\tMOVE.W\t" + dest + ",4(A7)");
+        }
+        assemblyCode.add("\tRTS");
     }
 
     private void pmb(Instruction ins) {
-        assert false : "TODO: implementar pmb";
-        // assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",-(A7)");
+        String prodName = ins.getDest().split("_")[1];
+        Procedimiento prod = this.threeAddressCode.getProcedimiento(prodName);
+        assert prod == null : "FUNCIÓN NO ENCONTRADA";
+        ArrayList<Variable> params =  prod.getParameters();
+        // Save rts dir
+        assemblyCode.add("\tMOVE.L\t(A7)+,D7");
+        if (prod.getReturnType() != StructureReturnType.VOID){
+            assemblyCode.add("\tMOVE.W\t(A7)+,D6");
+        }
+        if (params != null) {
+            for (Variable param: params){
+               assemblyCode.add("\tMOVE.W\t(A7)+," + param.getId());
+            }
+        }
+        if (prod.getReturnType() != StructureReturnType.VOID){
+            assemblyCode.add("\tMOVE.W\tD6,-(A7)");
+        }
+        assemblyCode.add("\tMOVE.L\tD7,-(A7)");
     }
 
     private void compare(Instruction ins) {

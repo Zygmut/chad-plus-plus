@@ -1,0 +1,13 @@
+alpha int test1(int p1){
+  int p = p1;
+  BEGIN
+  return p;
+}
+
+main {
+  int val = 0;
+  int p1 = 5;
+  BEGIN
+  val = test1(p1);
+  output(val);
+}
