@@ -5,4 +5,5 @@ public enum StructureReturnType {
     BOOL,
     TUP,
     VOID,
+    INT_OR_BOOL
 }

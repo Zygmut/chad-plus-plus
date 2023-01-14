@@ -40,13 +40,14 @@ public class A_Tuple extends BaseNode {
   @Override
   public void generate3dc(ThreeAddressCode codigoTresDir) {
     Variable var1 = codigoTresDir.putVar(null, TypeVar.INT);
-    codigoTresDir.addInstr(new Instruction(var1.getId(), Integer.toString(access.getValue()), Operator.ASSIGN, null));
+    codigoTresDir
+        .addInstr(new Instruction(var1.getId(), Integer.toString(access.getValue()), Operator.ASSIGN, null));
     Variable var2 = codigoTresDir.putVar(null, TypeVar.INT);
     // Multiplicamos por el acceso más grande que tenemos en nuestras estructuras
     // soportadas. En este caso el int que ocupa 4
-    codigoTresDir.addInstr(new Instruction(var2.getId(), var1.getId(), Operator.MULT, "4"));
+    codigoTresDir.addInstr(new Instruction(var2.getId(), var1.getId(), Operator.MULT, "2"));
     Variable var3 = codigoTresDir.putVar(null, TypeVar.INT);
-    codigoTresDir.addInstr(new Instruction(var3.getId(), id.getValue(), Operator.ASSIGN, var2.getId()));
+    codigoTresDir.addInstr(new Instruction(var3.getId(), id.getValue(), Operator.INDEXED_VALUE, var2.getId()));
   }
 
 }

@@ -142,7 +142,7 @@ public class SymbolTable {
      * @param id     nombre del simbolo
      * @return Symbol | null
      */
-    private Symbol searchSymbolAtAccess(int access, String id) {
+    public Symbol searchSymbolAtAccess(int access, String id) {
         // Mirar si tiene simbolos
         Integer[] range = this.ta.get(access);
         if (range[0] == this.NOT_AVALIABLE) {

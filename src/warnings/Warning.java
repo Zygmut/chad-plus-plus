@@ -15,6 +15,7 @@ public class Warning {
 
     public Warning(WarningCode code, int line, Phase phase) {
         this.code = code;
+        this.message = "";
         this.line = line;
         this.charloc = -1;
         this.phase = phase;
@@ -22,6 +23,7 @@ public class Warning {
 
     public Warning(WarningCode code, int line, int charloc, Phase phase) {
         this.code = code;
+        this.message = "";
         this.line = line;
         this.charloc = charloc;
         this.phase = phase;
@@ -33,6 +35,24 @@ public class Warning {
         this.line = line;
         this.charloc = charloc;
         this.phase = phase;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Warning warning = (Warning) obj;
+        // System.out.println(this.code.equals(warning.getCode()));
+        // System.out.println("---");
+        // System.out.println(this.message.equals(warning.getMessage()));
+        // System.out.println(this.line == warning.getLine());
+        // System.out.println(this.charloc == warning.getCharloc());
+        // System.out.println(this.charloc + " - " + warning.getCharloc());
+        // System.out.println(this.phase.message.equals(warning.getPhase()));
+        // System.out.println("---");
+        return this.code.equals(warning.getCode())
+                && this.message.equals(warning.getMessage())
+                && this.line == warning.getLine()
+                && this.charloc == warning.getCharloc()
+                && this.phase.message.equals(warning.getPhase());
     }
 
     @Override
@@ -63,17 +83,66 @@ public class Warning {
         return sb.toString();
     }
 
-    /**
-     *
-     * @return the phase of the error
-     */
-    private String getPhase() {
-        return this.phase.message;
-    }
-
     private void setMessage() {
         if (this.code != WarningCode.CUSTOM) {
             this.message = this.code.message;
         }
+    }
+
+    public boolean toggleColors() {
+        this.withColor = !this.withColor;
+        return this.withColor;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public WarningCode getCode() {
+        return code;
+    }
+
+    public void setCode(WarningCode code) {
+        this.code = code;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
+    }
+
+    public int getCharloc() {
+        return charloc;
+    }
+
+    public void setCharloc(int charloc) {
+        this.charloc = charloc;
+    }
+
+    public String getPhase() {
+        return phase.message;
+    }
+
+    public void setPhase(Phase phase) {
+        this.phase = phase;
+    }
+
+    public boolean isWithColor() {
+        return withColor;
+    }
+
+    public void setWithColor(boolean withColor) {
+        this.withColor = withColor;
     }
 }

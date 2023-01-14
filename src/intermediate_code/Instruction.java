@@ -61,6 +61,7 @@ public class Instruction {
         switch (operation.name()) {
             case "GOTO":
             case "PMB":
+            case "RETURN":
                 return operation.name() + " " + dest;
             case "SKIP":
                 return dest + ": " + operation.name();
@@ -70,9 +71,6 @@ public class Instruction {
             case "IN_BOL":
                 return dest + " = " + operation.name();
             case "ASSIGN":
-                if (op2 != null) {
-                    return dest + " = " + op1 + "[" + op2 + "]";
-                }
                 return dest + " = " + op1;
             case "ADD":
                 return dest + " = " + op1 + " + " + op2;
@@ -92,12 +90,12 @@ public class Instruction {
                 return dest + " = " + op1 + " < " + op2;
             case "EQUAL":
                 return dest + " = " + op1 + " == " + op2;
-            case "RETURN":
-                return operation.name() + " " + dest;
             case "CALL":
                 return dest + " = " + operation.name() + " " + op1;
             case "INDEXED_ASSIGN":
                 return dest + "[" + op1 + "] = " + op2;
+            case "INDEXED_VALUE":
+                return dest + " = " + op1 + "[" + op2 + "]";
             case "IF":
                 return "IF " + op1 + " == true GOTO " + dest;
             case "OUT":

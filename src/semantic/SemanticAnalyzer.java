@@ -8,6 +8,8 @@ import symbol_table.StructureType;
 import symbol_table.Symbol;
 import symbol_table.SymbolTable;
 import utils.Phase;
+import warnings.WarningCode;
+import warnings.WarningHandler;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -189,6 +191,16 @@ public class SemanticAnalyzer {
                 }
                 break;
             case "A_Tuple":
+                if (st.getSymbol(value.getaTuple().getId().getValue()).getStructureType()
+                        .equals(StructureType.PARAMETER)) {
+                    // WARNING: parameter not known at compile time, results may differ
+                    WarningHandler.addWarning(WarningCode.VARIABLE_CONTENT_NOT_KNOWN_AT_COMPILE_TIME,
+                            exp.getLine(),
+                            exp.getColumn(),
+                            Phase.SEMANTIC);
+                    type = StructureReturnType.INT_OR_BOOL;
+                    break;
+                }
                 Symbol symbolNTupleArg = st.getNTupleArgument(value.getaTuple().getId().getValue(),
                         value.getaTuple().getAccess().getValue());
                 if (symbolNTupleArg == null) {
@@ -255,8 +267,16 @@ public class SemanticAnalyzer {
 
         }
         StructureReturnType returnNextExpresion = checkExpresion(exp.getNextExpresion());
-        if (returnNextExpresion != type) {
-            return null;
+        if (type.equals(StructureReturnType.INT_OR_BOOL)) {
+            type = returnNextExpresion;
+        } else {
+            if (returnNextExpresion.equals(StructureReturnType.INT_OR_BOOL)) {
+                returnNextExpresion = type;
+            } else {
+                if (returnNextExpresion != type) {
+                    return null;
+                }
+            }
         }
 
         if (type.equals(StructureReturnType.INT) && returnNextExpresion.equals(StructureReturnType.INT)) {
@@ -409,6 +429,27 @@ public class SemanticAnalyzer {
     }
 
     /**
+     * Checkea la expresion pasada para el retorno de una funcion. Devuelve el
+     * StructureReturnType o null en caso que falle
+     *
+     * @param e
+     * @returns StructureReturnType | null
+     */
+    public StructureReturnType checkReturnValue(Expresion e) {
+        if (e.getValue().getCurrentInstance().equals("Tuple") && e.getOp() == null && e.getNextExpresion() == null) {
+            // ERROR: cannot return tuple primitive, create a variable
+            ErrorHandler.addError(ErrorCode.CANNOT_RETURN_TUPLE_PRIMITIVE,
+                    e.getLine(),
+                    e.getColumn(),
+                    Phase.SEMANTIC);
+            return null;
+        }
+
+        return this.checkExpresion(e);
+
+    }
+
+    /**
      * Verifica que el tipo de retorno sea correcto. Comprueba que el tipo de
      * retorno sea el mismo que el de la función.
      *
@@ -426,6 +467,11 @@ public class SemanticAnalyzer {
             symbol = st.getTs().get(i);
             if (symbol.getStructureType().equals(StructureType.RETURN)) {
                 nReturns++;
+                StructureReturnType symbolReturn = symbol.getStructureReturnType();
+                if (symbolReturn == null) {
+                    // ERROR is handled outside
+                    return;
+                }
                 if (!symbol.getStructureReturnType().equals(frt)) {
                     // ERROR RETURN TYPE DOES NOT MATCH
                     ErrorHandler.addError(ErrorCode.RETURN_VALUE_DOES_NOT_MATCH,

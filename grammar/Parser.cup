@@ -11,6 +11,8 @@ import core.*;
 import core.Number;
 import errors.ErrorHandler;
 import errors.ErrorCode;
+import warnings.WarningCode;
+import warnings.WarningHandler;
 import utils.Phase;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,156 +50,197 @@ parser code {:
 
     private boolean addTupleContentstoST(Asignation assig){
 
-        if(assig.getExpresion().getOp() != null || assig.getExpresion().getNextExpresion() != null){
-            // ERROR -> only allowed to set tuples alone
-            ErrorHandler.addError(ErrorCode.SET_TUPLES_ONLY_ALONE,
-            assig.getExpresion().getLine(),
-            assig.getExpresion().getColumn(),
-            Phase.SEMANTIC);
-        }
-        L_Args tupCont = assig.getExpresion().getValue().getTuple().getTupleContent();
+    if (assig.getExpresion().getOp() != null || assig.getExpresion().getNextExpresion() != null) {
+      // ERROR -> only allowed to set tuples alone
+      ErrorHandler.addError(ErrorCode.SET_TUPLES_ONLY_ALONE,
+          assig.getExpresion().getLine(),
+          assig.getExpresion().getColumn(),
+          Phase.SEMANTIC);
+    }
+    // Revisamos que la asignación de la tupla sea un id
+    if (!assig.getExpresion().getValue().getCurrentInstance().equals("Tuple")) {
+      // Revisar que el id sea una tupla
+      // ERROR: asignation of non tuple value to tuple variable
+      // ErrorHandler.addError(ErrorCode.INVALID_ASIGNATION_OF_TUPLE,
+      //     assig.getExpresion().getLine(),
+      //     assig.getExpresion().getColumn(),
+      //     Phase.SEMANTIC);
+      return false;
 
-        ArrayList<Symbol> content = new ArrayList<>();
+    }
+    ArrayList<Symbol> content = new ArrayList<>();
+    L_Args tupCont = assig.getExpresion().getValue().getTuple().getTupleContent();
 
-        for (L_Args arg = tupCont; arg != null; arg = arg.getNextArg()) {
-            Value value = arg.getArg().getValue();
+    for (L_Args arg = tupCont; arg != null; arg = arg.getNextArg()) {
+      Value value = arg.getArg().getValue();
 
-            switch(value.getCurrentInstance()){
-                case "Number": // int
-                    content.add(new Symbol("Number" + value.getNumber().getLine() + "_" + value.getNumber().getColumn(), StructureType.VALUE, StructureReturnType.INT, null, false, true , value.getNumber().getLine()));
-                    break;
-                case "Bol":
-                    content.add(new Symbol("BOL" + value.getBol().getLine() + "_" + value.getBol().getColumn(), StructureType.VALUE, StructureReturnType.BOOL, null, false, true, value.getBol().getLine()));
-                    break;
-                case "Id": // ts -> type
-                    // SEMANTIC -> check id returns Structure type
-                    StructureReturnType idReturnType = sem.checkId(value.getId());
-                    if (idReturnType == null){
-                        // ERROR -> ID NOT DECLARED
-                        ErrorHandler.addError(ErrorCode.ID_NOT_DECLARED_OR_NOT_FOUND,
-                        value.getId().getLine(),
-                        value.getId().getColumn(),
-                        Phase.SEMANTIC);
-                        return false;
-                    }
-                    if(idReturnType.equals(StructureReturnType.TUP)){
-                        ErrorHandler.addError(ErrorCode.SET_TUPLES_ONLY_ALONE,
-                        assig.getExpresion().getLine(),
-                        assig.getExpresion().getColumn(),
-                        Phase.SEMANTIC);
-                        return false;
-                    }
-                    content.add(new Symbol(value.getId().getValue(), StructureType.VALUE, idReturnType, null, false, true, value.getId().getLine()));
-                    break;
-                case "A_Tuple": // ts -> check if the index exists
-                    // Debido a que se ha tenido que crear la tupla, sabemos que los
-                    //elementos de esta son "legales" y por lo tanto solo tenemos que
-                    // revisar si existe tal parametro
-                    Symbol nTupleArg = st.getNTupleArgument(value.getaTuple().getId().getValue(), value.getaTuple().getAccess().getValue());
-                    if (nTupleArg == null){ // No existe tal parametro -> error
-                        ErrorHandler.addError(ErrorCode.TUPLE_INDEX_OUT_OF_BOUNDS,
-                        value.getaTuple().getLine(),
-                        value.getaTuple().getColumn(),
-                        Phase.SEMANTIC);
-                        return false;
-                    }
-                    content.add(new Symbol(nTupleArg.getName(), StructureType.VALUE, nTupleArg.getStructureReturnType(), null, false, true, value.getaTuple().getLine()));
-                    break;
-                case "Input": // input -> type
-                    String inputType = value.getInput().getType() == 0 ? "int" : "bol";
-                    if(inputType.equals("int")){
-                        content.add(new Symbol("Input" + inputType + value.getInput().getLine() + "_" + value.getInput().getColumn(), StructureType.VALUE, StructureReturnType.INT, null, false, true, value.getInput().getLine()));
-                    }else{
-                        content.add(new Symbol("Input" + inputType + value.getInput().getLine() + "_" + value.getInput().getColumn(), StructureType.VALUE, StructureReturnType.BOOL, null, false, true, value.getInput().getLine()));
-                    }
-                    break;
-                case "Expresion": // sem -> checkExp
-                    StructureReturnType returnedExpresionType = sem.checkExpresion(value.getExpresion());
-                    if(returnedExpresionType == null){
-                        //ERROR EXPRESION IS MALFORMED
-                        ErrorHandler.addError(ErrorCode.MALFORMED_EXPRESSION,
-                        value.getExpresion().getLine(),
-                        value.getExpresion().getColumn(),
-                        Phase.SEMANTIC);
-                        return false;
-                    }
-                    switch(returnedExpresionType.name()){
-                        case "INT":
-                            content.add(new Symbol("Expresion" + value.getExpresion().getLine() + "_" + value.getExpresion().getColumn(), StructureType.VALUE, StructureReturnType.INT, null, false, true, value.getExpresion().getLine()));
-                            break;
-                        case "BOOL":
-                            content.add(new Symbol("Expresion" + value.getExpresion().getLine() + "_" + value.getExpresion().getColumn(), StructureType.VALUE, StructureReturnType.BOOL, null, false, true, value.getExpresion().getLine()));
-                            break;
-                        case "TUP":
-                            content.add(new Symbol("Expresion" + value.getExpresion().getLine() + "_" + value.getExpresion().getColumn(), StructureType.VALUE, StructureReturnType.TUP, null, false, true, value.getExpresion().getLine()));
-                            break;
-                        default:
-                        // ERROR UNSUPORTED EXPRESION TYPE
-                            ErrorHandler.addError(ErrorCode.UNSUPPORTED_EXPRESSION_TYPE,
-                            value.getExpresion().getLine(),
-                            value.getExpresion().getColumn(),
-                            Phase.SEMANTIC);
-                            return false;
-                    }
-                    break;
-                case "Tuple": // Error
-                    // We don't allow tuples inside tuples
-                    ErrorHandler.addError(ErrorCode.TUPLE_CAN_NOT_CONTAIN_TUPLE,
-                    arg.getArg().getValue().getTuple().getLine(),
-                    arg.getArg().getValue().getTuple().getColumn(),
-                    Phase.SEMANTIC);
-                    return false;
-                case "CallFn":
-                    // Revisar si existe el Id
-                    Symbol fn = st.getFunction(value.getCallFn().getId().getValue());
-                    if (fn == null){
-                        ErrorHandler.addError(ErrorCode.UNDECLARED_FUNCTION,
-                        value.getCallFn().getLine(),
-                        value.getCallFn().getColumn(),
-                        Phase.SEMANTIC);
-                        return false;
-                    }
-                    // comprobar el tipo de return de la función
-                    if (fn.getStructureReturnType() == StructureReturnType.TUP){
-                        //   si retorna tuple -> error
-                        ErrorHandler.addError(ErrorCode.RETURN_TYPE_TUPLE_IN_TUPLE,
-                        value.getCallFn().getLine(),
-                        value.getCallFn().getColumn(),
-                        Phase.SEMANTIC);
-                        return false;
-                    }
-                    if(!sem.checkCallFArgs(value.getCallFn())){
-                        return false;
-                    }
-                    content.add(new Symbol("CallFn" + value.getCallFn().getId() + value.getCallFn().getLine() + "_" + value.getCallFn().getColumn(), StructureType.VALUE, fn.getStructureReturnType(), null, false, true, value.getCallFn().getLine()));
-                    break;
-                default:
-                    // ERROR -> unsupported element
-                    ErrorHandler.addError(ErrorCode.UNSUPPORTED_ELEMENT,
-                    value.getNumber().getLine(),
-                    value.getNumber().getColumn(),
-                    Phase.SEMANTIC);
-                    return false;
-            }
-
-
-        }
-        // Coger todos los ids
-        for(L_Ids l_ids = assig.getL_Ids(); l_ids != null;  l_ids = l_ids.nextId()){
-            Symbol symbol = st.getSymbol(l_ids.getId());
-            if (symbol == null){
-                // ERROR -> variable not declared
-                ErrorHandler.addError(ErrorCode.UNDECLARED_VARIABLE,
-                l_ids.getLine(),
-                l_ids.getColumn(),
+      switch (value.getCurrentInstance()) {
+        case "Number": // int
+          content.add(new Symbol("Number" + value.getNumber().getLine() + "_" + value.getNumber().getColumn(),
+              StructureType.VALUE, StructureReturnType.INT, null, false, true, value.getNumber().getLine()));
+          break;
+        case "Bol":
+          content.add(new Symbol("BOL" + value.getBol().getLine() + "_" + value.getBol().getColumn(),
+              StructureType.VALUE, StructureReturnType.BOOL, null, false, true, value.getBol().getLine()));
+          break;
+        case "Id": // ts -> type
+          // SEMANTIC -> check id returns Structure type
+          StructureReturnType idReturnType = sem.checkId(value.getId());
+          if (idReturnType == null) {
+            // ERROR -> ID NOT DECLARED
+            ErrorHandler.addError(ErrorCode.ID_NOT_DECLARED_OR_NOT_FOUND,
+                value.getId().getLine(),
+                value.getId().getColumn(),
                 Phase.SEMANTIC);
-                return false;
-            }
-            // Una vez encontrado, usar setContent para poner el contenido respectico a la tupla
-            symbol.setContent(content);
-        }
+            return false;
+          }
+          if (idReturnType.equals(StructureReturnType.TUP)) {
+            ErrorHandler.addError(ErrorCode.SET_TUPLES_ONLY_ALONE,
+                assig.getExpresion().getLine(),
+                assig.getExpresion().getColumn(),
+                Phase.SEMANTIC);
+            return false;
+          }
+          content.add(new Symbol(value.getId().getValue(), StructureType.VALUE, idReturnType, null, false, true,
+              value.getId().getLine()));
+          break;
+        case "A_Tuple": // ts -> check if the index exists
+          // Debido a que se ha tenido que crear la tupla, sabemos que los
+          // elementos de esta son "legales" y por lo tanto solo tenemos que
+          // revisar si existe tal parametro
+          if (st.getSymbol(value.getaTuple().getId().getValue()).getStructureType()
+                  .equals(StructureType.PARAMETER)) {
+              // WARNING: parameter not known at compile time, results may differ
+              WarningHandler.addWarning(WarningCode.VARIABLE_CONTENT_NOT_KNOWN_AT_COMPILE_TIME,
+                      value.getaTuple().getId().getLine(),
+                      value.getaTuple().getId().getColumn(),
+                      Phase.SEMANTIC);
+              break;
+          }
+          Symbol nTupleArg = st.getNTupleArgument(value.getaTuple().getId().getValue(),
+              value.getaTuple().getAccess().getValue());
+          if (nTupleArg == null) { // No existe tal parametro -> error
+            ErrorHandler.addError(ErrorCode.TUPLE_INDEX_OUT_OF_BOUNDS,
+                value.getaTuple().getLine(),
+                value.getaTuple().getColumn(),
+                Phase.SEMANTIC);
+            return false;
+          }
+          content.add(new Symbol(nTupleArg.getName(), StructureType.VALUE, nTupleArg.getStructureReturnType(), null,
+              false, true, value.getaTuple().getLine()));
+          break;
+        case "Input": // input -> type
+          String inputType = value.getInput().getType() == 0 ? "int" : "bol";
+          if (inputType.equals("int")) {
+            content
+                .add(new Symbol("Input" + inputType + value.getInput().getLine() + "_" + value.getInput().getColumn(),
+                    StructureType.VALUE, StructureReturnType.INT, null, false, true, value.getInput().getLine()));
+          } else {
+            content
+                .add(new Symbol("Input" + inputType + value.getInput().getLine() + "_" + value.getInput().getColumn(),
+                    StructureType.VALUE, StructureReturnType.BOOL, null, false, true, value.getInput().getLine()));
+          }
+          break;
+        case "Expresion": // sem -> checkExp
+          StructureReturnType returnedExpresionType = sem.checkExpresion(value.getExpresion());
+          if (returnedExpresionType == null) {
+            // ERROR EXPRESION IS MALFORMED
+            ErrorHandler.addError(ErrorCode.MALFORMED_EXPRESSION,
+                value.getExpresion().getLine(),
+                value.getExpresion().getColumn(),
+                Phase.SEMANTIC);
+            return false;
+          }
+          switch (returnedExpresionType.name()) {
+            case "INT":
+              content
+                  .add(new Symbol(
+                      "Expresion" + value.getExpresion().getLine() + "_" + value.getExpresion().getColumn(),
+                      StructureType.VALUE, StructureReturnType.INT, null, false, true,
+                      value.getExpresion().getLine()));
+              break;
+            case "BOOL":
+              content.add(new Symbol(
+                  "Expresion" + value.getExpresion().getLine() + "_" + value.getExpresion().getColumn(),
+                  StructureType.VALUE, StructureReturnType.BOOL, null, false, true, value.getExpresion().getLine()));
+              break;
+            case "TUP":
+              content
+                  .add(new Symbol(
+                      "Expresion" + value.getExpresion().getLine() + "_" + value.getExpresion().getColumn(),
+                      StructureType.VALUE, StructureReturnType.TUP, null, false, true,
+                      value.getExpresion().getLine()));
+              break;
+            default:
+              // ERROR UNSUPORTED EXPRESION TYPE
+              ErrorHandler.addError(ErrorCode.UNSUPPORTED_EXPRESSION_TYPE,
+                  value.getExpresion().getLine(),
+                  value.getExpresion().getColumn(),
+                  Phase.SEMANTIC);
+              return false;
+          }
+          break;
+        case "Tuple": // Error
+          // We don't allow tuples inside tuples
+          ErrorHandler.addError(ErrorCode.TUPLE_CAN_NOT_CONTAIN_TUPLE,
+              arg.getArg().getValue().getTuple().getLine(),
+              arg.getArg().getValue().getTuple().getColumn(),
+              Phase.SEMANTIC);
+          return false;
+        case "CallFn":
+          // Revisar si existe el Id
+          Symbol fn = st.getFunction(value.getCallFn().getId().getValue());
+          if (fn == null) {
+            ErrorHandler.addError(ErrorCode.UNDECLARED_FUNCTION,
+                value.getCallFn().getLine(),
+                value.getCallFn().getColumn(),
+                Phase.SEMANTIC);
+            return false;
+          }
+          // comprobar el tipo de return de la función
+          if (fn.getStructureReturnType() == StructureReturnType.TUP) {
+            // si retorna tuple -> error
+            ErrorHandler.addError(ErrorCode.RETURN_TYPE_TUPLE_IN_TUPLE,
+                value.getCallFn().getLine(),
+                value.getCallFn().getColumn(),
+                Phase.SEMANTIC);
+            return false;
+          }
+          if (!sem.checkCallFArgs(value.getCallFn())) {
+            return false;
+          }
+          content.add(new Symbol(
+              "CallFn" + value.getCallFn().getId() + value.getCallFn().getLine() + "_"
+                  + value.getCallFn().getColumn(),
+              StructureType.VALUE, fn.getStructureReturnType(), null, false, true, value.getCallFn().getLine()));
+          break;
+        default:
+          // ERROR -> unsupported element
+          ErrorHandler.addError(ErrorCode.UNSUPPORTED_ELEMENT,
+              value.getNumber().getLine(),
+              value.getNumber().getColumn(),
+              Phase.SEMANTIC);
+          return false;
+      }
+    }
 
-        return true;
+    // Coger todos los ids
+    for (L_Ids l_ids = assig.getL_Ids(); l_ids != null; l_ids = l_ids.nextId()) {
+      Symbol symbol = st.getSymbol(l_ids.getId());
+      if (symbol == null) {
+        // ERROR -> variable not declared
+        ErrorHandler.addError(ErrorCode.UNDECLARED_VARIABLE,
+            l_ids.getLine(),
+            l_ids.getColumn(),
+            Phase.SEMANTIC);
+        return false;
+      }
+      // Una vez encontrado, usar setContent para poner el contenido respectico a la
+      // tupla
+      symbol.setContent(content);
+    }
+
+    return true;
     }
 
         /**
@@ -446,7 +489,7 @@ R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY      
                 |   CALLF:fn SEMICOLON                                                              {: RESULT = new Instr(fn, fnleft , fnright); :}
                 |   RETURN EXPRESION:e SEMICOLON
                     {:
-                        st.addSymbol(new Symbol("Return" + eleft + "_" + eright, StructureType.RETURN, sem.checkExpresion(e), null, false, false, eleft));
+                        st.addSymbol(new Symbol("Return" + eleft + "_" + eright, StructureType.RETURN, sem.checkReturnValue(e), null, false, false, eleft));
                         RESULT = new Instr(new ReturnNode(e, eleft , eright), cur_token.left , cur_token.right);
                     :}
                 ;

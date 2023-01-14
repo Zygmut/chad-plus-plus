@@ -1,13 +1,21 @@
-alpha int test1(int p1){
-  int p = p1;
+$
+alpha tup test1(tup a){
+  tup tlp = [1, 2];
   BEGIN
-  return p;
+  tlp = a;
+  return tlp;
+}
+$
+alpha tup test1(){
+  tup tlp = [1, 2];
+  BEGIN
+  return tlp;
 }
 
 main {
-  int val = 0;
-  int p1 = 5;
+  tup vals = [0, 1, 2];
   BEGIN
-  val = test1(p1);
-  output(val);
+#  vals = test1(vals);
+  vals = test1();
+  output(vals);
 }

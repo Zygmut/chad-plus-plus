@@ -63,6 +63,11 @@ public class MainChpp {
         // Lexer
         Scanner scanner = new Scanner(input);
 
+        if (WarningHandler.hasWarnings()) {
+            WarningHandler.printWarnings();
+            saveTable(WarningHandler.getWarningString(), "Warnings.txt");
+        }
+
         if (ErrorHandler.hasErrors()) {
             ErrorHandler.printErrors();
             saveTable(ErrorHandler.getErrorsString(), "Errores.txt");
@@ -89,6 +94,11 @@ public class MainChpp {
             }
         }
 
+        if (WarningHandler.hasWarnings()) {
+            WarningHandler.printWarnings();
+            saveTable(WarningHandler.getWarningString(), "Warnings.txt");
+        }
+
         if (ErrorHandler.hasErrors()) {
             ErrorHandler.printErrors();
             saveTable(ErrorHandler.getErrorsString(), "Errores.txt");
@@ -105,7 +115,7 @@ public class MainChpp {
             saveTable(c3d.getTvString(), "TablaVariables.txt");
 
             // ASM
-            Assembly asm = new Assembly(c3d);
+            Assembly asm = new Assembly(c3d, parser.getSymbolTable());
             asm.generateAssemblyCode();
             asm.saveAssemblyCode(Env.FILE_DATA.getFileName() + ".x68");
         } catch (Exception e) {
@@ -114,6 +124,9 @@ public class MainChpp {
                 System.exit(0);
             }
         }
+
+        WarningHandler.printWarnings();
+        saveTable(WarningHandler.getWarningString(), "Warnings.txt");
 
         ErrorHandler.printErrors();
         saveTable(ErrorHandler.getErrorsString(), "Errores.txt");

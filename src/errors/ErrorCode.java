@@ -53,7 +53,8 @@ public enum ErrorCode {
     DUPLICATED_VARIABLE("This variable has been declared previously."),
     DUPLICATED_FUNCTION("This function has been declared previously."),
     EXPRESION_MUST_BE_ARITHMETIC("Expresion must return an arithmetic value."),
-    EXPRESION_MUST_BE_LOGICAL("Expresion must return a logical value.");
+    EXPRESION_MUST_BE_LOGICAL("Expresion must return a logical value."),
+    CANNOT_RETURN_TUPLE_PRIMITIVE("Cannot return tuple primitive, create a variable");
 
     public String message;
 

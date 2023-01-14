@@ -24,6 +24,11 @@ public class WarningHandler {
      */
     public static void addWarning(Warning warning) {
         if (!Env.TEST_MODE) {
+            for (Warning war : warnings) {
+                if (war.equals(warning)) {
+                    return;
+                }
+            }
             warnings.add(warning);
         }
     }
@@ -37,7 +42,13 @@ public class WarningHandler {
      */
     public static void addWarning(WarningCode code, int line, Phase phase) {
         if (!Env.TEST_MODE) {
-            warnings.add(new Warning(code, line, phase));
+            Warning warning = new Warning(code, line, phase);
+            for (Warning war : warnings) {
+                if (war.equals(warning)) {
+                    return;
+                }
+            }
+            warnings.add(warning);
         }
     }
 
@@ -51,7 +62,14 @@ public class WarningHandler {
      */
     public static void addWarning(WarningCode code, int line, int charloc, Phase phase) {
         if (!Env.TEST_MODE) {
-            warnings.add(new Warning(code, line, charloc, phase));
+            Warning warning = new Warning(code, line, charloc, phase);
+            for (Warning war : warnings) {
+                if (war.equals(warning)) {
+                    return;
+                }
+            }
+
+            warnings.add(warning);
         }
     }
 
@@ -65,7 +83,14 @@ public class WarningHandler {
      */
     public static void addWarning(String message, int line, int charloc, Phase phase) {
         if (!Env.TEST_MODE) {
-            warnings.add(new Warning(message, line, charloc, phase));
+            Warning warning = new Warning(message, line, charloc, phase);
+            for (Warning war : warnings) {
+                if (warning.equals(war)) {
+                    return;
+                }
+            }
+
+            warnings.add(warning);
         }
     }
 
@@ -93,8 +118,18 @@ public class WarningHandler {
      *
      * @return ArrayList<Warning>
      */
-    public static ArrayList<Warning> geWarnings() {
+    public static ArrayList<Warning> getWarnings() {
         return warnings;
+    }
+
+    public static String getWarningString() {
+        String s = "";
+        for (Warning warning : warnings) {
+            warning.toggleColors();
+            s += warning.toString() + "\n";
+            warning.toggleColors();
+        }
+        return s;
     }
 
 }
