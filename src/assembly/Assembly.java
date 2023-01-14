@@ -50,6 +50,8 @@ public class Assembly {
         assemblyCode.add("; -----------------------------------------------------------------------------");
         assemblyCode.add("; PROGRAM CONSTANTS AND VARIABLES");
         assemblyCode.add("; -----------------------------------------------------------------------------");
+        assemblyCode.add("CR\tEQU\t$0D");
+        assemblyCode.add("LF\tEQU\t$0A");
         for (Variable var : this.threeAddressCode.getTv()) {
             assemblyCode.add(var.getId() + "\tDS.W\t" + 1);
         }
@@ -88,8 +90,11 @@ public class Assembly {
         assemblyCode.add("\tCLR.L\tD0\t; CLEAR D0");
         assemblyCode.add("\tMOVE.W\t#3,D0\t; PRINT_INT");
         assemblyCode.add("\tTRAP\t#15\t; PRINT_INT CALL TO OS");
+        assemblyCode.add("\tLEA\t.NW_LN,A1\t; NEW LINE");
+        assemblyCode.add("\tJSR\tPRINT_STRING\t; PRINT NEW LINE");
         assemblyCode.add("\tMOVE.W\t(A7)+,D0\t; RESTORE D0");
         assemblyCode.add("\tRTS\t; RETURN FROM SUBROUTINE");
+        assemblyCode.add(".NW_LN\tDC.B\t' ',0");
         // PRINT_STRING
         assemblyCode.add("; -----------------------------------------------------------------------------");
         assemblyCode.add("PRINT_STRING");
@@ -99,7 +104,7 @@ public class Assembly {
         assemblyCode.add("; -----------------------------------------------------------------------------");
         assemblyCode.add("\tMOVE.W\tD0,-(A7)\t; SAVE D0");
         assemblyCode.add("\tCLR.L\tD0\t; CLEAR D0");
-        assemblyCode.add("\tMOVE.W\t#14,D0\t; PRINT_STRING");
+        assemblyCode.add("\tMOVE.W\t#13,D0\t; PRINT_STRING");
         assemblyCode.add("\tTRAP\t#15\t; PRINT_STRING CALL TO OS");
         assemblyCode.add("\tMOVE.W\t(A7)+,D0\t; RESTORE D0");
         assemblyCode.add("\tRTS\t; RETURN FROM SUBROUTINE");
