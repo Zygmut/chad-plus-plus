@@ -1,0 +1,11 @@
+alpha tup test_tup(tup c) {
+    return c;
+}
+
+main {
+    tup a = [1, 2];
+    tup b = [3];
+    BEGIN
+    b = test_tup(a);
+    output(b);
+}

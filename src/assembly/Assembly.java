@@ -77,11 +77,14 @@ public class Assembly {
         assemblyCode.add("; -----------------------------------------------------------------------------");
         assemblyCode.add("CR\tEQU\t$0D");
         assemblyCode.add("LF\tEQU\t$0A");
-        this.tupSize = getMaxSizeOfTuple() * 2;
+        this.tupSize = 1;
+        calcMaxTupSize();
+        this.tupSize *= 2;
         assemblyCode.add("TPSZ\tEQU\t" + tupSize);
         for (Variable var : this.threeAddressCode.getTv()) {
             if (var.getType().equals(TypeVar.TUP)) {
                 assemblyCode.add(var.getId() + "\tDS.W\tTPSZ");
+
             } else {
                 assemblyCode.add(var.getId() + "\tDS.W\t1");
             }
@@ -90,10 +93,9 @@ public class Assembly {
         assemblyCode.add("; -----------------------------------------------------------------------------");
     }
 
-    private int getMaxSizeOfTuple() {
-        int size = 1;
+    private void calcMaxTupSize() {
         for (Variable var : this.threeAddressCode.getTv()) {
-            if (var.getType().equals(TypeVar.TUP) && !var.isVolatile()) {
+            if (var.getType().equals(TypeVar.TUP) && !var.isVolatile()) { // Get max tup size
                 String[] splitName = var.getId().split("_");
                 int access = Integer.parseInt(splitName[splitName.length - 1]);
                 String id = splitName[0];
@@ -104,11 +106,13 @@ public class Assembly {
                 }
                 ArrayList<Symbol> contenido = this.symbolTable.searchSymbolAtAccess(access, id).getContent();
                 if (contenido != null) {
-                    size = contenido.size();
+                    int newTupSize = contenido.size();
+                    if (newTupSize > this.tupSize) {
+                        this.tupSize = newTupSize;
+                    }
                 }
             }
         }
-        return size;
     }
 
     private void assemblyCode() {
@@ -341,6 +345,15 @@ public class Assembly {
         }
     }
 
+    private boolean isTup(String v) {
+        for (Variable var : this.threeAddressCode.getTv()) {
+            if (v.equals(var.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void input(Instruction ins) {
         Variable dest = this.threeAddressCode.findVarById(ins.getDest());
         if (dest.getType().equals(TypeVar.INT)) {
@@ -355,13 +368,23 @@ public class Assembly {
     private void output(Instruction ins) {
         // Dependiendo del tipo (INT o BOL) se llama a printInt o printBol
         // String A1 | Int D1
-        if (this.threeAddressCode.findVarById(ins.getOp1()).getType().equals(TypeVar.INT)) {
-            assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D1");
-            assemblyCode.add("\tJSR\tPRINT_INT");
+        if (isTup(ins.getOp1())) {
+            // TODO:
+            //  - Mirar como hacer para printear los elementos de una tupla bool como str y no como int
+            //  - Mirar de no printear los huecos vacios de la tupla reservada
+            for (int i = 0; i < this.tupSize; i++) {
+                assemblyCode.add("\tMOVE.W\t(" + ins.getOp1() + "+" + (i * 2) + "),D1");
+                assemblyCode.add("\tJSR\tPRINT_INT");
+            }
         } else {
-            assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D1");
-            assemblyCode.add("\tJSR\tBOOLEAN_TO_STRING");
-            assemblyCode.add("\tJSR\tPRINT_STRING");
+            if (this.threeAddressCode.findVarById(ins.getOp1()).getType().equals(TypeVar.INT)) {
+                assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D1");
+                assemblyCode.add("\tJSR\tPRINT_INT");
+            } else {
+                assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D1");
+                assemblyCode.add("\tJSR\tBOOLEAN_TO_STRING");
+                assemblyCode.add("\tJSR\tPRINT_STRING");
+            }
         }
     }
 
@@ -433,7 +456,16 @@ public class Assembly {
         if (this.threeAddressCode.findVarById(ins.getOp1()) == null) {
             var1 = "#" + var1;
         }
-        assemblyCode.add("\tMOVE.W\t" + var1 + "," + ins.getDest());
+        String dest = ins.getDest();
+        if (isTup(var1) && isTup(dest)) {
+            for (int i = 0; i < this.tupSize; i++) {
+                String op1 = "(" + var1 + "+" + (i * 2) + "),";
+                String op2 = "(" + dest + "+" + (i * 2) + ")";
+                assemblyCode.add("\tMOVE.W\t" + op1 + op2);
+            }
+        } else {
+            assemblyCode.add("\tMOVE.W\t" + var1 + "," + ins.getDest());
+        }
     }
 
     private void param(Instruction ins) {
@@ -479,6 +511,11 @@ public class Assembly {
         }
         // Vaciar pila dependiendo del núm de params
         int paramsSize = prod.getParameters().size();
+        for (Variable param : prod.getParameters()) {
+            if (param.getType().equals(TypeVar.TUP)) {
+                paramsSize -= 1;
+            }
+        }
         if (paramsSize > 0) {
             assemblyCode.add("\tADDA.L\t#" + paramsSize * 2 + ",A7");
         }
@@ -487,20 +524,38 @@ public class Assembly {
     private void returnSubroutine(Instruction ins) {
         String dest = ins.getDest();
         if (dest != null) {
-            assemblyCode.add("\tMOVE.W\t" + dest + ",4(A7)");
+            if (isTup(dest)) {
+                for (int i = 0; i < this.tupSize; i++) {
+                    String op1 = "(" + dest + "+" + (i * 2) + "),";
+                    String op2 = ((i * 2) + 4) + "(A7)";
+                    assemblyCode.add("\tMOVE.W\t" + op1 + op2);
+                }
+            } else {
+                assemblyCode.add("\tMOVE.W\t" + dest + ",4(A7)");
+            }
         }
         assemblyCode.add("\tRTS");
     }
 
     private void pmb(Instruction ins) {
-        String prodName = ins.getDest().split("_")[1];
+        String[] splitProdName = ins.getDest().split("_");
+        String prodName = splitProdName[1];
+        if (splitProdName.length != 2) {
+            for (int i = 2; i < splitProdName.length; i++) {
+                prodName += "_" + splitProdName[i];
+            }
+        }
         Procedimiento prod = this.threeAddressCode.getProcedimiento(prodName);
         assert prod != null;
         ArrayList<Variable> params = prod.getParameters();
         // Save rts dir
         assemblyCode.add("\tMOVE.L\t(A7)+,D7");
         if (prod.getReturnType() != StructureReturnType.VOID) {
-            assemblyCode.add("\tMOVE.W\t(A7)+,D6");
+            if (prod.getReturnType().equals(StructureReturnType.TUP)) {
+                assemblyCode.add("\tADDA.L\t#TPSZ,A7");
+            } else {
+                assemblyCode.add("\tMOVE.W\t(A7)+,D6");
+            }
         }
         if (params != null) {
             for (Variable param : params) {
@@ -520,7 +575,11 @@ public class Assembly {
                 }
             }
             if (prod.getReturnType() != StructureReturnType.VOID) {
-                assemblyCode.add("\tMOVE.W\tD6,-(A7)");
+                if (prod.getReturnType().equals(StructureReturnType.TUP)) {
+                    assemblyCode.add("\tSUBA.L\t#TPSZ,A7");
+                } else {
+                    assemblyCode.add("\tMOVE.W\tD6,-(A7)");
+                }
             }
             assemblyCode.add("\tMOVE.L\tD7,-(A7)");
         }
