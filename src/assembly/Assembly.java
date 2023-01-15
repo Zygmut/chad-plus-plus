@@ -14,6 +14,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Assembly
@@ -79,22 +80,29 @@ public class Assembly {
         for (Variable var : this.threeAddressCode.getTv()) {
             int size = 1;
             if (var.getType().equals(TypeVar.TUP)) {
-                String[] varSplit = var.getId().split("_");
-                int access = 0;
-                String id = "";
-                Symbol symbol = null;
-                if (varSplit.length != 0) {
-                    // tuple_2
-                    access = Integer.parseInt(varSplit[varSplit.length - 1]);
-                    id = varSplit[0];
-                    for (int i = 0; i < varSplit.length - 2; i++) {
-                        id += "_" + varSplit[i + 1];
+                if (var.isVolatile()){
+                    // Provisional
+                    size = 10; // Reservamos un espacio de 10W
+                }else {
+                    String[] splitName = var.getId().split("_");
+                    System.out.println(Arrays.toString(splitName));
+                    int access = Integer.parseInt(splitName[splitName.length-1]);
+                    String id = splitName[0];
+                    if (splitName.length != 2){
+                        for (int i = 1; i < splitName.length - 1; i++) {
+                            System.out.println(splitName[i]);
+                            id += "_"+ splitName[i];
+                        }
                     }
-                    symbol = this.symbolTable.searchSymbolAtAccess(access, id);
-                } else {
-                    // t5
-
+                    ArrayList<Symbol> contenido = this.symbolTable.searchSymbolAtAccess(access, id).getContent();
+                    if (contenido == null){
+                       // Parametro
+                        size = 10;
+                    } else {
+                        size = contenido.size();
+                    }
                 }
+                assemblyCode.add(var.getId()+"S\tEQU\t" + size);
             }
             assemblyCode.add(var.getId() + "\tDS.W\t" + size);
         }
@@ -436,15 +444,27 @@ public class Assembly {
         // Si tiene valores de retorno guardar espacio
         Procedimiento prod = this.threeAddressCode.getProcedimiento(ins.getOp1());
         assert prod == null : "FUNCIÓN NO ENCONTRADA";
-        assert prod.getReturnType() == null : "FUNCION SIN NINGUN TIPO DE RETORNO";
         if (prod.getReturnType() != StructureReturnType.VOID) {
-            assemblyCode.add("\tSUBA.L\t#2,A7");
+            if (prod.getReturnType().equals(StructureReturnType.TUP)){
+                assemblyCode.add("\tSUBA.L\t#2,A7"); // RTS
+                assemblyCode.add("\tMOVE.W\t#0,-(A7)"); // Tam tupla
+                assemblyCode.add("\tSUBA.L\t#2,A7"); // @ tup rts
+            } else {
+                assemblyCode.add("\tSUBA.L\t#2,A7");
+            }
         }
         // Llamar subrutina
         assemblyCode.add("\tJSR\trun_" + ins.getOp1());
         // Si tiene valores de retorno recuperarlo y guardarlo donde toca
         if (prod.getReturnType() != StructureReturnType.VOID) {
-            assemblyCode.add("\tMOVE.W\t(A7)+," + ins.getDest());
+            if (prod.getReturnType().equals(StructureReturnType.TUP)){
+                assemblyCode.add("\tMOVE.W\t(A7)+,D5"); // Tam
+                assemblyCode.add("\tMOVE.L\t(A7)+,D4"); // @ tup rts
+                // TODO: Por el tamaño de retorno asignar en cada posición su valor
+                assemblyCode.add("\tMOVE.W\t(A7)+," + ins.getDest());
+            } else {
+                assemblyCode.add("\tMOVE.W\t(A7)+," + ins.getDest());
+            }
         }
         // Vaciar pila dependiendo del núm de params
         int paramsSize = prod.getParameters().size();
