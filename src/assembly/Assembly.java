@@ -14,7 +14,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Assembly
@@ -27,6 +26,7 @@ public class Assembly {
     private boolean isInputInt = false;
     private boolean isInputBoolean = false;
     private boolean isOutput = false;
+    private int tupSize = 1;
 
     public Assembly(ThreeAddressCode threeAddressCode, SymbolTable symbolTable) {
         this.threeAddressCode = threeAddressCode;
@@ -77,37 +77,38 @@ public class Assembly {
         assemblyCode.add("; -----------------------------------------------------------------------------");
         assemblyCode.add("CR\tEQU\t$0D");
         assemblyCode.add("LF\tEQU\t$0A");
+        this.tupSize = getMaxSizeOfTuple() * 2;
+        assemblyCode.add("TPSZ\tEQU\t" + tupSize);
         for (Variable var : this.threeAddressCode.getTv()) {
-            int size = 1;
             if (var.getType().equals(TypeVar.TUP)) {
-                if (var.isVolatile()){
-                    // Provisional
-                    size = 10; // Reservamos un espacio de 10W
-                }else {
-                    String[] splitName = var.getId().split("_");
-                    System.out.println(Arrays.toString(splitName));
-                    int access = Integer.parseInt(splitName[splitName.length-1]);
-                    String id = splitName[0];
-                    if (splitName.length != 2){
-                        for (int i = 1; i < splitName.length - 1; i++) {
-                            System.out.println(splitName[i]);
-                            id += "_"+ splitName[i];
-                        }
-                    }
-                    ArrayList<Symbol> contenido = this.symbolTable.searchSymbolAtAccess(access, id).getContent();
-                    if (contenido == null){
-                       // Parametro
-                        size = 10;
-                    } else {
-                        size = contenido.size();
-                    }
-                }
-                assemblyCode.add(var.getId()+"S\tEQU\t" + size);
+                assemblyCode.add(var.getId() + "\tDS.W\tTPSZ");
+            } else {
+                assemblyCode.add(var.getId() + "\tDS.W\t1");
             }
-            assemblyCode.add(var.getId() + "\tDS.W\t" + size);
         }
         assemblyCode.add("\tDS.W\t0");
         assemblyCode.add("; -----------------------------------------------------------------------------");
+    }
+
+    private int getMaxSizeOfTuple() {
+        int size = 1;
+        for (Variable var : this.threeAddressCode.getTv()) {
+            if (var.getType().equals(TypeVar.TUP) && !var.isVolatile()) {
+                String[] splitName = var.getId().split("_");
+                int access = Integer.parseInt(splitName[splitName.length - 1]);
+                String id = splitName[0];
+                if (splitName.length != 2) {
+                    for (int i = 1; i < splitName.length - 1; i++) {
+                        id += "_" + splitName[i];
+                    }
+                }
+                ArrayList<Symbol> contenido = this.symbolTable.searchSymbolAtAccess(access, id).getContent();
+                if (contenido != null) {
+                    size = contenido.size();
+                }
+            }
+        }
+        return size;
     }
 
     private void assemblyCode() {
@@ -437,31 +438,41 @@ public class Assembly {
 
     private void param(Instruction ins) {
         // int and bool = .W
-        assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",-(A7)");
+        TypeVar tp = null;
+        for (Variable var : this.threeAddressCode.getTv()) {
+            if (ins.getOp1().equals(var.getId())) {
+                tp = var.getType();
+            }
+        }
+        assert tp != null;
+        if (tp.equals(TypeVar.TUP)) {
+            for (int i = 0; i < this.tupSize; i++) {
+                assemblyCode.add("\tMOVE.W\t(" + ins.getOp1() + "+" + (i * 2) + "),-(A7)");
+            }
+        } else {
+            assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",-(A7)");
+        }
     }
 
     private void call(Instruction ins) {
         // Si tiene valores de retorno guardar espacio
         Procedimiento prod = this.threeAddressCode.getProcedimiento(ins.getOp1());
-        assert prod == null : "FUNCIÓN NO ENCONTRADA";
+        assert prod != null;
         if (prod.getReturnType() != StructureReturnType.VOID) {
-            if (prod.getReturnType().equals(StructureReturnType.TUP)){
-                assemblyCode.add("\tSUBA.L\t#2,A7"); // RTS
-                assemblyCode.add("\tMOVE.W\t#0,-(A7)"); // Tam tupla
-                assemblyCode.add("\tSUBA.L\t#2,A7"); // @ tup rts
+            if (prod.getReturnType().equals(StructureReturnType.TUP)) {
+                assemblyCode.add("\tSUBA.L\t#TPSZ,A7"); // RTS val
             } else {
-                assemblyCode.add("\tSUBA.L\t#2,A7");
+                assemblyCode.add("\tSUBA.L\t#2,A7"); // RTS val
             }
         }
         // Llamar subrutina
         assemblyCode.add("\tJSR\trun_" + ins.getOp1());
         // Si tiene valores de retorno recuperarlo y guardarlo donde toca
         if (prod.getReturnType() != StructureReturnType.VOID) {
-            if (prod.getReturnType().equals(StructureReturnType.TUP)){
-                assemblyCode.add("\tMOVE.W\t(A7)+,D5"); // Tam
-                assemblyCode.add("\tMOVE.L\t(A7)+,D4"); // @ tup rts
-                // TODO: Por el tamaño de retorno asignar en cada posición su valor
-                assemblyCode.add("\tMOVE.W\t(A7)+," + ins.getDest());
+            if (prod.getReturnType().equals(StructureReturnType.TUP)) {
+                for (int i = 0; i < this.tupSize; i++) {
+                    assemblyCode.add("\tMOVE.W\t(A7)+,(" + ins.getDest() + "+" + (i * 2) + ")");
+                }
             } else {
                 assemblyCode.add("\tMOVE.W\t(A7)+," + ins.getDest());
             }
@@ -484,7 +495,7 @@ public class Assembly {
     private void pmb(Instruction ins) {
         String prodName = ins.getDest().split("_")[1];
         Procedimiento prod = this.threeAddressCode.getProcedimiento(prodName);
-        assert prod == null : "FUNCIÓN NO ENCONTRADA";
+        assert prod != null;
         ArrayList<Variable> params = prod.getParameters();
         // Save rts dir
         assemblyCode.add("\tMOVE.L\t(A7)+,D7");
@@ -493,13 +504,26 @@ public class Assembly {
         }
         if (params != null) {
             for (Variable param : params) {
-                assemblyCode.add("\tMOVE.W\t(A7)+," + param.getId());
+                TypeVar tp = null;
+                for (Variable var : this.threeAddressCode.getTv()) {
+                    if (param.getId().equals(var.getId())) {
+                        tp = var.getType();
+                    }
+                }
+                assert tp != null;
+                if (tp.equals(TypeVar.TUP)) {
+                    for (int i = 0; i < this.tupSize; i++) {
+                        assemblyCode.add("\tMOVE.W\t(A7)+,(" + param.getId() + "+" + (i * 2) + ")");
+                    }
+                } else {
+                    assemblyCode.add("\tMOVE.W\t(A7)+," + param.getId());
+                }
             }
+            if (prod.getReturnType() != StructureReturnType.VOID) {
+                assemblyCode.add("\tMOVE.W\tD6,-(A7)");
+            }
+            assemblyCode.add("\tMOVE.L\tD7,-(A7)");
         }
-        if (prod.getReturnType() != StructureReturnType.VOID) {
-            assemblyCode.add("\tMOVE.W\tD6,-(A7)");
-        }
-        assemblyCode.add("\tMOVE.L\tD7,-(A7)");
     }
 
     private void compare(Instruction ins) {
