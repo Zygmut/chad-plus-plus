@@ -20,9 +20,9 @@ import java.util.ArrayList;
  */
 public class Assembly {
 
-    private ThreeAddressCode threeAddressCode;
-    private SymbolTable symbolTable;
-    private ArrayList<String> assemblyCode;
+    private final ThreeAddressCode threeAddressCode;
+    private final SymbolTable symbolTable;
+    private final ArrayList<String> assemblyCode;
     private boolean isInputInt = false;
     private boolean isInputBoolean = false;
     private boolean isOutput = false;
@@ -82,7 +82,7 @@ public class Assembly {
         this.tupSize *= 2;
         assemblyCode.add("TPSZ\tEQU\t" + tupSize);
         for (Variable var : this.threeAddressCode.getTv()) {
-            if (var.getType().equals(TypeVar.TUP)) {
+            if (var.getType() != null && var.getType().equals(TypeVar.TUP)) {
                 assemblyCode.add(var.getId() + "\tDS.W\tTPSZ");
 
             } else {
@@ -95,7 +95,7 @@ public class Assembly {
 
     private void calcMaxTupSize() {
         for (Variable var : this.threeAddressCode.getTv()) {
-            if (var.getType().equals(TypeVar.TUP) && !var.isVolatile()) { // Get max tup size
+            if (var.getType() != null && var.getType().equals(TypeVar.TUP) && !var.isVolatile()) { // Get max tup size
                 String[] splitName = var.getId().split("_");
                 int access = Integer.parseInt(splitName[splitName.length - 1]);
                 String id = splitName[0];
