@@ -44,9 +44,18 @@ public class Variable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        Variable var = (Variable) obj;
-        return Objects.equals(this.id, var.getId());
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Variable variable = (Variable) o;
+        return isVolatile == variable.isVolatile && type == variable.type && Objects.equals(id, variable.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, id, isVolatile);
     }
 
     @Override

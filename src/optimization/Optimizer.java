@@ -55,34 +55,55 @@ public class Optimizer {
     private void deleteUnusedFunctions() {
         ArrayList<Procedimiento> tp = this.threeAddressCode.getTp();
         ArrayList<Instruction> codigo3Dir = this.threeAddressCode.getCodigo3Dir();
+        ArrayList<Variable> tv = this.threeAddressCode.getTv();
         boolean isUsed;
         Procedimiento prod;
         ArrayList<Procedimiento> prodsAEliminar = new ArrayList<>();
+        ArrayList<Variable> varsAEliminar = new ArrayList<>();
         for (Procedimiento value : tp) {
             isUsed = false;
-            prodsAEliminar.clear();
+            // prodsAEliminar.clear();
             prod = value;
             // Mirar si hay algún call en alguna instuccion
             for (Instruction ins : codigo3Dir) {
-                // System.out.println(ins);
+
                 if (!Objects.equals(ins.getDest(), "run_main")
-                        && ins.getOperation().name().equals("CALL") && ins.getOp1().equals(prod.getId())) {
+                        && ins.getOperation().name().equals("CALL")
+                        && ins.getOp1().equals(prod.getId())) {
                     isUsed = true;
                     break;
                 }
             }
             if (!isUsed) {
                 // Eliminar prod
-                prodsAEliminar.add(prod);
+                if (!prod.getId().equals("main")) {
+                    prodsAEliminar.add(prod);
+                }
                 // Eliminar ins de dentro de la procedure
                 Instruction ins;
                 int inicio = 0, fin = 0;
                 boolean entrar = false;
+                boolean guardar = false;
                 for (int j = 0; j < codigo3Dir.size(); j++) {
                     ins = codigo3Dir.get(j);
                     if (ins.getOperation().name().equals("SKIP") && ins.getDest().equals("run_" + prod.getId())) {
                         inicio = j;
                         entrar = true;
+                        if (!ins.getDest().equals("run_main")) {
+                            guardar = true;
+                        }
+                    }
+                    if (guardar) {
+                        // Por cada variable meterlo en varsAEliminar
+                        switch (ins.getOperation().name()) {
+                            case "ASSIGN":
+                            case "INDEXED_VALUE":
+                            case "INDEXED_ASSIGN":
+                                varsAEliminar.add(threeAddressCode.findVarById(ins.getDest()));
+                                break;
+                            default:
+                                break;
+                        }
                     }
                     if (ins.getOperation().name().equals("RETURN") && ins.getDest() == null && entrar) {
                         fin = j;
@@ -95,10 +116,25 @@ public class Optimizer {
                 }
             }
         }
+        for (Variable var : varsAEliminar) {
+            // checkear si la variable es global -> continue
+            boolean found = false;
+            for (Variable variable : threeAddressCode.getTvg()) {
+                if (variable.equals(var)) {
+                    found = true;
+                    break;
+                }
+            }
+            // Si no es global la elimianos
+            if (!found) {
+                tv.remove(var);
+            }
+        }
         for (Procedimiento procedimiento : prodsAEliminar) {
             tp.remove(procedimiento);
         }
         this.threeAddressCode.setTp(tp);
+        this.threeAddressCode.setTv(tv);
     }
 
 }

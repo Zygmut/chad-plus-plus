@@ -178,7 +178,7 @@ public class ThreeAddressCode {
    * en caso contrario
    *
    * @param id
-   * @return
+   * @return Variable | null
    */
   public Variable findVarById(String id) {
     for (Variable var : this.tv) {

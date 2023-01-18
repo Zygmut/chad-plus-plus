@@ -123,6 +123,8 @@ public class MainChpp {
             optimizer.optimizeThreeAddressCode();
             ThreeAddressCode newC3d = optimizer.getThreeAddressCodeOptimized();
             newC3d.saveThreeAddressCode("Codigo3Dir_Opt.txt");
+            saveTable(newC3d.getTpString(), "TablaProcedimientos_Opt.txt");
+            saveTable(newC3d.getTvString(), "TablaVariables_Opt.txt");
 
             // ASM Opt
             Assembly asmOpt = new Assembly(newC3d, parser.getSymbolTable());
