@@ -1,6 +1,7 @@
 package optimization;
 
 import intermediate_code.Instruction;
+import intermediate_code.Operator;
 import intermediate_code.Procedimiento;
 import intermediate_code.ThreeAddressCode;
 import intermediate_code.Variable;
@@ -11,6 +12,7 @@ import java.util.Objects;
 public class Optimizer {
 
     private final ThreeAddressCode threeAddressCode;
+    private boolean continueOptimizations = true;
 
     public Optimizer(ThreeAddressCode threeAddressCode) {
         this.threeAddressCode = threeAddressCode;
@@ -21,38 +23,94 @@ public class Optimizer {
     }
 
     public void optimizeThreeAddressCode() {
-        deleteUnusedFunctions();
-        deleteUnusedVariables();
-        optimizeVariableAssignations();
-        assert false : "TODO: Implementar optimazeThreeAddressCode";
+        deleteUnusedFunctionsAndVaribales();
+        while (this.continueOptimizations) {
+            optimizeDifferdAssignations();
+            // doble etiquetas
+            // brancament
+            // Evaluancion de expresiones
+        }
     }
 
     /**
-     * Optimiza la asignación de variables extras e innecesarias. Si es posible
-     * eliminar variables temporales se realizará.
+     * Elimina las variables temporales que se utilizan solo una vez. Se hace la
+     * asignacion directamente.
      */
-    private void optimizeVariableAssignations() {
+    private void optimizeDifferdAssignations() {
         ArrayList<Instruction> codigo3Dir = this.threeAddressCode.getCodigo3Dir();
         ArrayList<Variable> tv = this.threeAddressCode.getTv();
+        ArrayList<Instruction> insAEliminar = new ArrayList<>();
+        ArrayList<Variable> varsAEliminar = new ArrayList<>();
 
-    }
+        // Iterar por todas las instrucciones
+        // Si encontramos una asignación -> ASSING
+        // Si el destino es una variable temporal
+        // Buscamos a partir de esta instruccion hacia adelante por su uso
+        // Una vez encontrado sustituimos el operado que sea igual a la variable
+        // temporal por el elemento asignado
+        Instruction actInstr;
+        Instruction nextInstr;
+        Operator op;
+        for (int i = 0; i < codigo3Dir.size(); i++) {
+            actInstr = codigo3Dir.get(i);
+            op = actInstr.getOperation();
+            if (op.equals(Operator.ASSIGN)
+                    && this.threeAddressCode.findVarById(actInstr.getDest()).isVolatile()) {
+                for (int j = i + 1; j < codigo3Dir.size(); j++) {
+                    nextInstr = codigo3Dir.get(j);
+                    if (nextInstr.getOp1() != null && nextInstr.getOp1().equals(actInstr.getDest())) {
+                        // Añadimos para eliminar
+                        insAEliminar.add(actInstr);
+                        varsAEliminar.add(this.threeAddressCode.findVarById(actInstr.getDest()));
 
-    /**
-     * Elimina del código de tres direcciones y la tabla de variables, las variables
-     * no empleadas durante el programa.
-     */
-    private void deleteUnusedVariables() {
-        ArrayList<Instruction> codigo3Dir = this.threeAddressCode.getCodigo3Dir();
-        ArrayList<Variable> tv = this.threeAddressCode.getTv();
-        // ArrayList<String> varADel
+                        // Sustituir
+                        nextInstr.setOp1(actInstr.getOp1());
+                        continue;
+                    }
+                    if (nextInstr.getOp2() != null && nextInstr.getOp2().equals(actInstr.getDest())) {
+                        // Añadimos para eliminar
+                        insAEliminar.add(actInstr);
+                        varsAEliminar.add(this.threeAddressCode.findVarById(actInstr.getDest()));
 
+                        // Sustituir
+                        nextInstr.setOp2(actInstr.getOp1());
+                        continue;
+                    }
+                    if (nextInstr.getDest() != null && nextInstr.getDest().equals(actInstr.getDest())) {
+                        // Añadimos para eliminar
+                        insAEliminar.add(actInstr);
+                        varsAEliminar.add(this.threeAddressCode.findVarById(actInstr.getDest()));
+
+                        // Sustituir
+                        nextInstr.setDest(actInstr.getOp1());
+                        continue;
+                    }
+                }
+            }
+
+        }
+
+        this.continueOptimizations = !insAEliminar.isEmpty() && !varsAEliminar.isEmpty();
+
+        // Eliminar las instrucciones
+        for (Instruction ins : insAEliminar) {
+            codigo3Dir.remove(ins);
+        }
+
+        // Eliminar las variables
+        for (Variable var : varsAEliminar) {
+            tv.remove(var);
+        }
+
+        this.threeAddressCode.setTv(tv);
     }
 
     /**
      * Elimina del código de tres direcciones y de la tabla de procedimientos, las
-     * funciones que no se usan durante el programa.
+     * funciones que no se usan durante el programa. Adicionalmente elimina las
+     * variables de la tabla de variables que no se usen durante el programa.
      */
-    private void deleteUnusedFunctions() {
+    private void deleteUnusedFunctionsAndVaribales() {
         ArrayList<Procedimiento> tp = this.threeAddressCode.getTp();
         ArrayList<Instruction> codigo3Dir = this.threeAddressCode.getCodigo3Dir();
         ArrayList<Variable> tv = this.threeAddressCode.getTv();

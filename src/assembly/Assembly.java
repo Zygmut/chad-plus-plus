@@ -347,7 +347,7 @@ public class Assembly {
 
     private boolean isTup(String v) {
         for (Variable var : this.threeAddressCode.getTv()) {
-            if (v.equals(var.getId())) {
+            if (v.equals(var.getId()) && var.getType().equals(TypeVar.TUP)) {
                 return true;
             }
         }
@@ -370,8 +370,9 @@ public class Assembly {
         // String A1 | Int D1
         if (isTup(ins.getOp1())) {
             // TODO:
-            //  - Mirar como hacer para printear los elementos de una tupla bool como str y no como int
-            //  - Mirar de no printear los huecos vacios de la tupla reservada
+            // - Mirar como hacer para printear los elementos de una tupla bool como str y
+            // no como int
+            // - Mirar de no printear los huecos vacios de la tupla reservada
             for (int i = 0; i < this.tupSize; i++) {
                 assemblyCode.add("\tMOVE.W\t(" + ins.getOp1() + "+" + (i * 2) + "),D1");
                 assemblyCode.add("\tJSR\tPRINT_INT");
@@ -393,7 +394,11 @@ public class Assembly {
     }
 
     private void indexedAssign(Instruction ins) {
-        assemblyCode.add("\tMOVE.W\t" + ins.getOp2() + ",(" + ins.getDest() + "+" + ins.getOp1() + ")");
+        String var = ins.getOp2();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tMOVE.W\t" + var + ",(" + ins.getDest() + "+" + ins.getOp1() + ")");
     }
 
     private void ifInstruction(Instruction ins) {

@@ -24,10 +24,11 @@ alpha tup test_tup4(tup g) {
 main {
     tup a = [1, 2];
     tup b = [3];
-    int c = 0;
+    int c = 5;
     BEGIN
     c = test_tup1();
+    c = 5;
     testt();
-    output(b);
+    # output(b);
+    output(c);
 }
-
