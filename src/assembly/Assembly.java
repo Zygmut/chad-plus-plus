@@ -378,15 +378,29 @@ public class Assembly {
                 assemblyCode.add("\tJSR\tPRINT_INT");
             }
         } else {
-            if (this.threeAddressCode.findVarById(ins.getOp1()).getType().equals(TypeVar.INT)) {
-                assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D1");
-                assemblyCode.add("\tJSR\tPRINT_INT");
+            Variable var = this.threeAddressCode.findVarById(ins.getOp1());
+            if (var == null) {
+                if (!ins.getOp1().equals("false") && !ins.getOp1().equals("true")) {
+                    assemblyCode.add("\tMOVE.W\t#" + ins.getOp1() + ",D1");
+                    assemblyCode.add("\tJSR\tPRINT_INT");
+                } else {
+                    String out = ins.getOp1().equals("true") ? "#1" : "#0";
+                    assemblyCode.add("\tMOVE.W\t" + out + ",D1");
+                    assemblyCode.add("\tJSR\tBOOLEAN_TO_STRING");
+                    assemblyCode.add("\tJSR\tPRINT_STRING");
+                }
             } else {
-                assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D1");
-                assemblyCode.add("\tJSR\tBOOLEAN_TO_STRING");
-                assemblyCode.add("\tJSR\tPRINT_STRING");
+                if (var.getType().equals(TypeVar.INT)) {
+                    assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D1");
+                    assemblyCode.add("\tJSR\tPRINT_INT");
+                } else {
+                    assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D1");
+                    assemblyCode.add("\tJSR\tBOOLEAN_TO_STRING");
+                    assemblyCode.add("\tJSR\tPRINT_STRING");
+                }
             }
         }
+
     }
 
     private void indexedValue(Instruction ins) {
@@ -403,7 +417,13 @@ public class Assembly {
 
     private void ifInstruction(Instruction ins) {
         // Mirar que el op1 sea true, si lo es saltar a dest
-        assemblyCode.add("\tCMP.W\t" + "#1, " + ins.getOp1());
+        if (ins.getOp1().equals("false") || ins.getOp1().equals("true")) {
+            String out = ins.getOp1().equals("true") ? "#1" : "#0";
+            assemblyCode.add("\tMOVE.W\t" + out + ",D1");
+            assemblyCode.add("\tCMP.W\t" + "#1, D1");
+        } else {
+            assemblyCode.add("\tCMP.W\t" + "#1, " + ins.getOp1());
+        }
         assemblyCode.add("\tBEQ\t" + ins.getDest());
     }
 
