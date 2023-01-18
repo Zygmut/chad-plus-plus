@@ -1,11 +1,8 @@
-alpha tup test_tup(tup c) {
-    return c;
+alpha int fn(int a){
+    return a;
 }
 
 main {
-    tup a = [1, 2];
-    tup b = [3];
+    tup a = [0, fn()];
     BEGIN
-    b = test_tup(a);
-    output(b);
 }

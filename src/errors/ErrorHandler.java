@@ -27,6 +27,11 @@ public class ErrorHandler {
      */
     public static void addError(Error error) {
         if (!Env.TEST_MODE) {
+            for (Error err : errors) {
+                if (err.equals(error)) {
+                    return;
+                }
+            }
             errors.add(error);
         }
     }
@@ -40,7 +45,13 @@ public class ErrorHandler {
      */
     public static void addError(ErrorCode code, int line, Phase phase) {
         if (!Env.TEST_MODE) {
-            errors.add(new Error(code, line, phase));
+            Error error = new Error(code, line, phase);
+            for (Error err : errors) {
+                if (err.equals(error)) {
+                    return;
+                }
+            }
+            errors.add(error);
         }
     }
 
@@ -54,7 +65,13 @@ public class ErrorHandler {
      */
     public static void addError(ErrorCode code, int line, int charloc, Phase phase) {
         if (!Env.TEST_MODE) {
-            errors.add(new Error(code, line, charloc, phase));
+            Error error = new Error(code, line, charloc, phase);
+            for (Error err : errors) {
+                if (err.equals(error)) {
+                    return;
+                }
+            }
+            errors.add(error);
         }
     }
 
@@ -69,6 +86,12 @@ public class ErrorHandler {
      */
     public static void addError(String message, int line, int charloc, Phase phase) {
         if (!Env.TEST_MODE) {
+            Error error = new Error(message, line, charloc, phase);
+            for (Error err : errors) {
+                if (err.equals(error)) {
+                    return;
+                }
+            }
             errors.add(new Error(message, line, charloc, phase));
         }
     }

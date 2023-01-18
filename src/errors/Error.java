@@ -2,6 +2,7 @@ package errors;
 
 import utils.ConsoleColor;
 import utils.Phase;
+import java.util.Objects;
 
 /**
  * Error - Clase con los metadatos de un error
@@ -78,6 +79,24 @@ public class Error {
         }
 
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Error error = (Error) o;
+        return line == error.line && charloc == error.charloc && withColor == error.withColor
+                && Objects.equals(message, error.message) && code == error.code && phase == error.phase;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color, message, code, line, charloc, phase, withColor);
     }
 
     /**
