@@ -289,6 +289,16 @@ public class SemanticAnalyzer {
                     break;
             }
         }
+
+        // Division by zero
+        if (op.name().equals("DIV") && exp.getNextExpresion().getValue().getCurrentInstance().equals("Number")
+                && exp.getNextExpresion().getValue().getNumber().getValue() == 0) {
+            WarningHandler.addWarning(WarningCode.DIVISION_BY_ZERO,
+                    exp.getLine(),
+                    exp.getColumn(),
+                    Phase.SEMANTIC);
+
+        }
         return type;
     }
 

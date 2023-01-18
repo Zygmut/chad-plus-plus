@@ -3,6 +3,6 @@ alpha int fn(int a){
 }
 
 main {
-    tup a = [0, fn()];
+    tup a = [1/0, fn()];
     BEGIN
 }
