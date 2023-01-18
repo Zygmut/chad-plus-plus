@@ -1,7 +1,9 @@
 package intermediate_code;
 
-import java.util.ArrayList;
 import symbol_table.StructureReturnType;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Clase que representa un procedimiento en el código intermedio.
@@ -91,6 +93,19 @@ public class Procedimiento {
 
     public void setDeclarations(ArrayList<Variable> declarations) {
         this.declarations = declarations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Procedimiento that = (Procedimiento) o;
+        return Objects.equals(id, that.id) && returnType == that.returnType && Objects.equals(parameters, that.parameters) && Objects.equals(declarations, that.declarations);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, returnType, parameters, declarations);
     }
 
     @Override

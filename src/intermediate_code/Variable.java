@@ -2,6 +2,8 @@ package intermediate_code;
 
 import core.TypeVar;
 
+import java.util.Objects;
+
 /**
  * Variable
  */
@@ -39,6 +41,12 @@ public class Variable {
 
     public void setVolatile(boolean isVolatile) {
         this.isVolatile = isVolatile;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Variable var = (Variable) obj;
+        return Objects.equals(this.id, var.getId());
     }
 
     @Override

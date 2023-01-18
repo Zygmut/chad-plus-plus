@@ -369,9 +369,9 @@ public class ThreeAddressCode {
   /**
    * Guarda el el código de 3 direcciones en un fichero de texto
    */
-  public void saveThreeAddressCode() {
+  public void saveThreeAddressCode(String fileName) {
     try {
-      BufferedWriter writer = new BufferedWriter(new FileWriter(Env.GENERATED_FILES + "/" + "Codigo3Dir.txt"));
+      BufferedWriter writer = new BufferedWriter(new FileWriter(Env.GENERATED_FILES + "/" + fileName));
       for (int i = 0; i < codigo3Dir.size(); i++) {
         writer.write(codigo3Dir.get(i).toString());
         writer.write("\n");

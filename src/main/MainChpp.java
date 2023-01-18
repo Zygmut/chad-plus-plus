@@ -2,6 +2,7 @@ package main;
 
 import errors.ErrorCode;
 import errors.ErrorHandler;
+import optimization.Optimizer;
 import tests.FileDataTests;
 import utils.Env;
 import utils.Phase;
@@ -110,7 +111,7 @@ public class MainChpp {
             // c3@
             ThreeAddressCode c3d = new ThreeAddressCode();
             parser.getTree().generate3dc(c3d);
-            c3d.saveThreeAddressCode();
+            c3d.saveThreeAddressCode("Codigo3Dir.txt");
             saveTable(c3d.getTpString(), "TablaProcedimientos.txt");
             saveTable(c3d.getTvString(), "TablaVariables.txt");
 
@@ -118,6 +119,18 @@ public class MainChpp {
             Assembly asm = new Assembly(c3d, parser.getSymbolTable());
             asm.generateAssemblyCode();
             asm.saveAssemblyCode(Env.FILE_DATA.getFileName() + ".x68");
+
+            // Optimizador
+            Optimizer optimizer = new Optimizer(c3d);
+            optimizer.optimizeThreeAddressCode();
+            ThreeAddressCode newC3d = optimizer.getThreeAddressCodeOptimized();
+            newC3d.saveThreeAddressCode("Codigo3Dir_Opt.txt");
+
+            // ASM Opt
+            Assembly asmOpt = new Assembly(newC3d, parser.getSymbolTable());
+            asmOpt.generateAssemblyCode();
+            asmOpt.saveAssemblyCode(Env.FILE_DATA.getFileName() + "_opt.x68");
+
         } catch (Exception e) {
             if (!ErrorHandler.hasErrors()) {
                 e.printStackTrace();

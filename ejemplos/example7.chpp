@@ -1,0 +1,33 @@
+alpha tup test_tup(tup c) {
+    return c;
+}
+
+alpha int test_tup1() {
+    return 0;
+}
+
+alpha void testt() {
+    int a = 0;
+    int b = 0;
+    int c = 0;
+    BEGIN
+}
+
+alpha tup test_tup2(tup g) {
+    return g;
+}
+
+alpha tup test_tup4(tup g) {
+    return g;
+}
+
+main {
+    tup a = [1, 2];
+    tup b = [3];
+    int c = 0;
+    BEGIN
+    c = test_tup1();
+    testt();
+    output(b);
+}
+
