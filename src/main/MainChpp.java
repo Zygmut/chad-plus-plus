@@ -64,12 +64,11 @@ public class MainChpp {
         // Lexer
         Scanner scanner = new Scanner(input);
 
-        if (WarningHandler.hasWarnings()) {
-            WarningHandler.printWarnings();
-            saveTable(WarningHandler.getWarningString(), "Warnings.txt");
-        }
-
         if (ErrorHandler.hasErrors()) {
+            if (WarningHandler.hasWarnings()) {
+                WarningHandler.printWarnings();
+                saveTable(WarningHandler.getWarningString(), "Warnings.txt");
+            }
             ErrorHandler.printErrors();
             saveTable(ErrorHandler.getErrorsString(), "Errores.txt");
             System.exit(0);
@@ -95,12 +94,11 @@ public class MainChpp {
             }
         }
 
-        if (WarningHandler.hasWarnings()) {
-            WarningHandler.printWarnings();
-            saveTable(WarningHandler.getWarningString(), "Warnings.txt");
-        }
-
         if (ErrorHandler.hasErrors()) {
+            if (WarningHandler.hasWarnings()) {
+                WarningHandler.printWarnings();
+                saveTable(WarningHandler.getWarningString(), "Warnings.txt");
+            }
             ErrorHandler.printErrors();
             saveTable(ErrorHandler.getErrorsString(), "Errores.txt");
             System.exit(0);

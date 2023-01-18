@@ -1,5 +1,7 @@
 package warnings;
 
+import java.util.Objects;
+
 import utils.ConsoleColor;
 import utils.Phase;
 
@@ -38,21 +40,20 @@ public class Warning {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        Warning warning = (Warning) obj;
-        // System.out.println(this.code.equals(warning.getCode()));
-        // System.out.println("---");
-        // System.out.println(this.message.equals(warning.getMessage()));
-        // System.out.println(this.line == warning.getLine());
-        // System.out.println(this.charloc == warning.getCharloc());
-        // System.out.println(this.charloc + " - " + warning.getCharloc());
-        // System.out.println(this.phase.message.equals(warning.getPhase()));
-        // System.out.println("---");
-        return this.code.equals(warning.getCode())
-                && this.message.equals(warning.getMessage())
-                && this.line == warning.getLine()
-                && this.charloc == warning.getCharloc()
-                && this.phase.message.equals(warning.getPhase());
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Warning warning = (Warning) o;
+        return line == warning.line && charloc == warning.charloc && withColor == warning.withColor
+                && Objects.equals(color, warning.color) && Objects.equals(message, warning.message)
+                && code == warning.code && phase == warning.phase;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color, message, code, line, charloc, phase, withColor);
     }
 
     @Override

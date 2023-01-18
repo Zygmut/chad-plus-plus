@@ -2,7 +2,13 @@ alpha int fn(int a){
     return a;
 }
 
+alpha int fn1(tup a){
+    tup b = [a[0]];
+    BEGIN
+    return 1;
+}
+
 main {
-    tup a = [1/0, fn()];
+    tup a = [1/0, fn(1)];
     BEGIN
 }
