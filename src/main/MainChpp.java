@@ -62,7 +62,10 @@ public class MainChpp {
         }
 
         // Lexer
+        long tInicio = System.currentTimeMillis();
         Scanner scanner = new Scanner(input);
+        long tFin = System.currentTimeMillis();
+        System.out.println("Tiempo de ejecución del lexer: " + (tFin - tInicio) + " milisegundos");
 
         if (ErrorHandler.hasErrors()) {
             if (WarningHandler.hasWarnings()) {
@@ -78,9 +81,12 @@ public class MainChpp {
         SymbolFactory sf = null;
         Parser parser = null;
         try {
+            tInicio = System.currentTimeMillis();
             sf = new ComplexSymbolFactory();
             parser = new Parser(scanner, sf);
             parser.parse();
+            tFin = System.currentTimeMillis();
+            System.out.println("Tiempo de ejecución del parser + semantic: " + (tFin - tInicio) + " milisegundos");
 
             // Guardar la tabla de simbolos
             saveTable(parser.getSymbolTable().toString(), "TablaSimbolos.txt");
@@ -108,19 +114,30 @@ public class MainChpp {
         try {
             // c3@
             ThreeAddressCode c3d = new ThreeAddressCode();
+            tInicio = System.currentTimeMillis();
             parser.getTree().generate3dc(c3d);
+            tFin = System.currentTimeMillis();
+            System.out.println(
+                    "Tiempo de ejecución del generador de código intermedio: " + (tFin - tInicio) + " milisegundos");
             c3d.saveThreeAddressCode("Codigo3Dir.txt");
             saveTable(c3d.getTpString(), "TablaProcedimientos.txt");
             saveTable(c3d.getTvString(), "TablaVariables.txt");
 
             // ASM
             Assembly asm = new Assembly(c3d, parser.getSymbolTable());
+            tInicio = System.currentTimeMillis();
             asm.generateAssemblyCode();
+            tFin = System.currentTimeMillis();
+            System.out.println(
+                    "Tiempo de ejecución del generador de código ensamblador: " + (tFin - tInicio) + " milisegundos");
             asm.saveAssemblyCode(Env.FILE_DATA.getFileName() + ".x68");
 
             // Optimizador
             Optimizer optimizer = new Optimizer(c3d);
+            tInicio = System.currentTimeMillis();
             optimizer.optimizeThreeAddressCode();
+            tFin = System.currentTimeMillis();
+            System.out.println("Tiempo de ejecución del optimizador: " + (tFin - tInicio) + " milisegundos");
             ThreeAddressCode newC3d = optimizer.getThreeAddressCodeOptimized();
             newC3d.saveThreeAddressCode("Codigo3Dir_Opt.txt");
             saveTable(newC3d.getTpString(), "TablaProcedimientos_Opt.txt");
@@ -128,7 +145,12 @@ public class MainChpp {
 
             // ASM Opt
             Assembly asmOpt = new Assembly(newC3d, parser.getSymbolTable());
+            tInicio = System.currentTimeMillis();
             asmOpt.generateAssemblyCode();
+            tFin = System.currentTimeMillis();
+            System.out.println(
+                    "Tiempo de ejecución del generador de código ensamblador optimizado: " + (tFin - tInicio)
+                            + " milisegundos");
             asmOpt.saveAssemblyCode(Env.FILE_DATA.getFileName() + "_opt.x68");
 
         } catch (Exception e) {

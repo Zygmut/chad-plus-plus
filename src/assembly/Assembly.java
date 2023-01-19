@@ -145,6 +145,7 @@ public class Assembly {
             assemblyCode.add("; -----------------------------------------------------------------------------");
             assemblyCode.add("\tMOVE.W\tD0,-(A7)\t; SAVE D0");
             assemblyCode.add("\tCLR.L\tD0\t; CLEAR D0");
+            assemblyCode.add("\tAND.L\t#$0000FFFF,D1\t; CLEAR HIGH WORD");
             assemblyCode.add("\tMOVE.W\t#3,D0\t; PRINT_INT");
             assemblyCode.add("\tTRAP\t#15\t; PRINT_INT CALL TO OS");
             assemblyCode.add("\tLEA\t.NW_LN,A1\t; NEW LINE");
@@ -428,44 +429,92 @@ public class Assembly {
     }
 
     private void add(Instruction ins) {
-        assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D0");
-        assemblyCode.add("\tADD.W\t" + ins.getOp2() + ",D0");
+        String var = ins.getOp1();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tMOVE.W\t" + var + ",D0");
+        var = ins.getOp2();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tADD.W\t" + var + ",D0");
         assemblyCode.add("\tMOVE.W\tD0," + ins.getDest());
     }
 
     private void sub(Instruction ins) {
-        assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D0");
-        assemblyCode.add("\tSUB.W\t" + ins.getOp2() + ",D0");
+        String var = ins.getOp1();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tMOVE.W\t" + var + ",D0");
+        var = ins.getOp2();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tSUB.W\t" + var + ",D0");
         assemblyCode.add("\tMOVE.W\tD0," + ins.getDest());
     }
 
     private void mult(Instruction ins) {
-        assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D0");
+        String var = ins.getOp1();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tMOVE.W\t" + var + ",D0");
         assemblyCode.add("\tEXT.L\tD0");
-        assemblyCode.add("\tMOVE.W\t" + ins.getOp2() + ",D1");
+        var = ins.getOp2();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tMOVE.W\t" + var + ",D1");
         assemblyCode.add("\tEXT.L\tD1");
         assemblyCode.add("\tMULS.W\tD1,D0");
         assemblyCode.add("\tMOVE.W\tD0," + ins.getDest());
     }
 
     private void div(Instruction ins) {
-        assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D0");
+        String var = ins.getOp1();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tMOVE.W\t" + var + ",D0");
         assemblyCode.add("\tEXT.L\tD0");
-        assemblyCode.add("\tMOVE.W\t" + ins.getOp2() + ",D1");
+        var = ins.getOp2();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tMOVE.W\t" + var + ",D1");
         assemblyCode.add("\tEXT.L\tD1");
         assemblyCode.add("\tDIVS.W\tD1,D0");
         assemblyCode.add("\tMOVE.W\tD0," + ins.getDest());
     }
 
     private void and(Instruction ins) {
-        assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D0");
-        assemblyCode.add("\tAND.W\t" + ins.getOp2() + ",D0");
+        String var = ins.getOp1();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tMOVE.W\t" + var + ",D0");
+        var = ins.getOp2();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tAND.W\t" + var + ",D0");
         assemblyCode.add("\tMOVE.W\tD0," + ins.getDest());
     }
 
     private void or(Instruction ins) {
-        assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D0");
-        assemblyCode.add("\tOR.W\t" + ins.getOp2() + ",D0");
+        String var = ins.getOp1();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tMOVE.W\t" + var + ",D0");
+        var = ins.getOp2();
+        if (this.threeAddressCode.findVarById(var) == null) {
+            var = "#" + var;
+        }
+        assemblyCode.add("\tOR.W\t" + var + ",D0");
         assemblyCode.add("\tMOVE.W\tD0," + ins.getDest());
     }
 
@@ -631,17 +680,17 @@ public class Assembly {
         switch (ins.getOperation()) {
             case EQUAL:
                 assemblyCode.add("\tSEQ\tD0");
-                assemblyCode.add("\tLSR.W\t #$7,D0");
+                assemblyCode.add("\tAND.W\t #1, D0");
                 assemblyCode.add("\tMOVE.W D0, " + ins.getDest());
                 break;
             case LESS:
                 assemblyCode.add("\tSLT\tD0");
-                assemblyCode.add("\tLSR.W\t #$7,D0");
+                assemblyCode.add("\tAND.W\t #1, D0");
                 assemblyCode.add("\tMOVE.W D0, " + ins.getDest());
                 break;
             case GREATER:
                 assemblyCode.add("\tSGT\tD0");
-                assemblyCode.add("\tLSR.W\t #$7,D0");
+                assemblyCode.add("\tAND.W\t #1, D0");
                 assemblyCode.add("\tMOVE.W D0, " + ins.getDest());
                 break;
             case IF:

@@ -60,12 +60,12 @@ public class CallFn extends BaseNode {
     @Override
     public void generate3dc(ThreeAddressCode codigoTresDir) {
         Procedimiento prod = codigoTresDir.getProcedimiento(this.id.getValue());
-        String varName = codigoTresDir.putVar(null, structureReturnTypeToTypeVar(prod.getReturnType())).getId();
         if (this.args != null) {
             codigoTresDir.toggleCallFn();
             this.args.generate3dc(codigoTresDir);
             codigoTresDir.toggleCallFn();
         }
+        String varName = codigoTresDir.putVar(null, structureReturnTypeToTypeVar(prod.getReturnType())).getId();
         codigoTresDir.addInstr(new Instruction(varName, id.getValue(), Operator.CALL, null));
     }
 

@@ -9,4 +9,5 @@ main{
    int a = vals[0];
    BEGIN
    test1(vals);
+   output(5/2);
 }

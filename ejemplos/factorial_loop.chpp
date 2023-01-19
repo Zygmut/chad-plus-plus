@@ -1,0 +1,21 @@
+alpha int factorial(int number){
+    int result = 1;
+    int iter = number;
+    BEGIN
+
+    # No se permite factoriales de numeros negativos
+    if (number < 0){
+        return 0;
+    }
+
+    loop(number, 0) {
+        result = result * iter;
+        iter = iter - 1;
+    }
+
+    return result;
+}
+
+main {
+    output(factorial(inputint()));
+}
