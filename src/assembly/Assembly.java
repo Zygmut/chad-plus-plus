@@ -406,6 +406,18 @@ public class Assembly {
     }
 
     private void indexedValue(Instruction ins) {
+        // Miramos de parsear el operando 2 a un numero, si lo es podemos directamente
+        // ponerlo en la instrucción. en caso contrario tenemos que hacer la gestion
+        // para hacer el acceso a la tupla mediante el uso de registros de direccion
+        try {
+            Integer.parseInt(ins.getOp2());
+        } catch (Exception e) {
+            assemblyCode.add("\tMOVE.W\t" + ins.getOp2() + ",D0");
+            assemblyCode.add("\tLEA\t" + ins.getOp1() + ",A1");
+            assemblyCode.add("\tADDA.L\tD0,A1");
+            assemblyCode.add("\tMOVE.W\t(A1)," + ins.getDest());
+            return;
+        }
         assemblyCode.add("\tMOVE.W\t" + "(" + ins.getOp1() + "+" + ins.getOp2() + ")," + ins.getDest());
     }
 
