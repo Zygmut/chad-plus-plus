@@ -17,5 +17,9 @@ alpha int factorial(int number){
 }
 
 main {
-    output(factorial(inputint()));
+    tup nums = [3, 5, 8];
+    BEGIN
+    output(factorial(nums[0]));
+    output(factorial(nums[1]));
+    output(factorial(nums[2]));
 }
