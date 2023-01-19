@@ -1,0 +1,46 @@
+$
+Returns the remainder or signed remainder of a division, after one number
+is divided by another; Also known as a % b.
+$
+alpha int mod(int a, int b) {
+    return a - (b * (a / b));
+}
+
+$
+Returs the absolute value of the numbers passed by parameter; Also known as |n|
+$
+alpha int abs(int n) {
+    if (n < 0) {
+        return n * -1;
+    }
+    return n;
+}
+
+$
+Returns the result of the operation "b raised to the e power"; Also known as b^n
+$
+alpha int pow(int b, int e) {
+    int result = 1;
+    int absE = abs(e);
+    BEGIN
+    while(absE > 0){
+        if(mod(absE, 2) == 1){
+            result = result * b;
+        }
+
+        b = b * b;
+        absE = absE / 2;
+    }
+
+    if(e < 0){
+        return 1 / result;
+    }
+    return result;
+}
+
+main{
+    int base = inputint();
+    int exponent = inputint();
+    BEGIN
+    output(pow(base, exponent));
+}

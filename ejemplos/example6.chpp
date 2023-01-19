@@ -1,8 +1,7 @@
-alpha int fn(int a){
-    return a;
-}
 
 main {
-    int fn = fn(1);
+    bol c = false;
+    bol a = (c || true) && (5 < 4) || (5 == 5);
     BEGIN
+
 }

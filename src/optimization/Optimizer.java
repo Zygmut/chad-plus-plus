@@ -5,14 +5,19 @@ import intermediate_code.Operator;
 import intermediate_code.Procedimiento;
 import intermediate_code.ThreeAddressCode;
 import intermediate_code.Variable;
+import utils.Phase;
 
 import java.util.ArrayList;
 import java.util.Objects;
+
+import errors.ErrorCode;
+import errors.ErrorHandler;
 
 public class Optimizer {
 
     private final ThreeAddressCode threeAddressCode;
     private boolean continueOptimizations = true;
+    private boolean errors = false;
 
     public Optimizer(ThreeAddressCode threeAddressCode) {
         this.threeAddressCode = threeAddressCode;
@@ -24,11 +29,107 @@ public class Optimizer {
 
     public void optimizeThreeAddressCode() {
         deleteUnusedFunctionsAndVaribales();
-        while (this.continueOptimizations) {
+        while (this.continueOptimizations && !errors) {
             optimizeDifferdAssignations();
             // doble etiquetas
             // brancament
-            // Evaluancion de expresiones
+            evaluateExpresions();
+        }
+    }
+
+    /**
+     * Evalua las expresiones que son conocidas en tiempo de compilación
+     */
+    private void evaluateExpresions() {
+        for (Instruction instr : this.threeAddressCode.getCodigo3Dir()) {
+            // Arithmetic operations
+            try {
+                int var1 = Integer.parseInt(instr.getOp1());
+                int var2 = Integer.parseInt(instr.getOp2());
+                String result = "";
+                switch (instr.getOperation()) {
+                    case MULT:
+                        instr.setOp1(Integer.toString(var1 * var2));
+                        break;
+                    case DIV:
+                        if (var2 == 0) {
+                            // ERROR: division by zero. Check your expresions
+                            ErrorHandler.addError(ErrorCode.DIVISION_BY_ZERO_IN_EXPRESIONS,
+                                    -1,
+                                    Phase.OPTIMIZATION);
+                            errors = true;
+                            return;
+                        }
+
+                        instr.setOp1(Integer.toString(var1 / var2));
+                        break;
+                    case ADD:
+                        instr.setOp1(Integer.toString(var1 + var2));
+                        break;
+                    case SUB:
+                        instr.setOp1(Integer.toString(var1 - var2));
+                        break;
+                    case EQUAL:
+                        result = var1 == var2 ? "true" : "false";
+                        instr.setOp1(result);
+                        break;
+                    case LESS:
+                        result = var1 < var2 ? "true" : "false";
+                        instr.setOp1(result);
+                        break;
+                    case GREATER:
+                        result = var1 > var2 ? "true" : "false";
+                        instr.setOp1(result);
+                        break;
+                    default:
+                        continue;
+                }
+                instr.setOperation(Operator.ASSIGN);
+                instr.setOp2(null);
+                continue;
+            } catch (Exception e) {
+            }
+
+            // Logical operations
+            try {
+                boolean var1 = false;
+                if (instr.getOp1().equals("true")) {
+                    var1 = true;
+                } else if (instr.getOp1().equals("false")) {
+                    var1 = false;
+                } else {
+                    throw new Exception();
+                }
+                boolean var2 = false;
+                if (instr.getOp2().equals("true")) {
+                    var2 = true;
+                } else if (instr.getOp2().equals("false")) {
+                    var2 = false;
+                } else {
+                    throw new Exception();
+                }
+                String result = "";
+                switch (instr.getOperation()) {
+                    case EQUAL:
+                        result = var1 == var2 ? "true" : "false";
+                        instr.setOp1(result);
+                        break;
+                    case AND:
+                        result = var1 && var2 ? "true" : "false";
+                        instr.setOp1(result);
+                        break;
+                    case OR:
+                        result = var1 || var2 ? "true" : "false";
+                        instr.setOp1(result);
+                        break;
+                    default:
+                        continue;
+                }
+                instr.setOperation(Operator.ASSIGN);
+                instr.setOp2(null);
+                continue;
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -124,7 +225,6 @@ public class Optimizer {
             prod = value;
             // Mirar si hay algún call en alguna instuccion
             for (Instruction ins : codigo3Dir) {
-
                 if (!Objects.equals(ins.getDest(), "run_main")
                         && ins.getOperation().name().equals("CALL")
                         && ins.getOp1().equals(prod.getId())) {
@@ -170,7 +270,7 @@ public class Optimizer {
                 }
                 // System.out.printf("INICIO: %d FIN %d\n", inicio, fin);
                 if (fin >= inicio) {
-                    codigo3Dir.subList(inicio, fin + 1).clear();
+                    codigo3Dir.subList(inicio, fin).clear();
                 }
             }
         }

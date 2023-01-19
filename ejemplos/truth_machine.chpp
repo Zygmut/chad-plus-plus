@@ -1,3 +1,27 @@
+$
+A truth-machine is a simple program type, devised by User:Keymaker to be a
+program that is easy, most of the time, to implement in a language, and useful
+for testing or showcasing the following capabilities of a language:
+
+- input
+- output
+- decision
+- repetition
+- termination
+
+Essentially, a truth-machine works like this:
+
+- Ask for input.
+- If the input is 0:
+  - Output 0.
+  - Terminate program.
+- Whereas if the input is 1:
+  - Repeat infinitely:
+  - Output 1.
+
+More info here: https://esolangs.org/wiki/Truth-machine
+$
+
 main{
     int userInput = 0;
     BEGIN

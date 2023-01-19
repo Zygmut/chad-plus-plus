@@ -14,6 +14,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Assembly
@@ -550,13 +551,16 @@ public class Assembly {
                 tp = var.getType();
             }
         }
-        assert tp != null;
-        if (tp.equals(TypeVar.TUP)) {
-            for (int i = 0; i < this.tupSize; i++) {
-                assemblyCode.add("\tMOVE.W\t(" + ins.getOp1() + "+" + (i * 2) + "),-(A7)");
-            }
+        if (tp == null) {
+            assemblyCode.add("\tMOVE.W\t#" + ins.getOp1() + ",-(A7)");
         } else {
-            assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",-(A7)");
+            if (tp.equals(TypeVar.TUP)) {
+                for (int i = 0; i < this.tupSize; i++) {
+                    assemblyCode.add("\tMOVE.W\t(" + ins.getOp1() + "+" + (i * 2) + "),-(A7)");
+                }
+            } else {
+                assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",-(A7)");
+            }
         }
     }
 
@@ -583,16 +587,18 @@ public class Assembly {
                 assemblyCode.add("\tMOVE.W\t(A7)+," + ins.getDest());
             }
         }
-        // Vaciar pila dependiendo del núm de params
-        int paramsSize = prod.getParameters().size();
-        for (Variable param : prod.getParameters()) {
-            if (param.getType().equals(TypeVar.TUP)) {
-                paramsSize -= 1;
-            }
-        }
-        if (paramsSize > 0) {
-            assemblyCode.add("\tADDA.L\t#" + paramsSize * 2 + ",A7");
-        }
+        /*
+         * // Vaciar pila dependiendo del núm de params
+         * int paramsSize = prod.getParameters().size();
+         * for (Variable param : prod.getParameters()) {
+         * if (param.getType().equals(TypeVar.TUP)) {
+         * paramsSize -= 1;
+         * }
+         * }
+         * if (paramsSize > 0) {
+         * assemblyCode.add("\tADDA.L\t#" + paramsSize * 2 + ",A7");
+         * }
+         */
     }
 
     private void returnSubroutine(Instruction ins) {
@@ -632,6 +638,7 @@ public class Assembly {
             }
         }
         if (params != null) {
+            Collections.reverse(params);
             for (Variable param : params) {
                 TypeVar tp = null;
                 for (Variable var : this.threeAddressCode.getTv()) {
@@ -648,6 +655,7 @@ public class Assembly {
                     assemblyCode.add("\tMOVE.W\t(A7)+," + param.getId());
                 }
             }
+            Collections.reverse(params);
             if (prod.getReturnType() != StructureReturnType.VOID) {
                 if (prod.getReturnType().equals(StructureReturnType.TUP)) {
                     assemblyCode.add("\tSUBA.L\t#TPSZ,A7");
