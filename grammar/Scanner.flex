@@ -14,6 +14,7 @@ import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import errors.ErrorHandler;
 import errors.ErrorCode;
 import utils.Phase;
+import java.util.ArrayList;
 
 import grammar.ParserSym;
 
@@ -42,6 +43,7 @@ ENDLINE       = [\r\n]+
 
 
 %{
+    public ArrayList<ComplexSymbol> tokens = new ArrayList<>();
 
     /*
      * Create ComplexSymbol without attribute
@@ -50,6 +52,7 @@ ENDLINE       = [\r\n]+
         ComplexSymbol cs = new ComplexSymbol(ParserSym.terminalNames[type], type);
         cs.left = yyline + 1;
         cs.right = yycolumn;
+        tokens.add(cs);
         return cs;
     }
 
@@ -60,6 +63,7 @@ ENDLINE       = [\r\n]+
         ComplexSymbol cs = new ComplexSymbol(ParserSym.terminalNames[type], type, value);
         cs.left = yyline + 1;
         cs.right = yycolumn;
+        tokens.add(cs);
         return cs;
     }
 
@@ -131,9 +135,9 @@ ENDLINE       = [\r\n]+
 {NUMBER}        { return symbol(ParserSym.NUMBER, this.yytext()); }
 {ID}            { return symbol(ParserSym.ID, this.yytext());     }
 
-{WS}            {                                                }
+{WS}            {                                                 }
 {COMMENT}       {                                                 }
 {LINE_COMMENT}  {                                                 }
-{ENDLINE}       {                                      }
+{ENDLINE}       {                                                 }
 
 [^]             { error();                                        }

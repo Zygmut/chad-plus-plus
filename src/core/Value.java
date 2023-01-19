@@ -1,5 +1,7 @@
 package core;
 
+import intermediate_code.ThreeAddressCode;
+
 public class Value {
     private String currentInstance;
     private Expresion expresion;
@@ -11,19 +13,19 @@ public class Value {
     private A_Tuple aTuple;
     private Input input;
 
-    public Value(String instance, String value) {
+    public Value(String instance, String value, int line, int column) {
         switch (instance) {
             case "Number":
                 this.currentInstance = instance;
-                this.number = new Number(value);
+                this.number = new Number(value, line, column);
                 break;
             case "Bol":
                 this.currentInstance = instance;
-                this.bol = new Bol(value);
+                this.bol = new Bol(value, line, column);
                 break;
             case "Id":
                 this.currentInstance = instance;
-                this.id = new Id(value);
+                this.id = new Id(value, line, column);
                 break;
             default:
                 this.currentInstance = "error";
@@ -65,6 +67,72 @@ public class Value {
     public Value(CallFn callFn) {
         this.callFn = callFn;
         this.currentInstance = "CallFn";
+    }
+
+    public String getCurrentInstance() {
+        return currentInstance;
+    }
+
+    public Expresion getExpresion() {
+        return expresion;
+    }
+
+    public Number getNumber() {
+        return number;
+    }
+
+    public Bol getBol() {
+        return bol;
+    }
+
+    public Tuple getTuple() {
+        return tuple;
+    }
+
+    public Id getId() {
+        return id;
+    }
+
+    public CallFn getCallFn() {
+        return callFn;
+    }
+
+    public A_Tuple getaTuple() {
+        return aTuple;
+    }
+
+    public Input getInput() {
+        return input;
+    }
+
+    public void generate3dc(ThreeAddressCode codigoTresDir) {
+        switch (currentInstance) {
+            case "Expresion":
+                this.expresion.generate3dc(codigoTresDir);
+                break;
+            case "Number":
+                this.number.generate3dc(codigoTresDir);
+                break;
+            case "Tuple":
+                this.tuple.generate3dc(codigoTresDir);
+                break;
+            case "Bol":
+                this.bol.generate3dc(codigoTresDir);
+                break;
+            case "Id":
+                this.id.generate3dc(codigoTresDir);
+                break;
+            case "CallFn":
+                this.callFn.generate3dc(codigoTresDir);
+                break;
+            case "A_Tuple":
+                this.aTuple.generate3dc(codigoTresDir);
+                break;
+            case "Input":
+                this.input.generate3dc(codigoTresDir);
+                break;
+        }
+
     }
 
     @Override

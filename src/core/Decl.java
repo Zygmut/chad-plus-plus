@@ -1,12 +1,15 @@
 package core;
 
-public class Decl {
+import intermediate_code.ThreeAddressCode;
+
+public class Decl extends BaseNode {
 
     private boolean isConstant;
     private TypeVar type;
     private Asignation asignation;
 
-    public Decl(boolean isConstant, TypeVar type, Asignation asignation) {
+    public Decl(boolean isConstant, TypeVar type, Asignation asignation, int line, int column) {
+        super(line, column);
         this.isConstant = isConstant;
         this.type = type;
         this.asignation = asignation;
@@ -38,7 +41,16 @@ public class Decl {
 
     @Override
     public String toString() {
-        return "Decl [isConstant=" + isConstant + ", type=" + type + ", asignation=" + asignation + "]";
+        return "Decl [isConstant=" + isConstant + ", type=" + type + ", asignation=" + asignation + " line=" + line
+                + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ThreeAddressCode codigoTresDir) {
+        codigoTresDir.startDeclaration(type);
+        asignation.generate3dc(codigoTresDir);
+        codigoTresDir.endDeclaration();
     }
 
 }

@@ -15,7 +15,12 @@ public enum WarningCode {
     CUSTOM(""),
     UNUSED_VARIABLE("Unused variable."),
     UNUSED_METHOD("Unused method."),
-    INACCESIBLE_LINE("Line cannot be accessed.");
+    INACCESIBLE_LINE("Line cannot be accessed."),
+    CHANGE_TYPE_OF_GLOBAL_TUPLE(
+            "Changed the type of a global defined tuple argument, program might return unexpected results"),
+    VARIABLE_CONTENT_NOT_KNOWN_AT_COMPILE_TIME(
+            "The variable content you are trying to access is not known at compile time. Due to the lack of program flow analysis and boundary checking, program might return unexpected results."),
+    DIVISION_BY_ZERO("Division by zero.");
 
     public String message;
 

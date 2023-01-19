@@ -1,0 +1,27 @@
+$
+alpha tup test1(tup a){
+  tup tlp = [1, 2];
+  BEGIN
+  tlp = a;
+  return tlp;
+}
+$
+alpha tup test1(tup a){
+  tup tlp_1 = [1, 2];
+  BEGIN
+  return tlp_1;
+}
+
+alpha int test2(int a){
+  return a;
+}
+
+main {
+  tup vals = [0, 1, 2];
+  int a = 5;
+  BEGIN
+  vals = test1(vals);
+# vals = test1();
+  a = test2(5);
+  output(vals);
+}

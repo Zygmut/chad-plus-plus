@@ -1,0 +1,14 @@
+main {
+    int f = 1;
+    int iter = 0;
+    BEGIN
+    while(true) {
+        iter = inputint();
+        while(iter > 0){
+            f = f * iter;
+            iter = iter - 1;
+        }
+        output(f);
+        f = 1;
+    }
+}

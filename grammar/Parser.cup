@@ -8,18 +8,242 @@
 package grammar;
 
 import core.*;
+import core.Number;
 import errors.ErrorHandler;
+import errors.ErrorCode;
+import warnings.WarningCode;
+import warnings.WarningHandler;
 import utils.Phase;
+import java.util.ArrayList;
 import java.util.List;
+import semantic.SemanticAnalyzer;
+import symbol_table.SymbolTable;
+import symbol_table.Symbol;
+import symbol_table.StructureType;
+import symbol_table.StructureReturnType;
+import core.TypeVar;
+import java.util.Stack;
 
 class Parser;
 parser code {:
     Chadpp tree;
+    SymbolTable st = new SymbolTable();
+    SemanticAnalyzer sem = new SemanticAnalyzer(st);
 
     public Chadpp getTree(){ return tree; }
+    public SymbolTable getSymbolTable(){ return st; }
+    public SemanticAnalyzer getSemanticAnalyzer(){ return sem; }
+
+    private StructureReturnType typeVartoReturnType(TypeVar tp){
+        switch(tp.name()){
+            case "INT":
+                return StructureReturnType.INT;
+            case "BOOL":
+                return StructureReturnType.BOOL;
+            case "TUP":
+                return StructureReturnType.TUP;
+            default:
+                return StructureReturnType.VOID;
+        }
+    }
 
 
-    /**
+    private boolean addTupleContentstoST(Asignation assig){
+
+    if (assig.getExpresion().getOp() != null || assig.getExpresion().getNextExpresion() != null) {
+      // ERROR -> only allowed to set tuples alone
+      ErrorHandler.addError(ErrorCode.SET_TUPLES_ONLY_ALONE,
+          assig.getExpresion().getLine(),
+          assig.getExpresion().getColumn(),
+          Phase.SEMANTIC);
+    }
+    // Revisamos que la asignación de la tupla sea un id
+    if (!assig.getExpresion().getValue().getCurrentInstance().equals("Tuple")) {
+      // Revisar que el id sea una tupla
+      // ERROR: asignation of non tuple value to tuple variable
+      // ErrorHandler.addError(ErrorCode.INVALID_ASIGNATION_OF_TUPLE,
+      //     assig.getExpresion().getLine(),
+      //     assig.getExpresion().getColumn(),
+      //     Phase.SEMANTIC);
+      return false;
+
+    }
+    ArrayList<Symbol> content = new ArrayList<>();
+    L_Args tupCont = assig.getExpresion().getValue().getTuple().getTupleContent();
+
+    for (L_Args arg = tupCont; arg != null; arg = arg.getNextArg()) {
+      Value value = arg.getArg().getValue();
+
+      switch (value.getCurrentInstance()) {
+        case "Number": // int
+          content.add(new Symbol("Number" + value.getNumber().getLine() + "_" + value.getNumber().getColumn(),
+              StructureType.VALUE, StructureReturnType.INT, null, false, true, value.getNumber().getLine()));
+          break;
+        case "Bol":
+          content.add(new Symbol("BOL" + value.getBol().getLine() + "_" + value.getBol().getColumn(),
+              StructureType.VALUE, StructureReturnType.BOOL, null, false, true, value.getBol().getLine()));
+          break;
+        case "Id": // ts -> type
+          // SEMANTIC -> check id returns Structure type
+          StructureReturnType idReturnType = sem.checkId(value.getId());
+          if (idReturnType == null) {
+            // ERROR -> ID NOT DECLARED
+            ErrorHandler.addError(ErrorCode.ID_NOT_DECLARED_OR_NOT_FOUND,
+                value.getId().getLine(),
+                value.getId().getColumn(),
+                Phase.SEMANTIC);
+            return false;
+          }
+          if (idReturnType.equals(StructureReturnType.TUP)) {
+            ErrorHandler.addError(ErrorCode.SET_TUPLES_ONLY_ALONE,
+                assig.getExpresion().getLine(),
+                assig.getExpresion().getColumn(),
+                Phase.SEMANTIC);
+            return false;
+          }
+          content.add(new Symbol(value.getId().getValue(), StructureType.VALUE, idReturnType, null, false, true,
+              value.getId().getLine()));
+          break;
+        case "A_Tuple": // ts -> check if the index exists
+          // Debido a que se ha tenido que crear la tupla, sabemos que los
+          // elementos de esta son "legales" y por lo tanto solo tenemos que
+          // revisar si existe tal parametro
+          if (st.getSymbol(value.getaTuple().getId().getValue()).getStructureType()
+                  .equals(StructureType.PARAMETER)) {
+              // WARNING: parameter not known at compile time, results may differ
+              WarningHandler.addWarning(WarningCode.VARIABLE_CONTENT_NOT_KNOWN_AT_COMPILE_TIME,
+                      value.getaTuple().getId().getLine(),
+                      value.getaTuple().getId().getColumn(),
+                      Phase.SEMANTIC);
+              break;
+          }
+          Symbol nTupleArg = st.getNTupleArgument(value.getaTuple().getId().getValue(),
+              value.getaTuple().getAccess().getValue());
+          if (nTupleArg == null) { // No existe tal parametro -> error
+            ErrorHandler.addError(ErrorCode.TUPLE_INDEX_OUT_OF_BOUNDS,
+                value.getaTuple().getLine(),
+                value.getaTuple().getColumn(),
+                Phase.SEMANTIC);
+            return false;
+          }
+          content.add(new Symbol(nTupleArg.getName(), StructureType.VALUE, nTupleArg.getStructureReturnType(), null,
+              false, true, value.getaTuple().getLine()));
+          break;
+        case "Input": // input -> type
+          String inputType = value.getInput().getType() == 0 ? "int" : "bol";
+          if (inputType.equals("int")) {
+            content
+                .add(new Symbol("Input" + inputType + value.getInput().getLine() + "_" + value.getInput().getColumn(),
+                    StructureType.VALUE, StructureReturnType.INT, null, false, true, value.getInput().getLine()));
+          } else {
+            content
+                .add(new Symbol("Input" + inputType + value.getInput().getLine() + "_" + value.getInput().getColumn(),
+                    StructureType.VALUE, StructureReturnType.BOOL, null, false, true, value.getInput().getLine()));
+          }
+          break;
+        case "Expresion": // sem -> checkExp
+          StructureReturnType returnedExpresionType = sem.checkExpresion(value.getExpresion());
+          if (returnedExpresionType == null) {
+            // ERROR EXPRESION IS MALFORMED
+            ErrorHandler.addError(ErrorCode.MALFORMED_EXPRESSION,
+                value.getExpresion().getLine(),
+                value.getExpresion().getColumn(),
+                Phase.SEMANTIC);
+            return false;
+          }
+          switch (returnedExpresionType.name()) {
+            case "INT":
+              content
+                  .add(new Symbol(
+                      "Expresion" + value.getExpresion().getLine() + "_" + value.getExpresion().getColumn(),
+                      StructureType.VALUE, StructureReturnType.INT, null, false, true,
+                      value.getExpresion().getLine()));
+              break;
+            case "BOOL":
+              content.add(new Symbol(
+                  "Expresion" + value.getExpresion().getLine() + "_" + value.getExpresion().getColumn(),
+                  StructureType.VALUE, StructureReturnType.BOOL, null, false, true, value.getExpresion().getLine()));
+              break;
+            case "TUP":
+              content
+                  .add(new Symbol(
+                      "Expresion" + value.getExpresion().getLine() + "_" + value.getExpresion().getColumn(),
+                      StructureType.VALUE, StructureReturnType.TUP, null, false, true,
+                      value.getExpresion().getLine()));
+              break;
+            default:
+              // ERROR UNSUPORTED EXPRESION TYPE
+              ErrorHandler.addError(ErrorCode.UNSUPPORTED_EXPRESSION_TYPE,
+                  value.getExpresion().getLine(),
+                  value.getExpresion().getColumn(),
+                  Phase.SEMANTIC);
+              return false;
+          }
+          break;
+        case "Tuple": // Error
+          // We don't allow tuples inside tuples
+          ErrorHandler.addError(ErrorCode.TUPLE_CAN_NOT_CONTAIN_TUPLE,
+              arg.getArg().getValue().getTuple().getLine(),
+              arg.getArg().getValue().getTuple().getColumn(),
+              Phase.SEMANTIC);
+          return false;
+        case "CallFn":
+          // Revisar si existe el Id
+          Symbol fn = st.getFunction(value.getCallFn().getId().getValue());
+          if (fn == null) {
+            ErrorHandler.addError(ErrorCode.UNDECLARED_FUNCTION,
+                value.getCallFn().getLine(),
+                value.getCallFn().getColumn(),
+                Phase.SEMANTIC);
+            return false;
+          }
+          // comprobar el tipo de return de la función
+          if (fn.getStructureReturnType() == StructureReturnType.TUP) {
+            // si retorna tuple -> error
+            ErrorHandler.addError(ErrorCode.RETURN_TYPE_TUPLE_IN_TUPLE,
+                value.getCallFn().getLine(),
+                value.getCallFn().getColumn(),
+                Phase.SEMANTIC);
+            return false;
+          }
+          if (!sem.checkCallFArgs(value.getCallFn())) {
+            return false;
+          }
+          content.add(new Symbol(
+              "CallFn" + value.getCallFn().getId() + value.getCallFn().getLine() + "_"
+                  + value.getCallFn().getColumn(),
+              StructureType.VALUE, fn.getStructureReturnType(), null, false, true, value.getCallFn().getLine()));
+          break;
+        default:
+          // ERROR -> unsupported element
+          ErrorHandler.addError(ErrorCode.UNSUPPORTED_ELEMENT,
+              value.getNumber().getLine(),
+              value.getNumber().getColumn(),
+              Phase.SEMANTIC);
+          return false;
+      }
+    }
+
+    // Coger todos los ids
+    for (L_Ids l_ids = assig.getL_Ids(); l_ids != null; l_ids = l_ids.nextId()) {
+      Symbol symbol = st.getSymbol(l_ids.getId());
+      if (symbol == null) {
+        // ERROR -> variable not declared
+        ErrorHandler.addError(ErrorCode.UNDECLARED_VARIABLE,
+            l_ids.getLine(),
+            l_ids.getColumn(),
+            Phase.SEMANTIC);
+        return false;
+      }
+      // Una vez encontrado, usar setContent para poner el contenido respectico a la
+      // tupla
+      symbol.setContent(content);
+    }
+
+    return true;
+    }
+
+        /**
      * Override syntax error to use custom message and error handling
      *
      * @param cur_token
@@ -39,7 +263,7 @@ parser code {:
      */
     @Override
     public void report_error(String message, Object token) {
-        ErrorHandler.addError(message, ((java_cup.runtime.Symbol) token).left, -1, Phase.SYNTACTIC);
+        ErrorHandler.addError(message, ((java_cup.runtime.Symbol) token).left, -1 , Phase.SYNTACTIC);
     }
 
     /**
@@ -69,147 +293,277 @@ terminal        BEGIN, MAIN, ALPHA, CONST, RETURN, INT, BOL, TUP, VOID,
                 SEMICOLON, COMMA, LPAREN, RPAREN, LKEY, RKEY, LSKEY,
                 RSKEY ;
 
-terminal        String      NUMBER;
-terminal        String      ID;
-terminal        String      VBOL;
+terminal        String              NUMBER;
+terminal        String              ID;
+terminal        String              VBOL;
 
-non terminal    Chadpp      CHADPP;
-non terminal    Main        MAINFN;
-non terminal    L_Decls     DECLS;
-non terminal    Decl        DECL;
-non terminal    TypeVar     TYPEVAR;
-non terminal    Asignation  ASIGNATION;
-non terminal    Expresion   EXPRESION;
-non terminal    Op          OP;
-non terminal    Value       VALUE;
-non terminal    Tuple       V_TUP;
-non terminal    A_Tuple     A_TUP;
-non terminal    CallFn      CALLF;
-non terminal    L_Args      ARGS;
-non terminal    L_Instrs    INSTRS;
-non terminal    L_Instrs    R_INSTRS;
-non terminal    Instr       INSTR;
-non terminal    Instr       R_INSTR;
-non terminal    L_FArgs     F_ARGS;
-non terminal    L_FArgs     F_ARGS2;
-non terminal    L_Fn        FUNCTIONS;
-non terminal    Function    FUNCTION;
-non terminal    L_Ids       LID;
+non terminal                        M;
+non terminal    Chadpp              CHADPP;
+non terminal    Main                MAINFN;
+non terminal    L_Decls             DECLS;
+non terminal    Decl                DECL;
+non terminal    L_Decls             GDECLS;
+non terminal    Decl                GDECL;
+non terminal    TypeVar             TYPEVAR;
+non terminal    Asignation          ASIGNATION;
+non terminal    Asignation          DASIGNATION;
+non terminal    Expresion           EXPRESION;
+non terminal    Op                  OP;
+non terminal    Value               VALUE;
+non terminal    Tuple               V_TUP;
+non terminal    A_Tuple             A_TUP;
+non terminal    CallFn              CALLF;
+non terminal    L_Args              ARGS;
+non terminal    L_Instrs            INSTRS;
+non terminal    L_Instrs            R_INSTRS;
+non terminal    Instr               INSTR;
+non terminal    Instr               R_INSTR;
+non terminal    L_FArgs             F_ARGS;
+non terminal    L_FArgs             F_ARGS2;
+non terminal    L_Fn                FUNCTIONS;
+non terminal    Function            FUNCTION;
+non terminal    L_Ids               LID;
 
 start with CHADPP;
 
-CHADPP          ::= MAINFN:main FUNCTIONS:fun                   {: tree = new Chadpp(main, fun); :}
+M               ::=                                                 {: st.addAccess(); :}
                 ;
 
-MAINFN          ::= MAIN LKEY DECLS:decls BEGIN INSTRS:i RKEY   {: RESULT = new Main(decls, i); :}
-                |   MAIN LKEY INSTRS:i RKEY                     {: RESULT = new Main(null, i); :}
+CHADPP          ::= M GDECLS:d  FUNCTIONS:fun MAINFN:main           {: tree = new Chadpp(d, main, fun, 0, 0);    :}
+                |   M FUNCTIONS:fun MAINFN:main                     {: tree = new Chadpp(null, main, fun, 0, 0); :}
                 ;
 
-
-DECLS           ::= DECL:d DECLS:ld                             {: RESULT = new L_Decls(d, ld); :}
-                | DECL:d                                        {: RESULT = new L_Decls(d); :}
+MAINFN          ::= M MAIN LKEY DECLS:decls BEGIN INSTRS:i RKEY     {: RESULT = new Main(decls, i, declsleft,declsright );:}
+                |   M MAIN LKEY INSTRS:i RKEY                       {: RESULT = new Main(null, i, ileft, iright);         :}
                 ;
 
-DECL            ::= CONST TYPEVAR:type ASIGNATION:assig         {: RESULT = new Decl(true, type, assig); :}
-                |   TYPEVAR:type ASIGNATION:assig               {: RESULT = new Decl(false, type, assig); :}
+GDECLS          ::= GDECL:d GDECLS:ld                               {: RESULT = new L_Decls(d, ld, dleft, dright);        :}
+                | GDECL:d                                           {: RESULT = new L_Decls(d, dleft, dright);            :}
                 ;
 
-TYPEVAR         ::= INT                                         {: RESULT = TypeVar.INT; :}
-                |   BOL                                         {: RESULT = TypeVar.BOOL; :}
-                |   TUP                                         {: RESULT = TypeVar.TUP; :}
+GDECL            ::= CONST TYPEVAR:type DASIGNATION:assig       {:
+                                                                    for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
+                                                                        if (!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, true, typeleft))){
+                                                                            // ERROR -> variable already declared
+                                                                            ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
+                                                                            l_id.getLine(),
+                                                                            l_id.getColumn(),
+                                                                            Phase.SEMANTIC);
+                                                                        };
+                                                                    };
+                                                                    if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
+                                                                        // Vamos añadiendo los elementos al contenido del simbolo
+                                                                        addTupleContentstoST(assig);
+                                                                    };
+                                                                    sem.checkAsignation(assig, true);
+                                                                    RESULT = new Decl(true, type, assig, typeleft, typeright);
+                                                                :}
+                |   TYPEVAR:type DASIGNATION:assig              {:
+                                                                    for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
+                                                                        if(!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, false, typeleft))){
+                                                                            // ERROR -> variable already declared
+                                                                            ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
+                                                                            l_id.getLine(),
+                                                                            l_id.getColumn(),
+                                                                            Phase.SEMANTIC);
+                                                                        };
+
+                                                                    };
+                                                                    if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
+                                                                        // Vamos añadiendo los elementos al contenido del simbolo
+                                                                        addTupleContentstoST(assig);
+                                                                    };
+                                                                    sem.checkAsignation(assig, true);
+                                                                    RESULT = new Decl(false, type, assig, typeleft, typeright);
+                                                                :}
                 ;
 
-ASIGNATION      ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e); :};
-
-LID             ::= ID:id COMMA LID:lid                         {: RESULT = new L_Ids(id, lid); :}
-                | ID:id                                         {: RESULT = new L_Ids(id); :}
+DECLS           ::= DECL:d DECLS:ld                             {: RESULT = new L_Decls(d, ld, dleft, dright);  :}
+                | DECL:d                                        {: RESULT = new L_Decls(d, dleft, dright);      :}
                 ;
 
-EXPRESION       ::= VALUE:v OP:op EXPRESION:e                   {: RESULT = new Expresion(v, e, op); :}
-                |   VALUE:v                                     {: RESULT = new Expresion(v); :}
+DECL            ::= CONST TYPEVAR:type DASIGNATION:assig        {:
+                                                                    for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
+                                                                        if(!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, true, typeleft))){
+                                                                            ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
+                                                                            l_id.getLine(),
+                                                                            l_id.getColumn(),
+                                                                            Phase.SEMANTIC);
+                                                                        };
+                                                                    };
+                                                                    if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
+                                                                        // Vamos añadiendo los elementos al contenido del simbolo
+                                                                        addTupleContentstoST(assig);
+                                                                    };
+                                                                    sem.checkAsignation(assig, true);
+                                                                    RESULT = new Decl(true, type, assig, typeleft, typeright);
+                                                                :}
+                |   TYPEVAR:type DASIGNATION:assig              {:
+                                                                    for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
+                                                                        if (!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, false, typeleft))){
+                                                                            // ERROR -> variable already declared
+                                                                            ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
+                                                                            l_id.getLine(),
+                                                                            l_id.getColumn(),
+                                                                            Phase.SEMANTIC);
+                                                                        };
+                                                                    };
+                                                                    if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
+                                                                        // Vamos añadiendo los elementos al contenido del simbolo
+                                                                        addTupleContentstoST(assig);
+                                                                    };
+                                                                    sem.checkAsignation(assig, true);
+                                                                    RESULT = new Decl(false, type, assig, typeleft, typeright);
+                                                                :}
                 ;
 
-OP              ::= PLUS                                        {: RESULT = Op.PLUS; :}
-                |   MINUS                                       {: RESULT = Op.MINUS; :}
-                |   MULT                                        {: RESULT = Op.MULT; :}
-                |   DIV                                         {: RESULT = Op.DIV; :}
+TYPEVAR         ::= INT                                         {: RESULT = TypeVar.INT;    :}
+                |   BOL                                         {: RESULT = TypeVar.BOOL;   :}
+                |   TUP                                         {: RESULT = TypeVar.TUP;    :}
+                ;
+
+ASIGNATION      ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e, lidleft, lidright); sem.checkAsignation(RESULT, false);:};
+
+DASIGNATION     ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e, lidleft, lidright); :};
+
+LID             ::= ID:id COMMA LID:lid                         {: RESULT = new L_Ids(id, lid, idleft, idright);    :}
+                | ID:id                                         {: RESULT = new L_Ids(id, idleft, idright);         :}
+                ;
+
+EXPRESION       ::= VALUE:v OP:op EXPRESION:e                   {: RESULT = new Expresion(v, e, op, vleft, vright); ;:}
+                |   VALUE:v                                     {: RESULT = new Expresion(v, vleft, vright);        ;:}
+                ;
+
+OP              ::= PLUS                                        {: RESULT = Op.PLUS;   :}
+                |   MINUS                                       {: RESULT = Op.MINUS;  :}
+                |   MULT                                        {: RESULT = Op.MULT;   :}
+                |   DIV                                         {: RESULT = Op.DIV;    :}
                 |   REQUAL                                      {: RESULT = Op.REQUAL; :}
-                |   LT                                          {: RESULT = Op.LT; :}
-                |   GT                                          {: RESULT = Op.GT; :}
-                |   AND                                         {: RESULT = Op.AND; :}
-                |   OR                                          {: RESULT = Op.OR; :}
-//                |   NOT
+                |   LT                                          {: RESULT = Op.LT;     :}
+                |   GT                                          {: RESULT = Op.GT;     :}
+                |   AND                                         {: RESULT = Op.AND;    :}
+                |   OR                                          {: RESULT = Op.OR;     :}
                 ;
 
 VALUE           ::= LPAREN EXPRESION:e RPAREN                   {: RESULT = new Value(e); :}                // (E)
-                |   V_TUP:v                                     {: RESULT = new Value(v); :}                                            // [a,b,c]
-                |   A_TUP:a                                     {: RESULT = new Value(a); :}                                            // v[5]
-                |   NUMBER:n                                    {: RESULT = new Value("Number", n); :}      // 1
-                |   VBOL:b                                      {: RESULT = new Value("Bol", b); :}        // true
+                |   V_TUP:v                                     {: RESULT = new Value(v); :}                // [a,b,c]
+                |   A_TUP:a                                     {: RESULT = new Value(a); :}                // v[5]
+                |   NUMBER:n                                    {: RESULT = new Value("Number", n, nleft, nright); :}      // 1
+                |   VBOL:b                                      {: RESULT = new Value("Bol", b, bleft, bright); :}         // true
                 |   CALLF:call                                  {: RESULT = new Value(call); :}             // fn()
-                |   ININT LPAREN RPAREN                         {: RESULT = new Value(new Input(0)); :}
-                |   INBOL LPAREN RPAREN                         {: RESULT = new Value(new Input(1)); :}
-                |   ID:id                                       {: RESULT = new Value("Id", id); :}         // a
+                |   ININT LPAREN RPAREN                         {: RESULT = new Value(new Input(0, cur_token.left, cur_token.right)); :}
+                |   INBOL LPAREN RPAREN                         {: RESULT = new Value(new Input(1, cur_token.left, cur_token.right)); :}
+                |   ID:id                                       {: RESULT = new Value("Id", id, idleft, idright); :}         // a
                 ;
 
 // No se permite []. Al menos debe tener un elemento i.e [A]
-V_TUP           ::= LSKEY ARGS:a RSKEY                          {: RESULT = new Tuple(a); :}
+V_TUP           ::= LSKEY ARGS:a RSKEY                          {: RESULT = new Tuple(a, aleft, aright); :}
                 ;
 
-A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: RESULT = new A_Tuple(new Id(id), new core.Number(num)); :}
+A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: RESULT = new A_Tuple(new Id(id, idleft, idright), new Number(num, numleft, numright), cur_token.left, cur_token.right); :}
                 ;
 
-CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new CallFn(new Id(id), args); :}
-                |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id)); :}
+CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new CallFn(new Id(id, idleft, idright), args, cur_token.left, cur_token.right); sem.checkCallFArgs(RESULT);:}
+                |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id, idleft, idright), cur_token.left, cur_token.right);       sem.checkCallFArgs(RESULT);:}
                 ;
 
-ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: RESULT = new L_Args(e, args); :}
-                |   EXPRESION:e                                 {: RESULT = new L_Args(e); :}
+ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: sem.checkExp(e); RESULT = new L_Args(e, args, eleft, eright);:}
+                |   EXPRESION:e                                 {: sem.checkExp(e); RESULT = new L_Args(e, eleft, eright);      :}
                 ;
 
-INSTRS          ::= INSTR:inst INSTRS:instrs                    {: RESULT = new L_Instrs(inst, instrs); :}
+INSTRS          ::= INSTR:inst INSTRS:instrs                    {: RESULT = new L_Instrs(inst, instrs, instleft, instright); :}
                 |                                               {: :}
                 ;
 
-R_INSTRS        ::= R_INSTR:inst R_INSTRS:instrs                {: RESULT = new L_Instrs(inst, instrs); :}
+R_INSTRS        ::= R_INSTR:inst R_INSTRS:instrs                {: RESULT = new L_Instrs(inst, instrs, instleft, instright); :}
                 |                                               {: :}
                 ;
 
-R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                          {: RESULT = new Instr(new IfNode(e, instrs)); :}
-                |   WHILE LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                       {: RESULT = new Instr(new WhileNode(e, instrs)); :}
-                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY R_INSTRS:instrs RKEY    {: RESULT = new Instr(new LoopNode(e1, e2, instrs)); :}
-                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                         {: RESULT = new Instr(new Output(e)); :}
-                |   ININT LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(0)); :}
-                |   INBOL LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(1)); :}
-                |   ASIGNATION:a                                                                    {: RESULT = new Instr(a); :}
-                |   CALLF:fn SEMICOLON                                                              {: RESULT = new Instr(fn); :}
-                |   RETURN EXPRESION:e SEMICOLON                                                    {: RESULT = new Instr(new ReturnNode(e)); :}
+R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                          {: sem.checkLogicalExpresion(e);RESULT = new Instr(new IfNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
+                |   WHILE LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                       {: sem.checkLogicalExpresion(e);RESULT = new Instr(new WhileNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
+                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY R_INSTRS:instrs RKEY    {: sem.checkLoop(e1,e2); RESULT = new Instr(new LoopNode(e1, e2, instrs, e1left, e1right), cur_token.left, cur_token.right); :}
+                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                         {: sem.checkExp(e);RESULT = new Instr(new Output(e, eleft , eright), cur_token.left , cur_token.right); :}
+                |   ININT LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(0, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   INBOL LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(1, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   ASIGNATION:a                                                                    {: RESULT = new Instr(a, aleft , aright); :}
+                |   CALLF:fn SEMICOLON                                                              {: RESULT = new Instr(fn, fnleft , fnright); :}
+                |   RETURN EXPRESION:e SEMICOLON
+                    {:
+                        st.addSymbol(new Symbol("Return" + eleft + "_" + eright, StructureType.RETURN, sem.checkReturnValue(e), null, false, false, eleft));
+                        RESULT = new Instr(new ReturnNode(e, eleft , eright), cur_token.left , cur_token.right);
+                    :}
                 ;
 
-INSTR           ::= IF LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                        {: RESULT = new Instr(new IfNode(e, instrs)); :}
-                |   WHILE LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                     {: RESULT = new Instr(new WhileNode(e, instrs)); :}
-                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY INSTRS:instrs RKEY  {: RESULT = new Instr(new LoopNode(e1, e2, instrs)); :}
-                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                     {: RESULT = new Instr(new Output(e)); :}
-                |   ININT LPAREN RPAREN SEMICOLON                                               {: RESULT = new Instr(new Input(0)); :}
-                |   INBOL LPAREN RPAREN SEMICOLON                                               {: RESULT = new Instr(new Input(1)); :}
-                |   ASIGNATION:a                                                                {: RESULT = new Instr(a); :}
-                |   CALLF:fn SEMICOLON                                                          {: RESULT = new Instr(fn); :}
+INSTR           ::= IF LPAREN EXPRESION:e RPAREN LKEY INSTRS:instrs RKEY                            {: sem.checkLogicalExpresion(e);RESULT = new Instr(new IfNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
+                |   WHILE LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                       {: sem.checkLogicalExpresion(e);RESULT = new Instr(new WhileNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
+                |   LOOP LPAREN EXPRESION:e1 COMMA EXPRESION:e2 RPAREN LKEY R_INSTRS:instrs RKEY    {: sem.checkLoop(e1,e2); RESULT = new Instr(new LoopNode(e1, e2, instrs, e1left, e1right), cur_token.left, cur_token.right); :}
+                |   OUT LPAREN EXPRESION:e RPAREN SEMICOLON                                         {: sem.checkExp(e);RESULT = new Instr(new Output(e, eleft , eright), cur_token.left , cur_token.right); :}
+                |   ININT LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(0, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   INBOL LPAREN RPAREN SEMICOLON                                                   {: RESULT = new Instr(new Input(1, cur_token.left , cur_token.right), cur_token.left , cur_token.right); :}
+                |   ASIGNATION:a                                                                    {: RESULT = new Instr(a, aleft , aright); :}
+                |   CALLF:fn SEMICOLON                                                              {: RESULT = new Instr(fn, fnleft , fnright); :}
                 ;
 
-FUNCTIONS        ::= FUNCTION:fn FUNCTIONS:fns                  {: RESULT = new L_Fn(fn, fns); :}
-                |                                               {: :}
+FUNCTIONS       ::= M FUNCTION:fn FUNCTIONS:fns                                                     {: RESULT = new L_Fn(fn, fns, fnleft, fnright); :}
+                |                                                                                   {: :}
                 ;
 
-FUNCTION         ::= TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY    {: RESULT = new Function(t, new Id(id), args, decls,instrs); :}
-                |   TYPEVAR:t ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY                       {: RESULT = new Function(t, new Id(id), args, null, instrs); :}
-                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY            {: RESULT = new Function(null, new Id(id), args, decls, instrs); :}
-                |   VOID ALPHA ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY                              {: RESULT = new Function(null, new Id(id), args, null, instrs); :}
+FUNCTION        ::= ALPHA TYPEVAR:t ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN R_INSTRS:instrs RKEY
+                    {:
+                        if(!st.addSymbol(new Symbol(id, StructureType.FUNCTION,typeVartoReturnType(t), null, false, false, idleft))){
+                            ErrorHandler.addError(ErrorCode.DUPLICATED_FUNCTION,
+                            idleft,
+                            idright,
+                            Phase.SEMANTIC);
+                        };
+                        sem.checkReturns();
+                        RESULT = new Function(t, new Id(id, idleft , idright), args, decls,instrs, idleft , idright);
+                    :}
+                |   ALPHA TYPEVAR:t ID:id LPAREN F_ARGS:args RPAREN LKEY R_INSTRS:instrs RKEY
+                    {:
+                        if(!st.addSymbol(new Symbol(id, StructureType.FUNCTION,typeVartoReturnType(t), null, false, false, idleft ))){
+                            ErrorHandler.addError(ErrorCode.DUPLICATED_FUNCTION,
+                            idleft,
+                            idright,
+                            Phase.SEMANTIC);
+                        };
+                        sem.checkReturns();
+                        RESULT = new Function(t, new Id(id, idleft , idright), args, null, instrs, idleft , idright);
+                    :}
+                |   ALPHA VOID ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:decls BEGIN INSTRS:instrs RKEY
+                    {:
+                        if(!st.addSymbol(new Symbol(id, StructureType.FUNCTION,StructureReturnType.VOID, null, false, false, idleft ))){
+                            ErrorHandler.addError(ErrorCode.DUPLICATED_FUNCTION,
+                            idleft,
+                            idright,
+                            Phase.SEMANTIC);
+                        };
+                        RESULT = new Function(null, new Id(id, idleft , idright), args, decls, instrs, idleft , idright);
+                    :}
+                |   ALPHA VOID ID:id LPAREN F_ARGS:args RPAREN LKEY INSTRS:instrs RKEY
+                    {:
+                        if(!st.addSymbol(new Symbol(id, StructureType.FUNCTION,StructureReturnType.VOID, null, false, false, idleft ))){
+                            ErrorHandler.addError(ErrorCode.DUPLICATED_FUNCTION,
+                            idleft,
+                            idright,
+                            Phase.SEMANTIC);
+                        };
+                        RESULT = new Function(null, new Id(id, idleft , idright), args, null, instrs,  idleft , idright);
+                    :}
                 ;
 
-F_ARGS          ::= F_ARGS2:args    {: RESULT = args; :}
-                |                   {: :}
+F_ARGS          ::= F_ARGS2:args    {: RESULT = args;   :}
+                |                   {:                  :}
                 ;
 
-F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args    {: RESULT = new L_FArgs( new FnArg(type, new Id(id)), args); :}
-                |   TYPEVAR:type ID:id                      {: RESULT = new L_FArgs( new FnArg(type, new Id(id)), null); :}
+F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args
+                    {:
+                        st.addSymbol(new Symbol(id, StructureType.PARAMETER, typeVartoReturnType(type), null, false, false, idleft));
+                        RESULT = new L_FArgs( new FnArg(type, new Id(id, idleft , idright), cur_token.left , cur_token.right), args, cur_token.left , cur_token.right);
+                    :}
+                |  TYPEVAR:type ID:id
+                    {:
+                        st.addSymbol(new Symbol(id, StructureType.PARAMETER, typeVartoReturnType(type), null, false, false, idleft));
+                        RESULT = new L_FArgs( new FnArg(type, new Id(id, idleft , idright), cur_token.left , cur_token.right), null, cur_token.left , cur_token.right);
+                    :}
                 ;

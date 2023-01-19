@@ -1,63 +1,73 @@
 package symbol_table;
 
+import java.util.ArrayList;
+
 public class Symbol {
 
-    private final String id;
-    private final Type type;
-    private final SubType subType;
-    private final String value;
-    private final String scope;
+    private final String name;
+    private final StructureType structureType;
+    private final StructureReturnType structureReturnType;
+    private ArrayList<Symbol> content; // content (ArrayList<Symbol>) o next (?LinkedList<Symbol>)
+    private final boolean isGlobal;
+    private final boolean isConstant;
+    private int line;
 
-    public enum Type {
-        FUNCTION,
-        VARIABLE,
-        PARAMETER,
+    public Symbol(String name, StructureType structureType, StructureReturnType structureReturnType,
+            ArrayList<Symbol> content, boolean isGlobal, boolean isConstant, int line) {
+        this.name = name;
+        this.structureType = structureType;
+        this.structureReturnType = structureReturnType;
+        this.content = content;
+        this.isGlobal = isGlobal;
+        this.isConstant = isConstant;
+        this.line = line;
     }
 
-    public enum SubType {
-        INT,
-        BOOL,
-        TUP,
-        VOID,
+    public String getName() {
+        return name;
     }
 
-    public Symbol(String id, Type type, SubType subType, String value, String scope) {
-        this.id = id;
-        this.type = type;
-        this.subType = subType;
-        this.value = value;
-        this.scope = scope;
+    public StructureType getStructureType() {
+        return structureType;
     }
 
-    public String getId() {
-        return id;
+    public StructureReturnType getStructureReturnType() {
+        return structureReturnType;
     }
 
-    public Type getType() {
-        return type;
+    public ArrayList<Symbol> getContent() {
+        return content;
     }
 
-    public SubType getSubType() {
-        return subType;
+    public void setContent(ArrayList<Symbol> content) {
+        this.content = content;
     }
 
-    public String getValue() {
-        return value;
+    public boolean isGlobal() {
+        return isGlobal;
     }
 
-    public String getScope() {
-        return scope;
+    public boolean isConstant() {
+        return isConstant;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.getName().equals(((Symbol) obj).getName());
     }
 
     @Override
     public String toString() {
-        return "Symbol{" +
-                "id='" + id + '\'' +
-                ", type=" + type +
-                ", subType=" + subType +
-                ", value='" + value + '\'' +
-                ", scope='" + scope + '\'' +
-                '}';
+        return "Symbol [name=" + name + ", structureType=" + structureType + ", structureReturnType="
+                + structureReturnType + ", content=" + content + ", isGlobal=" + isGlobal + ", isConstant=" + isConstant
+                + ", line=" + line + "]";
     }
-
 }

@@ -1,4 +1,4 @@
-tup alpha test_tuple(){
+alpha tup test_tuple(){
     return [2,3,4];
 }
 

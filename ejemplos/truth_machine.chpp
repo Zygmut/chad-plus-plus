@@ -1,0 +1,13 @@
+main{
+    int userInput = 0;
+    BEGIN
+    userInput = inputint();
+    if(userInput == 0){
+        output(0);
+    }
+    if(userInput == 1){
+        while(true){
+            output(1);
+        }
+    }
+}

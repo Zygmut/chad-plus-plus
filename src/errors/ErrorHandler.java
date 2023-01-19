@@ -1,5 +1,8 @@
 package errors;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import utils.Env;
@@ -24,6 +27,11 @@ public class ErrorHandler {
      */
     public static void addError(Error error) {
         if (!Env.TEST_MODE) {
+            for (Error err : errors) {
+                if (err.equals(error)) {
+                    return;
+                }
+            }
             errors.add(error);
         }
     }
@@ -37,7 +45,13 @@ public class ErrorHandler {
      */
     public static void addError(ErrorCode code, int line, Phase phase) {
         if (!Env.TEST_MODE) {
-            errors.add(new Error(code, line, phase));
+            Error error = new Error(code, line, phase);
+            for (Error err : errors) {
+                if (err.equals(error)) {
+                    return;
+                }
+            }
+            errors.add(error);
         }
     }
 
@@ -51,7 +65,13 @@ public class ErrorHandler {
      */
     public static void addError(ErrorCode code, int line, int charloc, Phase phase) {
         if (!Env.TEST_MODE) {
-            errors.add(new Error(code, line, charloc, phase));
+            Error error = new Error(code, line, charloc, phase);
+            for (Error err : errors) {
+                if (err.equals(error)) {
+                    return;
+                }
+            }
+            errors.add(error);
         }
     }
 
@@ -66,6 +86,12 @@ public class ErrorHandler {
      */
     public static void addError(String message, int line, int charloc, Phase phase) {
         if (!Env.TEST_MODE) {
+            Error error = new Error(message, line, charloc, phase);
+            for (Error err : errors) {
+                if (err.equals(error)) {
+                    return;
+                }
+            }
             errors.add(new Error(message, line, charloc, phase));
         }
     }
@@ -74,8 +100,15 @@ public class ErrorHandler {
      * Print all errors
      */
     public static void printErrors() {
-        for (Error error : errors) {
-            System.out.println(error);
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(Env.GENERATED_FILES + "/" + "errores.txt"));
+            for (Error error : errors) {
+                System.out.println(error);
+                writer.write(error.toString() + "\n");
+            }
+            writer.close();
+        } catch (IOException err) {
+            System.out.println(err);
         }
     }
 
@@ -95,6 +128,16 @@ public class ErrorHandler {
      */
     public static ArrayList<Error> getErrors() {
         return errors;
+    }
+
+    public static String getErrorsString() {
+        String s = "";
+        for (Error error : errors) {
+            error.toggleColors();
+            s += error.toString() + "\n";
+            error.toggleColors();
+        }
+        return s;
     }
 
 }

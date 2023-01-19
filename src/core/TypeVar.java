@@ -7,4 +7,5 @@ package core;
  */
 public enum TypeVar {
     INT, BOOL, TUP
+
 }

@@ -1,15 +1,19 @@
 package core;
 
-public class L_Instrs {
+import intermediate_code.ThreeAddressCode;
+
+public class L_Instrs extends BaseNode {
     private Instr instr;
     private L_Instrs nextInstr;
 
-    public L_Instrs(Instr instr, L_Instrs nextInstr) {
+    public L_Instrs(Instr instr, L_Instrs nextInstr, int line, int column) {
+        super(line, column);
         this.instr = instr;
         this.nextInstr = nextInstr;
     }
 
-    public L_Instrs(Instr instr) {
+    public L_Instrs(Instr instr, int line, int column) {
+        super(line, column);
         this.instr = instr;
     }
 
@@ -21,7 +25,7 @@ public class L_Instrs {
         this.instr = instr;
     }
 
-    public L_Instrs getNextInstr() {
+    public L_Instrs nextInstr() {
         return nextInstr;
     }
 
@@ -31,7 +35,18 @@ public class L_Instrs {
 
     @Override
     public String toString() {
-        return "L_Instrs [instr=" + instr + ", nextInstr=" + nextInstr + "]";
+        return "L_Instrs [instr=" + instr + ", nextInstr=" + nextInstr + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ThreeAddressCode codigoTresDir) {
+        this.instr.generate3dc(codigoTresDir);
+
+        if (this.nextInstr != null) {
+            this.nextInstr.generate3dc(codigoTresDir);
+        }
+
     }
 
 }

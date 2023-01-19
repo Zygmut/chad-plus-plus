@@ -1,32 +1,40 @@
-main {
-    int a = 0;
-    int b = 0;
-    int c = 0;
-    BEGIN
-    a = 1;
-    test_global();
-}
-
 # Hola que tal
 $
  hola
 $
+int value = 5;
+int a = 4 + 1;
+bol c = false;
+tup j, h = [1, false];
+const tup b = [1,2,3, true ];
 
-bol alpha mayor5 (int n){
+alpha bol mayor5 (int n){
+    bol test = true;
+    BEGIN
     if (n > 5){
         return true;
     }
     return false;
 }
 
-bol alpha mayor5_v2 (int n){
-    return n > 5;
+alpha bol mayor5_v2 (bol n, tup a){
+    return n ;
 }
 
-bol alpha mayor5_v3 (int n){
+alpha int test_global (int c){
+    return c;
+}
+
+alpha bol mayor5_v3 (int n){
     return ((n < 5) && (n == 5));
 }
 
-int alpha test_global (){
-    return a;
+
+main {
+    int c = 0;
+    tup d = [1, false, a, c, test_global(1), b[0], (1 - 2)];
+    tup a = [test_global()]; # DOBLE ERROR #44
+    BEGIN
+    test_global(1);
+    
 }

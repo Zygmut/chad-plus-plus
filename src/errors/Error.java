@@ -2,6 +2,7 @@ package errors;
 
 import utils.ConsoleColor;
 import utils.Phase;
+import java.util.Objects;
 
 /**
  * Error - Clase con los metadatos de un error
@@ -24,6 +25,7 @@ public class Error {
     private int charloc;
     // Phase of the compiler
     private Phase phase;
+    private boolean withColor = true;
 
     public Error(ErrorCode code, int line, Phase phase) {
         this.code = code;
@@ -51,26 +53,50 @@ public class Error {
     public String toString() {
         setMessage(); // Set the message based on the code
         StringBuilder sb = new StringBuilder();
+        if (withColor) {
+            sb.append(color);
+        }
 
-        sb.append(ConsoleColor.printColored(color, this.getPhase().toUpperCase()));
-        sb.append(ConsoleColor.printColored(color, " "));
-        sb.append(ConsoleColor.printColored(color, "ERROR"));
+        sb.append(this.getPhase().toUpperCase());
+        sb.append(" ");
+        sb.append("ERROR");
         // CLI argument error
         if (this.line != -1) {
-            sb.append(ConsoleColor.printColored(color, " at line "));
-            sb.append(ConsoleColor.printColored(color, Integer.toString(line)));
+            sb.append(" at line ");
+            sb.append(Integer.toString(line));
 
             if (this.charloc != -1) {
-                sb.append(ConsoleColor.printColored(color, ":"));
-                sb.append(ConsoleColor.printColored(color, Integer.toString(charloc)));
+                sb.append(":");
+                sb.append(Integer.toString(charloc));
 
             }
         }
 
-        sb.append(ConsoleColor.printColored(color, " - "));
-        sb.append(ConsoleColor.printColored(color, message));
+        sb.append(" - ");
+        sb.append(message);
+        if (withColor) {
+            sb.append(ConsoleColor.RESET);
+        }
 
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Error error = (Error) o;
+        return line == error.line && charloc == error.charloc && withColor == error.withColor
+                && Objects.equals(message, error.message) && code == error.code && phase == error.phase;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color, message, code, line, charloc, phase, withColor);
     }
 
     /**
@@ -91,4 +117,8 @@ public class Error {
         }
     }
 
+    public boolean toggleColors() {
+        this.withColor = !this.withColor;
+        return this.withColor;
+    }
 }

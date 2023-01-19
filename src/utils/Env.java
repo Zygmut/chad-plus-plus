@@ -32,6 +32,7 @@ public class Env {
     public static final FileData FILE_DATA = new FileData();
     public static final String OUTPUTPATH = "./target/";
     public static final String[] VALID_EXT = { "txt", "chpp" };
+    public static final String GENERATED_FILES = "ficherosGenerados";
 
     public static final String welcomeString = "This is the Chad++ compiler!\n"
             + "\tUsage:\t  chadpp <inputFile> \n\t       or chadpp <inputFile> <outputFile>\n\n"

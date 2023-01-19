@@ -1,9 +1,15 @@
 package core;
 
-public class Output {
+import intermediate_code.Instruction;
+import intermediate_code.Operator;
+import intermediate_code.ThreeAddressCode;
+import intermediate_code.Variable;
+
+public class Output extends BaseNode {
     private Expresion expresion;
 
-    public Output(Expresion expresion) {
+    public Output(Expresion expresion, int line, int column) {
+        super(line, column);
         this.expresion = expresion;
     }
 
@@ -17,7 +23,22 @@ public class Output {
 
     @Override
     public String toString() {
-        return "Output [expresion=" + expresion + "]";
+        return "Output [expresion=" + expresion + " line=" + line + " column=" + column + "]";
+
+    }
+
+    @Override
+    public void generate3dc(ThreeAddressCode codigoTresDir) {
+        this.expresion.generate3dc(codigoTresDir);
+        if (!codigoTresDir.getLargs().isEmpty()) {
+            for (Variable var : codigoTresDir.getLargs()) {
+                codigoTresDir.addInstr(new Instruction(null, var.getId(), Operator.OUT, null));
+            }
+        } else {
+            codigoTresDir.addInstr(new Instruction(null, codigoTresDir.getLastVariable().getId(), Operator.OUT, null));
+        }
+        codigoTresDir.purgeArgs();
+
     }
 
 }
