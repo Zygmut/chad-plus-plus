@@ -7,16 +7,11 @@
 
 package grammar;
 
-import java.io.*;
-
-import java_cup.runtime.*;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import errors.ErrorHandler;
 import errors.ErrorCode;
 import utils.Phase;
 import java.util.ArrayList;
-
-import grammar.ParserSym;
 
 %%
 

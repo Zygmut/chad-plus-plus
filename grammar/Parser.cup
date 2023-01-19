@@ -22,7 +22,6 @@ import symbol_table.Symbol;
 import symbol_table.StructureType;
 import symbol_table.StructureReturnType;
 import core.TypeVar;
-import java.util.Stack;
 
 class Parser;
 parser code {:
@@ -49,24 +48,16 @@ parser code {:
 
 
     private boolean addTupleContentstoST(Asignation assig){
-
-    if (assig.getExpresion().getOp() != null || assig.getExpresion().getNextExpresion() != null) {
-      // ERROR -> only allowed to set tuples alone
-      ErrorHandler.addError(ErrorCode.SET_TUPLES_ONLY_ALONE,
-          assig.getExpresion().getLine(),
-          assig.getExpresion().getColumn(),
-          Phase.SEMANTIC);
-    }
-    // Revisamos que la asignación de la tupla sea un id
-    if (!assig.getExpresion().getValue().getCurrentInstance().equals("Tuple")) {
-      // Revisar que el id sea una tupla
-      // ERROR: asignation of non tuple value to tuple variable
-      // ErrorHandler.addError(ErrorCode.INVALID_ASIGNATION_OF_TUPLE,
-      //     assig.getExpresion().getLine(),
-      //     assig.getExpresion().getColumn(),
-      //     Phase.SEMANTIC);
-      return false;
-
+        if (assig.getExpresion().getOp() != null || assig.getExpresion().getNextExpresion() != null) {
+        // ERROR -> only allowed to set tuples alone
+        ErrorHandler.addError(ErrorCode.SET_TUPLES_ONLY_ALONE,
+            assig.getExpresion().getLine(),
+            assig.getExpresion().getColumn(),
+            Phase.SEMANTIC);
+        }
+        // Revisamos que la asignación de la tupla sea un id
+        if (!assig.getExpresion().getValue().getCurrentInstance().equals("Tuple")) {
+        return false;
     }
     ArrayList<Symbol> content = new ArrayList<>();
     L_Args tupCont = assig.getExpresion().getValue().getTuple().getTupleContent();
@@ -341,142 +332,147 @@ GDECLS          ::= GDECL:d GDECLS:ld                               {: RESULT = 
                 | GDECL:d                                           {: RESULT = new L_Decls(d, dleft, dright);            :}
                 ;
 
-GDECL            ::= CONST TYPEVAR:type DASIGNATION:assig       {:
-                                                                    for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
-                                                                        if (!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, true, typeleft))){
-                                                                            // ERROR -> variable already declared
-                                                                            ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
-                                                                            l_id.getLine(),
-                                                                            l_id.getColumn(),
-                                                                            Phase.SEMANTIC);
-                                                                        };
-                                                                    };
-                                                                    if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
-                                                                        // Vamos añadiendo los elementos al contenido del simbolo
-                                                                        addTupleContentstoST(assig);
-                                                                    };
-                                                                    sem.checkAsignation(assig, true);
-                                                                    RESULT = new Decl(true, type, assig, typeleft, typeright);
-                                                                :}
-                |   TYPEVAR:type DASIGNATION:assig              {:
-                                                                    for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
-                                                                        if(!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, false, typeleft))){
-                                                                            // ERROR -> variable already declared
-                                                                            ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
-                                                                            l_id.getLine(),
-                                                                            l_id.getColumn(),
-                                                                            Phase.SEMANTIC);
-                                                                        };
+GDECL           ::= CONST TYPEVAR:type DASIGNATION:assig
+                    {:
+                        for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
+                            if (!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, true, typeleft))){
+                                // ERROR -> variable already declared
+                                ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
+                                l_id.getLine(),
+                                l_id.getColumn(),
+                                Phase.SEMANTIC);
+                            };
+                        };
+                        if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
+                            // Vamos añadiendo los elementos al contenido del simbolo
+                            addTupleContentstoST(assig);
+                        };
+                        sem.checkAsignation(assig, true);
+                        RESULT = new Decl(true, type, assig, typeleft, typeright);
+                    :}
+                |   TYPEVAR:type DASIGNATION:assig
+                    {:
+                        for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
+                            if(!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, true, false, typeleft))){
+                                // ERROR -> variable already declared
+                                ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
+                                l_id.getLine(),
+                                l_id.getColumn(),
+                                Phase.SEMANTIC);
+                            };
+                        };
 
-                                                                    };
-                                                                    if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
-                                                                        // Vamos añadiendo los elementos al contenido del simbolo
-                                                                        addTupleContentstoST(assig);
-                                                                    };
-                                                                    sem.checkAsignation(assig, true);
-                                                                    RESULT = new Decl(false, type, assig, typeleft, typeright);
-                                                                :}
+                        if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
+                            // Vamos añadiendo los elementos al contenido del simbolo
+                            addTupleContentstoST(assig);
+                        };
+
+                        sem.checkAsignation(assig, true);
+                        RESULT = new Decl(false, type, assig, typeleft, typeright);
+                    :}
                 ;
 
-DECLS           ::= DECL:d DECLS:ld                             {: RESULT = new L_Decls(d, ld, dleft, dright);  :}
-                | DECL:d                                        {: RESULT = new L_Decls(d, dleft, dright);      :}
+DECLS           ::= DECL:d DECLS:ld                                 {: RESULT = new L_Decls(d, ld, dleft, dright);  :}
+                | DECL:d                                            {: RESULT = new L_Decls(d, dleft, dright);      :}
                 ;
 
-DECL            ::= CONST TYPEVAR:type DASIGNATION:assig        {:
-                                                                    for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
-                                                                        if(!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, true, typeleft))){
-                                                                            ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
-                                                                            l_id.getLine(),
-                                                                            l_id.getColumn(),
-                                                                            Phase.SEMANTIC);
-                                                                        };
-                                                                    };
-                                                                    if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
-                                                                        // Vamos añadiendo los elementos al contenido del simbolo
-                                                                        addTupleContentstoST(assig);
-                                                                    };
-                                                                    sem.checkAsignation(assig, true);
-                                                                    RESULT = new Decl(true, type, assig, typeleft, typeright);
-                                                                :}
-                |   TYPEVAR:type DASIGNATION:assig              {:
-                                                                    for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
-                                                                        if (!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, false, typeleft))){
-                                                                            // ERROR -> variable already declared
-                                                                            ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
-                                                                            l_id.getLine(),
-                                                                            l_id.getColumn(),
-                                                                            Phase.SEMANTIC);
-                                                                        };
-                                                                    };
-                                                                    if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
-                                                                        // Vamos añadiendo los elementos al contenido del simbolo
-                                                                        addTupleContentstoST(assig);
-                                                                    };
-                                                                    sem.checkAsignation(assig, true);
-                                                                    RESULT = new Decl(false, type, assig, typeleft, typeright);
-                                                                :}
+DECL            ::= CONST TYPEVAR:type DASIGNATION:assig
+                    {:
+                        for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
+                            if(!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, true, typeleft))){
+                                ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
+                                l_id.getLine(),
+                                l_id.getColumn(),
+                                Phase.SEMANTIC);
+                            };
+                        };
+                        if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
+                            // Vamos añadiendo los elementos al contenido del simbolo
+                            addTupleContentstoST(assig);
+                        };
+                        sem.checkAsignation(assig, true);
+                        RESULT = new Decl(true, type, assig, typeleft, typeright);
+                    :}
+                |   TYPEVAR:type DASIGNATION:assig
+                        {:
+                            for(L_Ids l_id = assig.getL_Ids(); l_id != null; l_id = l_id.nextId()){
+                                if (!st.addSymbol(new Symbol(l_id.getId(), StructureType.VARIABLE , typeVartoReturnType(type), null, false, false, typeleft))){
+                                    // ERROR -> variable already declared
+                                    ErrorHandler.addError(ErrorCode.DUPLICATED_VARIABLE,
+                                    l_id.getLine(),
+                                    l_id.getColumn(),
+                                    Phase.SEMANTIC);
+                                };
+                            };
+                            if (typeVartoReturnType(type).equals(StructureReturnType.TUP)) {
+                                // Vamos añadiendo los elementos al contenido del simbolo
+                                addTupleContentstoST(assig);
+                            };
+                            sem.checkAsignation(assig, true);
+                            RESULT = new Decl(false, type, assig, typeleft, typeright);
+                        :}
                 ;
 
-TYPEVAR         ::= INT                                         {: RESULT = TypeVar.INT;    :}
-                |   BOL                                         {: RESULT = TypeVar.BOOL;   :}
-                |   TUP                                         {: RESULT = TypeVar.TUP;    :}
+TYPEVAR         ::= INT                                             {: RESULT = TypeVar.INT;    :}
+                |   BOL                                             {: RESULT = TypeVar.BOOL;   :}
+                |   TUP                                             {: RESULT = TypeVar.TUP;    :}
                 ;
 
-ASIGNATION      ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e, lidleft, lidright); sem.checkAsignation(RESULT, false);:};
+ASIGNATION      ::= LID:lid EQUAL EXPRESION:e SEMICOLON             {: RESULT = new Asignation(lid, e, lidleft, lidright); sem.checkAsignation(RESULT, false);:};
 
-DASIGNATION     ::= LID:lid EQUAL EXPRESION:e SEMICOLON         {: RESULT = new Asignation(lid, e, lidleft, lidright); :};
+DASIGNATION     ::= LID:lid EQUAL EXPRESION:e SEMICOLON             {: RESULT = new Asignation(lid, e, lidleft, lidright); :};
 
-LID             ::= ID:id COMMA LID:lid                         {: RESULT = new L_Ids(id, lid, idleft, idright);    :}
-                | ID:id                                         {: RESULT = new L_Ids(id, idleft, idright);         :}
+LID             ::= ID:id COMMA LID:lid                             {: RESULT = new L_Ids(id, lid, idleft, idright);    :}
+                | ID:id                                             {: RESULT = new L_Ids(id, idleft, idright);         :}
                 ;
 
-EXPRESION       ::= VALUE:v OP:op EXPRESION:e                   {: RESULT = new Expresion(v, e, op, vleft, vright); ;:}
-                |   VALUE:v                                     {: RESULT = new Expresion(v, vleft, vright);        ;:}
+EXPRESION       ::= VALUE:v OP:op EXPRESION:e                       {: RESULT = new Expresion(v, e, op, vleft, vright); ;:}
+                |   VALUE:v                                         {: RESULT = new Expresion(v, vleft, vright);        ;:}
                 ;
 
-OP              ::= PLUS                                        {: RESULT = Op.PLUS;   :}
-                |   MINUS                                       {: RESULT = Op.MINUS;  :}
-                |   MULT                                        {: RESULT = Op.MULT;   :}
-                |   DIV                                         {: RESULT = Op.DIV;    :}
-                |   REQUAL                                      {: RESULT = Op.REQUAL; :}
-                |   LT                                          {: RESULT = Op.LT;     :}
-                |   GT                                          {: RESULT = Op.GT;     :}
-                |   AND                                         {: RESULT = Op.AND;    :}
-                |   OR                                          {: RESULT = Op.OR;     :}
+OP              ::= PLUS                                            {: RESULT = Op.PLUS;   :}
+                |   MINUS                                           {: RESULT = Op.MINUS;  :}
+                |   MULT                                            {: RESULT = Op.MULT;   :}
+                |   DIV                                             {: RESULT = Op.DIV;    :}
+                |   REQUAL                                          {: RESULT = Op.REQUAL; :}
+                |   LT                                              {: RESULT = Op.LT;     :}
+                |   GT                                              {: RESULT = Op.GT;     :}
+                |   AND                                             {: RESULT = Op.AND;    :}
+                |   OR                                              {: RESULT = Op.OR;     :}
                 ;
 
-VALUE           ::= LPAREN EXPRESION:e RPAREN                   {: RESULT = new Value(e); :}                // (E)
-                |   V_TUP:v                                     {: RESULT = new Value(v); :}                // [a,b,c]
-                |   A_TUP:a                                     {: RESULT = new Value(a); :}                // v[5]
-                |   NUMBER:n                                    {: RESULT = new Value("Number", n, nleft, nright); :}      // 1
-                |   VBOL:b                                      {: RESULT = new Value("Bol", b, bleft, bright); :}         // true
-                |   CALLF:call                                  {: RESULT = new Value(call); :}             // fn()
-                |   ININT LPAREN RPAREN                         {: RESULT = new Value(new Input(0, cur_token.left, cur_token.right)); :}
-                |   INBOL LPAREN RPAREN                         {: RESULT = new Value(new Input(1, cur_token.left, cur_token.right)); :}
-                |   ID:id                                       {: RESULT = new Value("Id", id, idleft, idright); :}         // a
+VALUE           ::= LPAREN EXPRESION:e RPAREN                       {: RESULT = new Value(e); :}                // (E)
+                |   V_TUP:v                                         {: RESULT = new Value(v); :}                // [a,b,c]
+                |   A_TUP:a                                         {: RESULT = new Value(a); :}                // v[5]
+                |   NUMBER:n                                        {: RESULT = new Value("Number", n, nleft, nright); :}      // 1
+                |   VBOL:b                                          {: RESULT = new Value("Bol", b, bleft, bright); :}         // true
+                |   CALLF:call                                      {: RESULT = new Value(call); :}             // fn()
+                |   ININT LPAREN RPAREN                             {: RESULT = new Value(new Input(0, cur_token.left, cur_token.right)); :}
+                |   INBOL LPAREN RPAREN                             {: RESULT = new Value(new Input(1, cur_token.left, cur_token.right)); :}
+                |   ID:id                                           {: RESULT = new Value("Id", id, idleft, idright); :}         // a
                 ;
 
 // No se permite []. Al menos debe tener un elemento i.e [A]
-V_TUP           ::= LSKEY ARGS:a RSKEY                          {: RESULT = new Tuple(a, aleft, aright); :}
+V_TUP           ::= LSKEY ARGS:a RSKEY                              {: RESULT = new Tuple(a, aleft, aright); :}
                 ;
 
-A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                {: RESULT = new A_Tuple(new Id(id, idleft, idright), new Number(num, numleft, numright), cur_token.left, cur_token.right); :}
+A_TUP           ::= ID:id LSKEY NUMBER:num RSKEY                    {: RESULT = new A_Tuple(new Id(id, idleft, idright), new Number(num, numleft, numright), cur_token.left, cur_token.right); :}
                 ;
 
-CALLF           ::= ID:id LPAREN ARGS:args RPAREN               {: RESULT = new CallFn(new Id(id, idleft, idright), args, cur_token.left, cur_token.right); sem.checkCallFArgs(RESULT);:}
-                |   ID:id LPAREN RPAREN                         {: RESULT = new CallFn(new Id(id, idleft, idright), cur_token.left, cur_token.right);       sem.checkCallFArgs(RESULT);:}
+CALLF           ::= ID:id LPAREN ARGS:args RPAREN                   {: RESULT = new CallFn(new Id(id, idleft, idright), args, cur_token.left, cur_token.right); sem.checkCallFArgs(RESULT);:}
+                |   ID:id LPAREN RPAREN                             {: RESULT = new CallFn(new Id(id, idleft, idright), cur_token.left, cur_token.right);       sem.checkCallFArgs(RESULT);:}
                 ;
 
-ARGS            ::= EXPRESION:e COMMA ARGS:args                 {: sem.checkExp(e); RESULT = new L_Args(e, args, eleft, eright);:}
-                |   EXPRESION:e                                 {: sem.checkExp(e); RESULT = new L_Args(e, eleft, eright);      :}
+ARGS            ::= EXPRESION:e COMMA ARGS:args                     {: sem.checkExp(e); RESULT = new L_Args(e, args, eleft, eright);:}
+                |   EXPRESION:e                                     {: sem.checkExp(e); RESULT = new L_Args(e, eleft, eright);      :}
                 ;
 
-INSTRS          ::= INSTR:inst INSTRS:instrs                    {: RESULT = new L_Instrs(inst, instrs, instleft, instright); :}
-                |                                               {: :}
+INSTRS          ::= INSTR:inst INSTRS:instrs                        {: RESULT = new L_Instrs(inst, instrs, instleft, instright); :}
+                |                                                   {: :}
                 ;
 
-R_INSTRS        ::= R_INSTR:inst R_INSTRS:instrs                {: RESULT = new L_Instrs(inst, instrs, instleft, instright); :}
-                |                                               {: :}
+R_INSTRS        ::= R_INSTR:inst R_INSTRS:instrs                    {: RESULT = new L_Instrs(inst, instrs, instleft, instright); :}
+                |                                                   {: :}
                 ;
 
 R_INSTR         ::= IF LPAREN EXPRESION:e RPAREN LKEY R_INSTRS:instrs RKEY                          {: sem.checkLogicalExpresion(e);RESULT = new Instr(new IfNode(e, instrs, eleft, eright), cur_token.left, cur_token.right); :}
@@ -553,7 +549,7 @@ FUNCTION        ::= ALPHA TYPEVAR:t ID:id LPAREN F_ARGS:args RPAREN LKEY DECLS:d
                 ;
 
 F_ARGS          ::= F_ARGS2:args    {: RESULT = args;   :}
-                |                   {:                  :}
+                |                   {: :}
                 ;
 
 F_ARGS2        ::= TYPEVAR:type ID:id COMMA F_ARGS2:args

@@ -1,7 +1,5 @@
 package tests;
 
-import core.Chadpp;
-
 /**
  * ChadppTests
  */

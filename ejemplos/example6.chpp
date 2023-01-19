@@ -1,7 +1,0 @@
-
-main {
-    bol c = false;
-    bol a = (c || true) && (5 < 4) || (5 == 5);
-    BEGIN
-
-}
