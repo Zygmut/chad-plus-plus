@@ -35,7 +35,6 @@ import grammar.ParserSym;
 
 ID            = [a-zA-Z][a-zA-Z_0-9]*
 NUMBER        = 0 | [\+\-]?[1-9][0-9]*
-// STRING_LIT    = \" .*? \"               // Optional
 COMMENT       = "$" [^*] ~"$" | "$" "$"
 LINE_COMMENT  = "#" [^\r\n]* [\r|\n|\r\n]?
 WS            = [ \t]+
@@ -95,14 +94,12 @@ ENDLINE       = [\r\n]+
 
 // code branching
 "if"            { return symbol(ParserSym.IF);                    }
-// optional "else"          { return symbol(ParserSym.ELSE);                  }
 "while"         { return symbol(ParserSym.WHILE);                 }
 "loop"          { return symbol(ParserSym.LOOP);                  }
 
 // logic 2
 "&&"            { return symbol(ParserSym.AND);                   }
 "||"            { return symbol(ParserSym.OR);                    }
-// "!"             { return symbol(ParserSym.NOT);                   }
 
 // relational 2
 "=="            { return symbol(ParserSym.REQUAL);                }
