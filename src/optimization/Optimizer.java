@@ -8,7 +8,9 @@ import intermediate_code.Variable;
 import utils.Phase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import errors.ErrorCode;
 import errors.ErrorHandler;
@@ -28,13 +30,254 @@ public class Optimizer {
     }
 
     public void optimizeThreeAddressCode() {
-        deleteUnusedFunctionsAndVaribales();
+        // Delete unused code
+        // deleteUnusedFunctionsAndVaribales();
         while (this.continueOptimizations && !errors) {
-            optimizeDifferdAssignations();
+            this.continueOptimizations = false;
+
+            // Asignaciones diferidas
+            differdAssignations();
+
             // doble etiquetas
+            // doubleLabels();
+
             // brancament
+            // forkBranches();
+
+            // Evaluar expresiones
             evaluateExpresions();
+
+            // Reducción por fuerza
+            // strengthReduction();
+
+            // Eliminar variables no usadas
+            deleteUnusedVariables();
+
+            // Eliminar saltos redundantes
+            // Eliminación de etiquetas no usadas
+            // TODO: Revisar. Nunca hara nada si no cambiamos lo de los ifs (los ifs tienen
+            // TODO: hardcodeado == true)
+            // removeUnusedLabels();
+
+            // Eliminar código inaccesible
+            // TODO: Revisar
+            removeInnaccesibleCode();
         }
+    }
+
+    /**
+     * Elimina las etiquetas que no tengan gotos o calls asociados
+     */
+    private void removeUnusedLabels() {
+        ArrayList<Instruction> c3d = this.threeAddressCode.getCodigo3Dir();
+        ArrayList<Instruction> instr_to_remove = new ArrayList<>();
+        boolean found;
+
+        for (Instruction instruction : c3d) {
+            if (!instruction.getOperation().equals(Operator.SKIP)) {
+                continue;
+            }
+
+            found = false;
+            for (Instruction instruction2 : c3d) {
+                if (instruction.getOperation().equals(Operator.GOTO)
+                        && instruction.getDest().equals(instruction2.getDest().substring(4))) {
+                    found = true;
+                    break;
+                }
+                if (instruction.getOperation().equals(Operator.CALL)
+                        && instruction.getDest().equals(instruction2.getOp1())) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                continue;
+            }
+
+            instr_to_remove.add(instruction);
+        }
+        for (Instruction instruction : instr_to_remove) {
+            System.out.println("Removed label" + instruction);
+            c3d.remove(instruction);
+        }
+        this.threeAddressCode.setCodigo3Dir(c3d);
+    }
+
+    private void forkBranches() {
+
+    }
+
+    private void strengthReduction() {
+
+    }
+
+    /**
+     * Elimina todo codigo que no es accedido. Si hay un goto no condicional o un
+     * return borrar instrucciones hasta encontrar una etiqueta
+     */
+    private void removeInnaccesibleCode() {
+        ArrayList<Instruction> instr_to_remove = new ArrayList<>();
+        ArrayList<Procedimiento> prods_to_remove = new ArrayList<>();
+        ArrayList<Procedimiento> tp = this.threeAddressCode.getTp();
+        ArrayList<Variable> tv = this.threeAddressCode.getTv();
+        ArrayList<Integer> lines = new ArrayList<>();
+        ArrayList<Instruction> c3d = this.threeAddressCode.getCodigo3Dir();
+        Instruction instr = null;
+        Instruction aux_instr = null;
+        boolean found = false;
+        for (int i = 0; i < c3d.size(); i++) {
+            instr = c3d.get(i);
+            switch (instr.getOperation()) {
+                case GOTO:
+                case RETURN:
+                    for (int j = i + 1; j < c3d.size(); j++) {
+                        aux_instr = c3d.get(j);
+                        if (aux_instr.getOperation().equals(Operator.SKIP)) {
+                            i = j;
+                            break;
+                        }
+
+                        instr_to_remove.add(aux_instr);
+                        lines.add(j + 1);
+                    }
+                    break;
+                case PMB:
+                    // Miramos si hay algun call para este pmb
+                    // Iteramos por todo el codigo en busqueda de un call con el destino igual al
+                    // pmb
+                    found = false;
+                    for (Instruction instruction : c3d) {
+                        if (instruction.getOperation().equals(Operator.CALL)
+                                && ("run_" + instruction.getOp1()).equals(instr.getDest())) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found) {
+                        break;
+                    }
+
+                    // Si no lo encontramos, eliminamos desde esta instrucción -1 hasta encontrar un
+                    // skip que empieze por run
+
+                    // Añadimos el procedimiento a la lista para eliminar
+                    for (Procedimiento procedimiento : this.threeAddressCode.getTp()) {
+                        if (procedimiento.getId().equals(instr.getDest().substring(4))) {
+                            prods_to_remove.add(procedimiento);
+                            break;
+                        }
+                    }
+
+                    aux_instr = c3d.get(i - 1);
+                    instr_to_remove.add(c3d.get(i - 1));
+                    lines.add(i);
+                    for (int j = i; j < c3d.size(); j++) {
+                        aux_instr = c3d.get(j);
+                        if (aux_instr.getOperation().equals(Operator.SKIP)
+                                && aux_instr.getDest().contains("run_")
+                                && aux_instr.getDest().subSequence(0, 4).equals("run_")) {
+                            i = j;
+                            break;
+                        }
+
+                        instr_to_remove.add(aux_instr);
+                        lines.add(j + 1);
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+        Variable var;
+        for (Instruction instruction : instr_to_remove) {
+            var = this.threeAddressCode.findVarById(instruction.getDest());
+            c3d.remove(instruction);
+
+            if (var == null) {
+                continue;
+            }
+
+            // si son temporales se eliminan
+            if (var.isVolatile()) {
+                tv.remove(var);
+                continue;
+            }
+
+            // si no lo son, se tiene que mirar si son globales. Si eso es cierto, no se
+            // borran
+            if (var.getId().endsWith("0")) {
+                continue;
+            }
+
+            tv.remove(var);
+        }
+
+        for (Procedimiento procedimiento : prods_to_remove) {
+            tp.remove(procedimiento);
+        }
+
+        this.continueOptimizations = !instr_to_remove.isEmpty();
+        this.threeAddressCode.setTp(tp);
+        this.threeAddressCode.setTv(tv);
+        this.threeAddressCode.setCodigo3Dir(c3d);
+
+    }
+
+    private void deleteUnusedVariables() {
+        ArrayList<Variable> varsToRemove = new ArrayList<>();
+        ArrayList<Instruction> cod3Dir = this.threeAddressCode.getCodigo3Dir();
+        ArrayList<Variable> tVars = this.threeAddressCode.getTv();
+        ArrayList<Instruction> declarations = new ArrayList<>();
+        HashMap<String, Integer> vars = new HashMap<>();
+        int count = 0;
+        for (Instruction inst : cod3Dir) {
+            if (Objects.nonNull(inst.getOp1())) {
+                if (this.threeAddressCode.findVarById(inst.getOp1()) != null) {
+                    count = vars.containsKey(inst.getOp1()) ? vars.get(inst.getOp1()) + 1 : 1;
+                    vars.put(inst.getOp1(), count);
+                }
+            }
+            if (Objects.nonNull(inst.getOp2())) {
+                if (this.threeAddressCode.findVarById(inst.getOp2()) != null) {
+                    count = vars.containsKey(inst.getOp2()) ? vars.get(inst.getOp2()) + 1 : 1;
+                    vars.put(inst.getOp2(), count);
+                }
+            }
+
+            if (Objects.nonNull(inst.getDest())) {
+                if (this.threeAddressCode.findVarById(inst.getDest()) != null) {
+                    count = vars.containsKey(inst.getDest()) ? vars.get(inst.getDest()) + 1 : 1;
+                    vars.put(inst.getDest(), count);
+                    declarations.add(inst);
+                }
+            }
+        }
+        for (Variable var : this.threeAddressCode.getTv()) {
+            if (!vars.containsKey(var.getId())) {
+                varsToRemove.add(var);
+            }
+
+            if (vars.containsKey(var.getId()) && vars.get(var.getId()) < 2) {
+                varsToRemove.add(var);
+            }
+        }
+
+        for (Variable var : varsToRemove) {
+            tVars.remove(var);
+            for (Instruction instruction : declarations) {
+                if (instruction.getDest().equals(var.getId())) {
+                    cod3Dir.remove(instruction);
+                }
+            }
+        }
+
+        this.threeAddressCode.setTv(tVars);
     }
 
     /**
@@ -86,6 +329,7 @@ public class Optimizer {
                 }
                 instr.setOperation(Operator.ASSIGN);
                 instr.setOp2(null);
+                this.continueOptimizations = true;
                 continue;
             } catch (Exception e) {
             }
@@ -127,6 +371,7 @@ public class Optimizer {
                 }
                 instr.setOperation(Operator.ASSIGN);
                 instr.setOp2(null);
+                this.continueOptimizations = true;
                 continue;
             } catch (Exception e) {
             }
@@ -137,7 +382,7 @@ public class Optimizer {
      * Elimina las variables temporales que se utilizan solo una vez. Se hace la
      * asignacion directamente.
      */
-    private void optimizeDifferdAssignations() {
+    private void differdAssignations() {
         ArrayList<Instruction> codigo3Dir = this.threeAddressCode.getCodigo3Dir();
         ArrayList<Variable> tv = this.threeAddressCode.getTv();
         ArrayList<Instruction> insAEliminar = new ArrayList<>();
@@ -204,6 +449,7 @@ public class Optimizer {
         }
 
         this.threeAddressCode.setTv(tv);
+        this.threeAddressCode.setCodigo3Dir(codigo3Dir);
     }
 
     /**
