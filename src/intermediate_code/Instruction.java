@@ -102,6 +102,10 @@ public class Instruction {
                 return "OUT " + op1;
             case "PARAM":
                 return operation.name() + " " + op1;
+            case "SHITFR":
+                return dest + " = " + op1 + " >> " + op2;
+            case "SHITFL":
+                return dest + " = " + op1 + " << " + op2;
             default:
                 return "{" +
                         " dest='" + this.dest + "'" +

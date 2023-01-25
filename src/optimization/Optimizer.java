@@ -1,19 +1,13 @@
 package optimization;
 
-import intermediate_code.Instruction;
-import intermediate_code.Operator;
-import intermediate_code.Procedimiento;
-import intermediate_code.ThreeAddressCode;
-import intermediate_code.Variable;
+import errors.ErrorCode;
+import errors.ErrorHandler;
+import intermediate_code.*;
 import utils.Phase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.concurrent.ArrayBlockingQueue;
-
-import errors.ErrorCode;
-import errors.ErrorHandler;
 
 public class Optimizer {
 
@@ -37,6 +31,9 @@ public class Optimizer {
 
             // Asignaciones diferidas
             differdAssignations();
+
+            // Reorganizar operaciones
+            reorganizeOperations();
 
             // doble etiquetas
             // doubleLabels();
@@ -63,6 +60,10 @@ public class Optimizer {
             // TODO: Revisar
             removeInnaccesibleCode();
         }
+    }
+
+    private void reorganizeOperations() {
+
     }
 
     /**
@@ -110,7 +111,92 @@ public class Optimizer {
     }
 
     private void strengthReduction() {
+        ArrayList<Instruction> c3d = this.threeAddressCode.getCodigo3Dir();
+        ArrayList<Instruction> instrToAdd = new ArrayList<>();
+        ArrayList<Integer> lineToAddInstr = new ArrayList<>();
+        Instruction instr;
 
+        for (int i = 0; i < c3d.size(); ++i) {
+            instr = c3d.get(i);
+            switch (instr.getOperation().name()) {
+                case "MULT" -> {
+                    try {
+                        // Comprobar si es un valor númerico
+                        int val = Integer.parseInt(instr.getOp2());
+                        int exp = Math.getExponent(val);
+                        // Cal exp
+                        // Comprobar si es un potencia de 2
+                        if (val % 2 == 0) {
+                            // Si es potencia de dos -> x << pot2
+                            instr.setOperation(Operator.SHIFTL);
+                            instr.setOp2(Integer.toString(exp));
+                        } else {
+                            // Si no lo es x << pot2 + x
+                            instr.setOperation(Operator.SHIFTL);
+                            instr.setOp2(Integer.toString(exp));
+                            instrToAdd.add(
+                                    new Instruction(instr.getDest(), instr.getDest(), Operator.ADD, instr.getOp1()));
+                            lineToAddInstr.add(i + 1);
+                        }
+                    } catch (Exception ignored) {
+                        // No es un número, no hacer nada
+                    }
+                }
+                case "DIV" -> {
+                    try {
+                        // Comprobar si es un valor númerico
+                        int val = Integer.parseInt(instr.getOp2());
+                        // Cal exp
+                        int exp = Math.getExponent(val);
+                        // Comprobar si es un potencia de 2
+                        if (val % 2 == 0) {
+                            // Si es potencia de dos -> x >> pot2
+                            instr.setOperation(Operator.SHIFTR);
+                            instr.setOp2(Integer.toString(exp));
+                        } else {
+                            // TODO
+                        }
+                    } catch (Exception ignored) {
+                        // No es un número, no hacer nada
+                    }
+                }
+                case "ADD" -> {
+                    // Mirar si son iguales op1 y op2
+                    // x = y + y -> x = y * 2 -> x = y << 1
+                    // Si lo son iguales x = << 1
+                    if (Objects.equals(instr.getOp1(), instr.getOp2())) {
+                        instr.setOperation(Operator.SHIFTL);
+                        instr.setOp2("1");
+                    }
+                }
+                case "SUB" -> {
+                    // Mirar si son iguales op1 y op2
+                    // Si lo son iguales x = 0
+                    if (Objects.equals(instr.getOp1(), instr.getOp2())) {
+                        instr.setOp2(null);
+                        instr.setOp1("0");
+                        instr.setOperation(Operator.ASSIGN);
+                    }
+                }
+                default -> {
+                    // No hacer nada
+                }
+            }
+        }
+        this.continueOptimizations = !instrToAdd.isEmpty();
+        assert instrToAdd.size() == lineToAddInstr.size();
+        int line = 0;
+        Instruction ins = null;
+        System.out.println("HOLAA");
+        System.out.println(instrToAdd);
+        System.out.println(lineToAddInstr);
+        for (int i = 0; i < instrToAdd.size(); i++) {
+            line = lineToAddInstr.get(i);
+            ins = instrToAdd.get(i);
+            c3d.add(line, ins);
+        }
+
+        this.threeAddressCode.setCodigo3Dir(c3d);
     }
 
     /**
@@ -331,7 +417,7 @@ public class Optimizer {
                 instr.setOp2(null);
                 this.continueOptimizations = true;
                 continue;
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
 
             // Logical operations
@@ -373,7 +459,7 @@ public class Optimizer {
                 instr.setOp2(null);
                 this.continueOptimizations = true;
                 continue;
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
     }

@@ -1,0 +1,7 @@
+main {
+    int a = 0;
+    int b = 2;
+    BEGIN 
+    a = a + a;
+    b = a * 17;
+}
