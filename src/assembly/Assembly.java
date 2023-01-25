@@ -344,7 +344,23 @@ public class Assembly {
             case EXIT:
                 // simhalt
                 break;
+            case SHIFTL:
+            case SHIFTR:
+                shift(instruction);
+                break;
+            default:
+                break;
         }
+    }
+
+    private void shift(Instruction ins) {
+        assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D0");
+        if (ins.getOperation().name().equals("SHIFTR")) {
+            assemblyCode.add("\tLSR.W\t#" + ins.getOp2() + ",D0");
+        } else {
+            assemblyCode.add("\tLSL.W\t#" + ins.getOp2() + ",D0");
+        }
+        assemblyCode.add("\tMOVE.W\tD0," + ins.getDest());
     }
 
     private boolean isTup(String v) {

@@ -44,9 +44,6 @@ public class Optimizer {
             // Evaluar expresiones
             evaluateExpresions();
 
-            // Reducción por fuerza
-            // strengthReduction();
-
             // Eliminar variables no usadas
             deleteUnusedVariables();
 
@@ -60,6 +57,8 @@ public class Optimizer {
             // TODO: Revisar
             removeInnaccesibleCode();
         }
+        // Reducción por fuerza
+        strengthReduction();
     }
 
     private void reorganizeOperations() {
@@ -130,13 +129,6 @@ public class Optimizer {
                             // Si es potencia de dos -> x << pot2
                             instr.setOperation(Operator.SHIFTL);
                             instr.setOp2(Integer.toString(exp));
-                        } else {
-                            // Si no lo es x << pot2 + x
-                            instr.setOperation(Operator.SHIFTL);
-                            instr.setOp2(Integer.toString(exp));
-                            instrToAdd.add(
-                                    new Instruction(instr.getDest(), instr.getDest(), Operator.ADD, instr.getOp1()));
-                            lineToAddInstr.add(i + 1);
                         }
                     } catch (Exception ignored) {
                         // No es un número, no hacer nada
@@ -153,11 +145,14 @@ public class Optimizer {
                             // Si es potencia de dos -> x >> pot2
                             instr.setOperation(Operator.SHIFTR);
                             instr.setOp2(Integer.toString(exp));
-                        } else {
-                            // TODO
                         }
                     } catch (Exception ignored) {
                         // No es un número, no hacer nada
+                        if (Objects.equals(instr.getOp1(), instr.getOp2())) {
+                            instr.setOperation(Operator.ASSIGN);
+                            instr.setOp1("1");
+                            instr.setOp2(null);
+                        }
                     }
                 }
                 case "ADD" -> {
@@ -187,9 +182,6 @@ public class Optimizer {
         assert instrToAdd.size() == lineToAddInstr.size();
         int line = 0;
         Instruction ins = null;
-        System.out.println("HOLAA");
-        System.out.println(instrToAdd);
-        System.out.println(lineToAddInstr);
         for (int i = 0; i < instrToAdd.size(); i++) {
             line = lineToAddInstr.get(i);
             ins = instrToAdd.get(i);
