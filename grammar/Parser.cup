@@ -189,13 +189,23 @@ parser code {:
                     return false;
                 }
                 // comprobar el tipo de return de la función
-                if (fn.getStructureReturnType() == StructureReturnType.TUP) {
-                    // si retorna tuple -> error
-                    ErrorHandler.addError(ErrorCode.RETURN_TYPE_TUPLE_IN_TUPLE,
-                        value.getCallFn().getLine(),
-                        value.getCallFn().getColumn(),
-                        Phase.SEMANTIC);
-                    return false;
+                switch(fn.getStructureReturnType()){
+                    case TUP:
+                        // si retorna tuple -> error
+                        ErrorHandler.addError(ErrorCode.RETURN_TYPE_TUPLE_IN_TUPLE,
+                            value.getCallFn().getLine(),
+                            value.getCallFn().getColumn(),
+                            Phase.SEMANTIC);
+                        return false;
+                    case VOID:
+                    // ERROR: Cannot asign value of an void declared function
+                        ErrorHandler.addError(ErrorCode.CANNOT_ASSIGN_VALUE_OF_VOID_FUNCTION,
+                            value.getCallFn().getLine(),
+                            value.getCallFn().getColumn(),
+                            Phase.SEMANTIC);
+                        return false;
+                    default:
+                        break;
                 }
                 if (!sem.checkCallFArgs(value.getCallFn())) {
                     return false;
