@@ -111,8 +111,6 @@ public class Optimizer {
 
     private void strengthReduction() {
         ArrayList<Instruction> c3d = this.threeAddressCode.getCodigo3Dir();
-        ArrayList<Instruction> instrToAdd = new ArrayList<>();
-        ArrayList<Integer> lineToAddInstr = new ArrayList<>();
         Instruction instr;
 
         for (int i = 0; i < c3d.size(); ++i) {
@@ -178,16 +176,6 @@ public class Optimizer {
                 }
             }
         }
-        this.continueOptimizations = !instrToAdd.isEmpty();
-        assert instrToAdd.size() == lineToAddInstr.size();
-        int line = 0;
-        Instruction ins = null;
-        for (int i = 0; i < instrToAdd.size(); i++) {
-            line = lineToAddInstr.get(i);
-            ins = instrToAdd.get(i);
-            c3d.add(line, ins);
-        }
-
         this.threeAddressCode.setCodigo3Dir(c3d);
     }
 
