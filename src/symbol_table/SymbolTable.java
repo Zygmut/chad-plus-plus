@@ -151,8 +151,24 @@ public class SymbolTable {
         }
 
         // Buscar el simbolo el en access
+        Symbol symbol = null;
         for (int i = range[0]; i <= range[1]; i++) {
-            Symbol symbol = this.ts.get(i);
+            symbol = this.ts.get(i);
+            if (symbol.getName().equals(id)) {
+                return symbol;
+            }
+        }
+
+        // Mirar si tiene simbolos
+        range = this.ta.get(0);
+        if (range[0] == this.NOT_AVALIABLE) {
+            // No tiene simbolos
+            return null;
+        }
+
+        // Buscar el simbolo en el ambito global
+        for (int i = range[0]; i <= range[1]; i++) {
+            symbol = this.ts.get(i);
             if (symbol.getName().equals(id)) {
                 return symbol;
             }

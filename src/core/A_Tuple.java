@@ -48,6 +48,9 @@ public class A_Tuple extends BaseNode {
     codigoTresDir.addInstr(new Instruction(var2.getId(), var1.getId(), Operator.MULT, "2"));
     Variable var3 = codigoTresDir.putVar(null, TypeVar.INT);
     Variable tuple = codigoTresDir.findVarById(id.getValue() + "_" + codigoTresDir.getTp().size());
+    if (tuple == null) {
+      tuple = codigoTresDir.findVarById(id.getValue() + "_0");
+    }
     codigoTresDir.addInstr(new Instruction(var3.getId(), tuple.getId(), Operator.INDEXED_VALUE, var2.getId()));
   }
 

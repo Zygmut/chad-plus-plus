@@ -1,40 +1,7 @@
-# Hola que tal
-$
- hola
-$
-int value = 5;
-int a = 4 + 1;
-bol c = false;
-tup j, h = [1, false];
-const tup b = [1,2,3, true ];
-
-alpha bol mayor5 (int n){
-    bol test = true;
-    BEGIN
-    if (n > 5){
-        return true;
-    }
-    return false;
-}
-
-alpha bol mayor5_v2 (bol n, tup a){
-    return n ;
-}
-
-alpha int test_global (int c){
-    return c;
-}
-
-alpha bol mayor5_v3 (int n){
-    return ((n < 5) && (n == 5));
-}
-
-
 main {
-    int c = 0;
-    tup d = [1, false, a, c, test_global(1), b[0], (1 - 2)];
-    tup a = [test_global()]; # DOBLE ERROR #44
-    BEGIN
-    test_global(1);
-    
+    int a = 0;
+    int b = 2;
+    BEGIN 
+    a = a + a;
+    b = a * 17;
 }

@@ -1,8 +1,0 @@
-alpha int fn(int a){
-    return a;
-}
-
-main {
-    int fn = fn(1);
-    BEGIN
-}

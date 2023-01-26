@@ -1,0 +1,7 @@
+tup g_tup = [1,2,3];
+
+
+main{
+    output(g_tup[0]);
+    output(g_tup[0] + g_tup[1]);
+}

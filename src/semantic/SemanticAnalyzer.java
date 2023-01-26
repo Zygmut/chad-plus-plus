@@ -257,14 +257,8 @@ public class SemanticAnalyzer {
                         break;
                 }
                 break;
-            case "TUP":
-                if (op != null) {
-                    return null;
-                }
-                break;
             default:
                 return null;
-
         }
         StructureReturnType returnNextExpresion = checkExpresion(exp.getNextExpresion());
         if (type.equals(StructureReturnType.INT_OR_BOOL)) {
@@ -297,7 +291,6 @@ public class SemanticAnalyzer {
                     exp.getLine(),
                     exp.getColumn(),
                     Phase.SEMANTIC);
-
         }
         return type;
     }

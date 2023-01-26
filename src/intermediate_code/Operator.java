@@ -28,5 +28,7 @@ public enum Operator {
     INDEXED_ASSIGN,
     IF,
     OUT,
-    EXIT
+    EXIT,
+    SHIFTR,
+    SHIFTL
 }

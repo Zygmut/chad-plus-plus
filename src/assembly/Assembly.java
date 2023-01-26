@@ -14,6 +14,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Assembly
@@ -343,7 +344,23 @@ public class Assembly {
             case EXIT:
                 // simhalt
                 break;
+            case SHIFTL:
+            case SHIFTR:
+                shift(instruction);
+                break;
+            default:
+                break;
         }
+    }
+
+    private void shift(Instruction ins) {
+        assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",D0");
+        if (ins.getOperation().name().equals("SHIFTR")) {
+            assemblyCode.add("\tLSR.W\t#" + ins.getOp2() + ",D0");
+        } else {
+            assemblyCode.add("\tLSL.W\t#" + ins.getOp2() + ",D0");
+        }
+        assemblyCode.add("\tMOVE.W\tD0," + ins.getDest());
     }
 
     private boolean isTup(String v) {
@@ -405,6 +422,18 @@ public class Assembly {
     }
 
     private void indexedValue(Instruction ins) {
+        // Miramos de parsear el operando 2 a un numero, si lo es podemos directamente
+        // ponerlo en la instrucción. en caso contrario tenemos que hacer la gestion
+        // para hacer el acceso a la tupla mediante el uso de registros de direccion
+        try {
+            Integer.parseInt(ins.getOp2());
+        } catch (Exception e) {
+            assemblyCode.add("\tMOVE.W\t" + ins.getOp2() + ",D0");
+            assemblyCode.add("\tLEA\t" + ins.getOp1() + ",A1");
+            assemblyCode.add("\tADDA.L\tD0,A1");
+            assemblyCode.add("\tMOVE.W\t(A1)," + ins.getDest());
+            return;
+        }
         assemblyCode.add("\tMOVE.W\t" + "(" + ins.getOp1() + "+" + ins.getOp2() + ")," + ins.getDest());
     }
 
@@ -550,13 +579,16 @@ public class Assembly {
                 tp = var.getType();
             }
         }
-        assert tp != null;
-        if (tp.equals(TypeVar.TUP)) {
-            for (int i = 0; i < this.tupSize; i++) {
-                assemblyCode.add("\tMOVE.W\t(" + ins.getOp1() + "+" + (i * 2) + "),-(A7)");
-            }
+        if (tp == null) {
+            assemblyCode.add("\tMOVE.W\t#" + ins.getOp1() + ",-(A7)");
         } else {
-            assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",-(A7)");
+            if (tp.equals(TypeVar.TUP)) {
+                for (int i = 0; i < this.tupSize; i++) {
+                    assemblyCode.add("\tMOVE.W\t(" + ins.getOp1() + "+" + (i * 2) + "),-(A7)");
+                }
+            } else {
+                assemblyCode.add("\tMOVE.W\t" + ins.getOp1() + ",-(A7)");
+            }
         }
     }
 
@@ -583,16 +615,18 @@ public class Assembly {
                 assemblyCode.add("\tMOVE.W\t(A7)+," + ins.getDest());
             }
         }
-        // Vaciar pila dependiendo del núm de params
-        int paramsSize = prod.getParameters().size();
-        for (Variable param : prod.getParameters()) {
-            if (param.getType().equals(TypeVar.TUP)) {
-                paramsSize -= 1;
-            }
-        }
-        if (paramsSize > 0) {
-            assemblyCode.add("\tADDA.L\t#" + paramsSize * 2 + ",A7");
-        }
+        /*
+         * // Vaciar pila dependiendo del núm de params
+         * int paramsSize = prod.getParameters().size();
+         * for (Variable param : prod.getParameters()) {
+         * if (param.getType().equals(TypeVar.TUP)) {
+         * paramsSize -= 1;
+         * }
+         * }
+         * if (paramsSize > 0) {
+         * assemblyCode.add("\tADDA.L\t#" + paramsSize * 2 + ",A7");
+         * }
+         */
     }
 
     private void returnSubroutine(Instruction ins) {
@@ -632,6 +666,7 @@ public class Assembly {
             }
         }
         if (params != null) {
+            Collections.reverse(params);
             for (Variable param : params) {
                 TypeVar tp = null;
                 for (Variable var : this.threeAddressCode.getTv()) {
@@ -648,6 +683,7 @@ public class Assembly {
                     assemblyCode.add("\tMOVE.W\t(A7)+," + param.getId());
                 }
             }
+            Collections.reverse(params);
             if (prod.getReturnType() != StructureReturnType.VOID) {
                 if (prod.getReturnType().equals(StructureReturnType.TUP)) {
                     assemblyCode.add("\tSUBA.L\t#TPSZ,A7");

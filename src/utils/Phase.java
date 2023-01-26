@@ -6,7 +6,8 @@ public enum Phase {
     LEXICAL("lexical"),
     SYNTACTIC("syntactic"),
     SEMANTIC("semantic"),
-    CODE_GENERATION("code generation");
+    CODE_GENERATION("code generation"),
+    OPTIMIZATION("optimizing");
 
     public String message;
 
