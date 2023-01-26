@@ -55,7 +55,8 @@ public enum ErrorCode {
     EXPRESION_MUST_BE_ARITHMETIC("Expresion must return an arithmetic value."),
     EXPRESION_MUST_BE_LOGICAL("Expresion must return a logical value."),
     CANNOT_RETURN_TUPLE_PRIMITIVE("Cannot return tuple primitive, create a variable."),
-    DIVISION_BY_ZERO_IN_EXPRESIONS("Found division by zero, check your expresions.");
+    DIVISION_BY_ZERO_IN_EXPRESIONS("Found division by zero, check your expresions."),
+    CANNOT_ASSIGN_VALUE_OF_VOID_FUNCTION("Cannot assign the value of a void function.");
 
     public String message;
 

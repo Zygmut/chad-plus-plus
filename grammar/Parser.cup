@@ -155,13 +155,6 @@ parser code {:
                         "Expresion" + value.getExpresion().getLine() + "_" + value.getExpresion().getColumn(),
                         StructureType.VALUE, StructureReturnType.BOOL, null, false, true, value.getExpresion().getLine()));
                     break;
-                    case "TUP":
-                    content
-                        .add(new Symbol(
-                            "Expresion" + value.getExpresion().getLine() + "_" + value.getExpresion().getColumn(),
-                            StructureType.VALUE, StructureReturnType.TUP, null, false, true,
-                            value.getExpresion().getLine()));
-                    break;
                     default:
                     // ERROR UNSUPORTED EXPRESION TYPE
                     ErrorHandler.addError(ErrorCode.UNSUPPORTED_EXPRESSION_TYPE,
