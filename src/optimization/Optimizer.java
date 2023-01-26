@@ -51,7 +51,7 @@ public class Optimizer {
             // Eliminación de etiquetas no usadas
             // TODO: Revisar. Nunca hara nada si no cambiamos lo de los ifs (los ifs tienen
             // TODO: hardcodeado == true)
-            // removeUnusedLabels();
+            removeUnusedLabels();
 
             // Eliminar código inaccesible
             // TODO: Revisar
