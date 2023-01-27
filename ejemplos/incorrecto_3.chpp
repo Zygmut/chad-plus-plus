@@ -1,0 +1,17 @@
+alpha int suma(int a, int b) {
+    return a + b;
+}
+
+main {
+    int res = 0;
+    const tup valores = [0, 3];
+    BEGIN
+
+    # ERROR: Funcion no declarada
+    res = suma_2(valores[0], 5);
+    output(res);
+
+    # ERROR: Índice fuera de rango
+    res = suma(valores[2], 5);
+    output(res);
+}

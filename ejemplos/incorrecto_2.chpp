@@ -1,0 +1,26 @@
+# declaracion de tupla constante por lenguaje
+tup global_tuple = [1,2,3];
+int global_integer = 3;
+
+main{
+    const int a = 5;
+    int input = 0;
+    BEGIN
+ 
+    # ERROR: no se puede modificar una variable constante
+    a = 3;
+
+    global_integer = 4;
+
+    # ERROR: las tuplas en chadpp globales son constantes
+    global_tuple = [1,2,3];
+
+    # ERROR: no se le puede asignar un valor boleano a una variable numérica
+    input = inputbol();
+
+    # WARNING: División por 0
+    global_integer = global_integer/0;
+
+    # ERROR: no se pueden definir variables fuera del bloque BEGIN
+    int j = 9;
+}
