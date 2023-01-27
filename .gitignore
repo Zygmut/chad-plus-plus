@@ -37,4 +37,5 @@ grammar/Parser.java
 out/
 
 ficherosGenerados/
+output/
 .vscode/launch.json
